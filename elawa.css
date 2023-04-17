@@ -1,0 +1,852 @@
+#bga-zoom-wrapper {
+  position: relative;
+}
+
+#bga-zoom-wrapper .bga-zoom-inner {
+  transform-origin: left top;
+}
+
+#bga-zoom-wrapper .bga-zoom-inner[data-smooth=true] {
+  transition: transform 0.5s;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls {
+  position: absolute;
+  top: 0;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls[data-position=top-left] {
+  left: 0;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls[data-position=top-right] {
+  right: 0;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls button {
+  border: 0;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls button:not(.disabled) {
+  cursor: pointer;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+#bga-zoom-wrapper #bga-zoom-controls .bga-zoom-out-icon {
+  width: 40px;
+  height: 40px;
+  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="65 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"><g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M118,118C122.1,113.8 124.3,108.7 124.3,102.8C124.3,96.8 122.1,91.8 118,87.6C113.8,83.4 108.7,81.3 102.8,81.3C96.8,81.3 91.8,83.4 87.6,87.6C83.3,91.8 81.3,96.8 81.3,102.8C81.3,108.7 83.3,113.8 87.6,118C91.8,122.2 96.8,124.3 102.8,124.3C108.7,124.3 113.8,122.2 118,118" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M118,118L132.3,132.3" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M114.5,102.1L90.8,102.1" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g></g></svg>');
+}
+
+#bga-zoom-wrapper #bga-zoom-controls .bga-zoom-in-icon {
+  width: 40px;
+  height: 40px;
+  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"><g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M23.8,102.1L35.7,102.1" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,102.1L47.5,102.1" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,102.1L35.7,90.3" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M51,118C55.2,113.8 57.3,108.7 57.3,102.8C57.3,96.8 55.2,91.8 51,87.6C46.8,83.4 41.7,81.3 35.8,81.3C29.9,81.3 24.8,83.4 20.6,87.6C16.4,91.8 14.3,96.8 14.3,102.8C14.3,108.7 16.4,113.8 20.6,118C24.8,122.2 29.9,124.3 35.8,124.3C41.7,124.3 46.8,122.2 51,118" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,113.9L35.7,102.1" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M65.3,132.3L51,118" style="fill:none;fill-rule:nonzero;stroke:black;stroke-width:7px;"/></g></g></svg>');
+}
+
+#bga-zoom-wrapper #bga-zoom-controls[data-color=white] .bga-zoom-out-icon {
+  width: 40px;
+  height: 40px;
+  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="65 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"><g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M118,118C122.1,113.8 124.3,108.7 124.3,102.8C124.3,96.8 122.1,91.8 118,87.6C113.8,83.4 108.7,81.3 102.8,81.3C96.8,81.3 91.8,83.4 87.6,87.6C83.3,91.8 81.3,96.8 81.3,102.8C81.3,108.7 83.3,113.8 87.6,118C91.8,122.2 96.8,124.3 102.8,124.3C108.7,124.3 113.8,122.2 118,118" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M118,118L132.3,132.3" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-4.97116,-76.2244)"><path d="M114.5,102.1L90.8,102.1" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g></g></svg>');
+}
+
+#bga-zoom-wrapper #bga-zoom-controls[data-color=white] .bga-zoom-in-icon {
+  width: 40px;
+  height: 40px;
+  background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 70 70" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;"><g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M23.8,102.1L35.7,102.1" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,102.1L47.5,102.1" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,102.1L35.7,90.3" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M51,118C55.2,113.8 57.3,108.7 57.3,102.8C57.3,96.8 55.2,91.8 51,87.6C46.8,83.4 41.7,81.3 35.8,81.3C29.9,81.3 24.8,83.4 20.6,87.6C16.4,91.8 14.3,96.8 14.3,102.8C14.3,108.7 16.4,113.8 20.6,118C24.8,122.2 29.9,124.3 35.8,124.3C41.7,124.3 46.8,122.2 51,118" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M35.7,113.9L35.7,102.1" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g><g transform="matrix(1,0,0,1,-7.91703,-76.2244)"><path d="M65.3,132.3L51,118" style="fill:none;fill-rule:nonzero;stroke:white;stroke-width:7px;"/></g></g></svg>');
+}
+
+body > .card {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+.card {
+  flex-shrink: 0;
+}
+
+.card[data-side=back] .card-sides {
+  transform: rotateY(180deg);
+}
+
+.card .card-sides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.card .card-sides .card-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+  transform-origin: center center;
+  box-shadow: 1px 1px 2px 1px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.card .card-sides .card-side.front > * {
+  pointer-events: none;
+  user-select: none;
+}
+
+.card .card-sides .card-side.back {
+  transform: rotateY(180deg);
+}
+
+.card .card-sides .card-side.back > * {
+  pointer-events: none;
+  user-select: none;
+}
+
+.card-stock.selectable .card:not(.disabled) {
+  cursor: pointer;
+}
+
+.card-stock .card.selectable:not(.disabled) {
+  cursor: pointer;
+}
+
+.card-stock.line-stock {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: var(--wrap);
+  flex-direction: var(--direction);
+}
+
+.card-stock.line-stock[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.slot-stock {
+  display: flex;
+  gap: var(--gap);
+  flex-wrap: var(--wrap);
+  flex-direction: var(--direction);
+}
+
+.card-stock.slot-stock[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.scrollable-stock {
+  display: flex;
+  gap: var(--button-gap);
+}
+
+.card-stock.scrollable-stock[data-scrollbar-visible=false] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.card-stock.scrollable-stock[data-scrollbar-visible=false]::-webkit-scrollbar {
+  display: none;
+}
+
+.card-stock.scrollable-stock .scrollable-stock-inner {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: var(--gap);
+}
+
+.card-stock.scrollable-stock .scrollable-stock-inner[data-center=true] {
+  justify-content: center;
+}
+
+.card-stock.hand-stock {
+  display: flex;
+  justify-content: center;
+}
+
+.card-stock.hand-stock .card {
+  transform: translateY(calc(var(--card-shift) * var(--hand-stock-middle-index-abs))) rotate(calc(var(--hand-stock-middle-index) * var(--card-inclination)));
+}
+
+.card-stock.hand-stock .card:not(:first-child) {
+  margin-left: calc(-1 * var(--card-overlap));
+}
+
+.card-stock.manual-position-stock {
+  position: relative;
+}
+
+.card-stock.manual-position-stock .card {
+  position: absolute;
+}
+
+.card-stock.void-stock {
+  position: relative;
+}
+
+.card-stock.void-stock .card {
+  position: absolute;
+}
+
+.card-stock.deck {
+  position: relative;
+  width: var(--width);
+  height: var(--height);
+}
+
+.card-stock.deck > .card {
+  position: absolute;
+  top: calc(var(--thickness) * var(--xShadowShift) * -1);
+  left: calc(var(--thickness) * var(--yShadowShift) * -1);
+}
+
+.card-stock.deck > .card:first-child {
+  box-shadow: calc(var(--thickness) * var(--xShadowShift)) calc(var(--thickness) * var(--yShadowShift)) 0px 0px #111, calc(var(--thickness) * var(--xShadowShift)) calc(var(--thickness) * var(--yShadowShift)) 2px 1px rgba(0, 0, 0, 0.5);
+}
+
+.card-stock.deck[data-empty=true] > .card {
+  visibility: hidden;
+}
+
+.card-stock.all-visible-deck {
+  position: absolute;
+  --tile-count: 1;
+  width: calc(var(--width) + var(--tile-count) * var(--shift));
+  transition: height 0.5s ease-in-out, background-color 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+  opacity: var(--tile-count);
+}
+
+.card-stock.all-visible-deck > * {
+  position: absolute;
+  margin: 0;
+  transition: left 0.5s ease-in-out, top 0.5s ease-in-out;
+  top: calc(var(--shift) * var(--order));
+  left: calc(var(--shift) * var(--order));
+}
+
+.card-stock.all-visible-deck:hover, .card-stock.all-visible-deck:active, .card-stock.all-visible-deck.opened {
+  height: calc((var(--height) + var(--shift)) * var(--tile-count) - var(--shift));
+  z-index: 1;
+}
+
+.card-stock.all-visible-deck:hover > *, .card-stock.all-visible-deck:active > *, .card-stock.all-visible-deck.opened > * {
+  top: calc((var(--height) + var(--shift)) * var(--order));
+}
+
+.card {
+  display: inline-block;
+  position: relative;
+  width: 100px;
+  height: 152px;
+  margin: 5px;
+  border-radius: 8px;
+  /*&.selectable:not(.disabled) {
+      cursor: pointer;
+      &:not(.selected) {
+          animation: selectable-card-animation 1s alternate infinite ease-in-out;
+      }
+
+      .card-side {
+          box-shadow: unset;
+      }
+  }    
+
+  &.selected:not(.disabled) {
+      box-shadow: 0 0 5px 8px #e273f5;
+
+      .card-side {
+          box-shadow: unset;
+      }
+  } */
+}
+.card.disabled {
+  cursor: not-allowed;
+  filter: contrast(0.6);
+}
+.card .card-sides .card-side {
+  border-radius: 8px;
+}
+.card .card-sides .card-side > * {
+  pointer-events: none;
+  user-select: none;
+}
+.card .card-sides .card-side.back {
+  background-size: auto 100%;
+  background-image: url("img/card-back.jpg");
+}
+.card .card-sides .card-side.front {
+  background-size: auto 600%;
+  background-image: url("img/cards.jpg");
+}
+.card .front[data-number="1"] {
+  background-position: 0% 0%;
+}
+.card .front[data-number="2"] {
+  background-position: 11.1111111111% 0%;
+}
+.card .front[data-number="3"] {
+  background-position: 22.2222222222% 0%;
+}
+.card .front[data-number="4"] {
+  background-position: 33.3333333333% 0%;
+}
+.card .front[data-number="5"] {
+  background-position: 44.4444444444% 0%;
+}
+.card .front[data-number="6"] {
+  background-position: 55.5555555556% 0%;
+}
+.card .front[data-number="7"] {
+  background-position: 66.6666666667% 0%;
+}
+.card .front[data-number="8"] {
+  background-position: 77.7777777778% 0%;
+}
+.card .front[data-number="9"] {
+  background-position: 88.8888888889% 0%;
+}
+.card .front[data-number="10"] {
+  background-position: 100% 0%;
+}
+.card .front[data-number="11"] {
+  background-position: 0% 20%;
+}
+.card .front[data-number="12"] {
+  background-position: 11.1111111111% 20%;
+}
+.card .front[data-number="13"] {
+  background-position: 22.2222222222% 20%;
+}
+.card .front[data-number="14"] {
+  background-position: 33.3333333333% 20%;
+}
+.card .front[data-number="15"] {
+  background-position: 44.4444444444% 20%;
+}
+.card .front[data-number="16"] {
+  background-position: 55.5555555556% 20%;
+}
+.card .front[data-number="17"] {
+  background-position: 66.6666666667% 20%;
+}
+.card .front[data-number="18"] {
+  background-position: 77.7777777778% 20%;
+}
+.card .front[data-number="19"] {
+  background-position: 88.8888888889% 20%;
+}
+.card .front[data-number="20"] {
+  background-position: 100% 20%;
+}
+.card .front[data-number="21"] {
+  background-position: 0% 40%;
+}
+.card .front[data-number="22"] {
+  background-position: 11.1111111111% 40%;
+}
+.card .front[data-number="23"] {
+  background-position: 22.2222222222% 40%;
+}
+.card .front[data-number="24"] {
+  background-position: 33.3333333333% 40%;
+}
+.card .front[data-number="25"] {
+  background-position: 44.4444444444% 40%;
+}
+.card .front[data-number="26"] {
+  background-position: 55.5555555556% 40%;
+}
+.card .front[data-number="27"] {
+  background-position: 66.6666666667% 40%;
+}
+.card .front[data-number="28"] {
+  background-position: 77.7777777778% 40%;
+}
+.card .front[data-number="29"] {
+  background-position: 88.8888888889% 40%;
+}
+.card .front[data-number="30"] {
+  background-position: 100% 40%;
+}
+.card .front[data-number="31"] {
+  background-position: 0% 60%;
+}
+.card .front[data-number="32"] {
+  background-position: 11.1111111111% 60%;
+}
+.card .front[data-number="33"] {
+  background-position: 22.2222222222% 60%;
+}
+.card .front[data-number="34"] {
+  background-position: 33.3333333333% 60%;
+}
+.card .front[data-number="35"] {
+  background-position: 44.4444444444% 60%;
+}
+.card .front[data-number="36"] {
+  background-position: 55.5555555556% 60%;
+}
+.card .front[data-number="37"] {
+  background-position: 66.6666666667% 60%;
+}
+.card .front[data-number="38"] {
+  background-position: 77.7777777778% 60%;
+}
+.card .front[data-number="39"] {
+  background-position: 88.8888888889% 60%;
+}
+.card .front[data-number="40"] {
+  background-position: 100% 60%;
+}
+.card .front[data-number="41"] {
+  background-position: 0% 80%;
+}
+.card .front[data-number="42"] {
+  background-position: 11.1111111111% 80%;
+}
+.card .front[data-number="43"] {
+  background-position: 22.2222222222% 80%;
+}
+.card .front[data-number="44"] {
+  background-position: 33.3333333333% 80%;
+}
+.card .front[data-number="45"] {
+  background-position: 44.4444444444% 80%;
+}
+.card .front[data-number="46"] {
+  background-position: 55.5555555556% 80%;
+}
+.card .front[data-number="47"] {
+  background-position: 66.6666666667% 80%;
+}
+.card .front[data-number="48"] {
+  background-position: 77.7777777778% 80%;
+}
+.card .front[data-number="49"] {
+  background-position: 88.8888888889% 80%;
+}
+.card .front[data-number="50"] {
+  background-position: 100% 80%;
+}
+.card .front[data-number="51"] {
+  background-position: 0% 100%;
+}
+.card .front[data-number="52"] {
+  background-position: 11.1111111111% 100%;
+}
+.card .front[data-number="53"] {
+  background-position: 22.2222222222% 100%;
+}
+.card .front[data-number="54"] {
+  background-position: 33.3333333333% 100%;
+}
+.card .front[data-number="55"] {
+  background-position: 44.4444444444% 100%;
+}
+.card .front[data-number="56"] {
+  background-position: 55.5555555556% 100%;
+}
+.card .front[data-number="57"] {
+  background-position: 66.6666666667% 100%;
+}
+.card .front[data-number="58"] {
+  background-position: 77.7777777778% 100%;
+}
+.card .front[data-number="59"] {
+  background-position: 88.8888888889% 100%;
+}
+.card .front[data-number="60"] {
+  background-position: 100% 100%;
+}
+.card.score {
+  background-size: auto 100%;
+  background-image: url("img/scoring-cards.jpg");
+}
+.card.score[data-cost="1"] {
+  background-position-x: 0%;
+}
+.card.score[data-cost="2"] {
+  background-position-x: 25%;
+}
+.card.score[data-cost="3"] {
+  background-position-x: 50%;
+}
+.card.score[data-cost="4"] {
+  background-position-x: 75%;
+}
+.card.score[data-cost="5"] {
+  background-position-x: 100%;
+}
+.card.objective .card-sides .card-side {
+  border-radius: 8px;
+}
+.card.objective .card-sides .card-side > * {
+  pointer-events: none;
+  user-select: none;
+}
+.card.objective .card-sides .card-side.front {
+  background-size: auto 100%;
+  background-image: url("img/variant-cards.jpg");
+}
+.card.objective .card-sides .card-side.front[data-number="1"] {
+  background-position-x: 0%;
+}
+.card.objective .card-sides .card-side.front[data-number="2"] {
+  background-position-x: 7.6923076923%;
+}
+.card.objective .card-sides .card-side.front[data-number="3"] {
+  background-position-x: 15.3846153846%;
+}
+.card.objective .card-sides .card-side.front[data-number="4"] {
+  background-position-x: 23.0769230769%;
+}
+.card.objective .card-sides .card-side.front[data-number="5"] {
+  background-position-x: 30.7692307692%;
+}
+.card.objective .card-sides .card-side.front[data-number="6"] {
+  background-position-x: 38.4615384615%;
+}
+.card.objective .card-sides .card-side.front[data-number="7"] {
+  background-position-x: 46.1538461538%;
+}
+.card.objective .card-sides .card-side.front[data-number="8"] {
+  background-position-x: 53.8461538462%;
+}
+.card.objective .card-sides .card-side.front[data-number="9"] {
+  background-position-x: 61.5384615385%;
+}
+.card.objective .card-sides .card-side.front[data-number="10"] {
+  background-position-x: 69.2307692308%;
+}
+.card.objective .card-sides .card-side.front[data-number="11"] {
+  background-position-x: 76.9230769231%;
+}
+.card.objective .card-sides .card-side.front[data-number="12"] {
+  background-position-x: 84.6153846154%;
+}
+.card.objective .card-sides .card-side.front[data-number="13"] {
+  background-position-x: 92.3076923077%;
+}
+.card.objective .card-sides .card-side.front[data-number="14"] {
+  background-position-x: 100%;
+}
+
+/*@keyframes selectable-card-animation {
+    0% { 
+      //background: var(--background-lighter);
+      box-shadow: 0 0 3px 2px #FFFFFF;
+    }
+    100% { 
+      //background: var(--background-darker);
+      box-shadow: 0 0 5px 3px #FFFFFF;
+    }
+}*/
+#table-center {
+  border: 2px solid #ffd752;
+  padding: 5px;
+  border-radius: 15px;
+  background: rgba(255, 215, 82, 0.4);
+  margin: 5px;
+}
+#table-center .slot {
+  position: relative;
+  width: 100px;
+  height: 152px;
+}
+#table-center .slot .card {
+  margin: 0;
+}
+#table-center .slot .player-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -32px;
+  background: white;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.5333333333);
+  z-index: 1;
+}
+#table-center .slot .player-block .player-block-avatar {
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  outline: 1px solid #6a6a6a;
+  border-radius: 50%;
+}
+#table-center .slot .player-block .player-block-name {
+  font-weight: bold;
+  flex: 1;
+  font-size: 11pt;
+  word-break: break-word;
+}
+#table-center .card-line:not(:last-child) {
+  margin-bottom: 8px;
+}
+#table-center .label-top {
+  margin-top: 32px;
+}
+#table-center #player-cards {
+  justify-content: space-evenly !important;
+}
+#table-center #player-cards .slot {
+  border: 1px dashed white;
+  background: rgba(255, 255, 255, 0.5333333333);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+#table-center #objectives {
+  background: rgba(45, 41, 102, 0.8);
+  border-radius: 8px;
+  margin-bottom: 40px;
+}
+#table-center hr {
+  margin: 28px;
+  border-color: #ffd752;
+  border-style: solid;
+}
+
+.player-board {
+  background-color: white;
+}
+.player-board.spectator-mode * {
+  background: white !important;
+}
+
+.counters {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+.counters > div {
+  flex: 1;
+}
+.counters .icon {
+  margin-right: 5px;
+}
+
+.player-scored-card {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-image: url("img/card-deck.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  vertical-align: middle;
+}
+
+.bet-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 12px;
+  margin: 8px 0;
+}
+.bet-tokens .bet-token {
+  background-image: url("img/bet-tokens.png");
+  background-repeat: no-repeat;
+  background-size: auto 200%;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 3px 1px black;
+  margin-left: -12px;
+}
+.bet-tokens .bet-token[data-value="3"] {
+  background-position: 0% 0%;
+}
+.bet-tokens .bet-token[data-value="-3"] {
+  background-position: 0% 100%;
+}
+.bet-tokens .bet-token[data-value="4"] {
+  background-position: 50% 0%;
+}
+.bet-tokens .bet-token[data-value="-4"] {
+  background-position: 50% 100%;
+}
+.bet-tokens .bet-token[data-value="5"] {
+  background-position: 100% 0%;
+}
+.bet-tokens .bet-token[data-value="-5"] {
+  background-position: 100% 100%;
+}
+
+.player-table {
+  width: 100%;
+  position: relative;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5333333333);
+  border-radius: 15px;
+  margin: 5px;
+  font-size: 16pt;
+  color: white;
+}
+.player-table .name-wrapper {
+  color: var(--player-color);
+  position: relative;
+  display: flex;
+  background: rgba(255, 255, 255, 0.5333333333);
+  padding: 5px;
+  border-radius: 15px;
+  justify-content: center;
+  align-items: center;
+  font-size: 20pt;
+}
+.player-table .block-with-text {
+  display: flex;
+}
+.player-table .block-with-text .block-label {
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+  text-align: center;
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  padding: 5px;
+  text-overflow: ellipsis;
+}
+.player-table .block-with-text .block-label.your-line {
+  margin-left: 5px;
+}
+.player-table .block-with-text > div:not(.block-label) {
+  flex: 1;
+}
+.player-table .hand-wrapper {
+  margin: 5px;
+  background: rgba(255, 255, 255, 0.5333333333);
+  border-radius: 10px;
+}
+.player-table .cards {
+  min-height: 152px;
+}
+.player-table .score.cards {
+  display: flex;
+  justify-content: center;
+}
+.player-table .score.cards .cards {
+  margin-top: -110px;
+}
+.player-table .score.cards .cards .card:not(:first-child) {
+  margin-top: calc(-1 * var(--card-overlap));
+}
+
+/* make space between buttons on touch devices */
+@media (hover: none) {
+  #page-title .action-button.bgabutton, #page-title .bgabutton {
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+}
+html, .mode_3d #game_play_area_background {
+  background: url("img/background.jpg");
+  background-size: 100% auto;
+  background-repeat: repeat;
+}
+
+#zoom-wrapper {
+  position: relative;
+}
+#zoom-wrapper #zoom-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#zoom-wrapper #zoom-controls button {
+  width: 40px;
+  height: 40px;
+  background: url("img/zoom.svg");
+  background-size: auto 220%;
+}
+#zoom-wrapper #zoom-controls button:not(.disabled) {
+  cursor: pointer;
+}
+#zoom-wrapper #zoom-controls button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+#zoom-wrapper #zoom-controls #zoom-in {
+  background-position: 6% 94%;
+}
+#zoom-wrapper #zoom-controls #zoom-out {
+  background-position: 82% 94%;
+}
+
+#round-counter-row {
+  display: flex;
+  justify-content: center;
+}
+#round-counter-row #round-counter-block {
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 120%;
+  padding: 8px 16px;
+  margin: 0 5px;
+  border-radius: 10px;
+  text-shadow: 0 0 1px black, 0 0 2px black, 0 0 3px black, 0 0 4px black;
+  color: white;
+}
+
+#tables-and-center {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 20px;
+  flex-direction: column;
+}
+#tables-and-center #tables {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  flex-direction: column;
+}
+
+@media (min-width: 1500px) {
+  #tables-and-center {
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: start;
+  }
+  #tables-and-center > div {
+    flex: 1;
+  }
+}
+.log [data-color="1"], .dijitTooltipContents [data-color="1"] {
+  color: #f46d33;
+}
+.log [data-color="2"], .dijitTooltipContents [data-color="2"] {
+  color: #ef5c93;
+}
+.log [data-color="3"], .dijitTooltipContents [data-color="3"] {
+  color: #0079bc;
+}
+.log [data-color="4"], .dijitTooltipContents [data-color="4"] {
+  color: #6ab355;
+}
+.log [data-color="5"], .dijitTooltipContents [data-color="5"] {
+  color: #6967af;
+}
+.log .points-circle, .dijitTooltipContents .points-circle {
+  color: white;
+  border-radius: 50%;
+  background: #ffbb40;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  text-align: center;
+  font-size: 90%;
+}
+.log .points-circle[data-negative=true], .dijitTooltipContents .points-circle[data-negative=true] {
+  background: #e94422;
+}

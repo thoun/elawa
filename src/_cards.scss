@@ -1,0 +1,107 @@
+.card {
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 152px;
+    margin: 5px;
+    border-radius: 8px;
+
+    &.disabled {
+      cursor: not-allowed;
+      filter: contrast(0.6);
+    }
+
+    .card-sides {
+        .card-side {
+            border-radius: 8px;
+
+            &>* {
+                pointer-events: none;
+                user-select: none;
+            }
+
+            &.back {  
+                background-size: auto 100%;
+                background-image: url('img/card-back.jpg');
+            }
+
+            &.front {
+                background-size: auto 600%;
+                background-image: url('img/cards.jpg');
+            }
+        }
+    }    
+
+    /*&.selectable:not(.disabled) {
+        cursor: pointer;
+        &:not(.selected) {
+            animation: selectable-card-animation 1s alternate infinite ease-in-out;
+        }
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }    
+
+    &.selected:not(.disabled) {
+        box-shadow: 0 0 5px 8px #e273f5;
+
+        .card-side {
+            box-shadow: unset;
+        }
+    } */
+
+    @for $line from 0 through 5 {
+        @for $col from 1 through 10 {
+            .front[data-number="#{$line * 10 + $col}"] {
+                background-position: #{($col - 1) * 100% / 9} #{$line * 100% / 5};
+            }
+        }
+    }
+
+    &.score {        
+        background-size: auto 100%;              
+        background-image: url('img/scoring-cards.jpg');
+
+        @for $cost from 1 through 5 {
+            &[data-cost="#{$cost}"] {
+                background-position-x: #{($cost - 1) * 100% / 4};
+            }
+        }
+    }
+
+    &.objective {
+        .card-sides {
+            .card-side {
+                border-radius: 8px;
+
+                &>* {
+                    pointer-events: none;
+                    user-select: none;
+                }
+
+                &.front {
+                    background-size: auto 100%;
+                    background-image: url('img/variant-cards.jpg');
+
+                    @for $number from 1 through 14 {
+                        &[data-number="#{$number}"] {
+                            background-position-x: #{($number - 1) * 100% / 13};
+                        }
+                    }
+                }
+            }
+        }  
+    }
+}
+
+/*@keyframes selectable-card-animation {
+    0% { 
+      //background: var(--background-lighter);
+      box-shadow: 0 0 3px 2px #FFFFFF;
+    }
+    100% { 
+      //background: var(--background-darker);
+      box-shadow: 0 0 5px 3px #FFFFFF;
+    }
+}*/
