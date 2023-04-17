@@ -170,7 +170,7 @@ class Elawa implements ElawaGame {
     }
 
     private createPlayerTable(gamedatas: ElawaGamedatas, playerId: number) {
-        const table = new PlayerTable(this, gamedatas.players[playerId], gamedatas.costs);
+        const table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     }
 
@@ -222,7 +222,6 @@ class Elawa implements ElawaGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['newRound', 1],
             ['selectedCard', 1],
             ['delayBeforeReveal', ANIMATION_MS],
             ['revealCards', ANIMATION_MS * 2],
@@ -239,12 +238,6 @@ class Elawa implements ElawaGame {
             dojo.subscribe(notif[0], this, `notif_${notif[0]}`);
             (this as any).notifqueue.setSynchronous(notif[0], notif[1]);
         });
-    }
-
-    notif_newRound(notif: Notif<NotifNewRoundArgs>) {
-        console.log('notif_newRound', notif.args);
-        this.roundCounter.toValue(notif.args.number);
-        this.playersTables.forEach(table => table.newRound(notif.args.costs));
     }
 
     notif_selectedCard(notif: Notif<NotifSelectedCardArgs>) {

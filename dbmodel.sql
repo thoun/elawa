@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- Example 2: add a custom field to the standard "player" table
---ALTER TABLE `player` ADD `player_selected_card` INT UNSIGNED NULL;
+ALTER TABLE `player` ADD `player_chief` tinyint UNSIGNED NULL;
 
 CREATE TABLE IF NOT EXISTS `global_variables` (
   `name` varchar(50) NOT NULL,

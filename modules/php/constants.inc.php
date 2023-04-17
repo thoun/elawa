@@ -1,6 +1,15 @@
 <?php
 
 /*
+ * Color
+ */
+define('BLUE', 1);
+define('YELLOW', 2);
+define('GREEN', 3);
+define('RED', 4);
+define('PURPLE', 5);
+
+/*
  * Tokens
  */
 define('BERRY', 1);
@@ -14,19 +23,15 @@ define('BONE', 5);
  */
 define('ST_BGA_GAME_SETUP', 1);
 
-define('ST_NEW_ROUND', 10);
+define('ST_PLAYER_TAKE_CARD', 10);
 
-define('ST_PLAYER_TAKE_CARD', 20);
-
-define('ST_PLAYER_PLAY_CARD', 30);
+define('ST_PLAYER_PLAY_CARD', 20);
 
 define('ST_PLAYER_STORE_TOKEN', 60);
 
 define('ST_PLAYER_DISCARD_TOKENS', 70);
 
 define('ST_NEXT_PLAYER', 80);
-
-define('ST_END_ROUND', 85);
 
 define('ST_END_SCORE', 90);
 
@@ -41,7 +46,7 @@ define('END_SCORE', 100);
 /*
  * Options
  */
-define('BONUS_OBJECTIVES_OPTION', 100);
+define('CHIEFTAIN_OPTION', 100);
 
 /*
  * Global variables

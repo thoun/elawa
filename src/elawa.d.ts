@@ -32,7 +32,6 @@ interface ElawaGamedatas {
     // Add here variables you set up in getAllDatas
     selected: Card[];
     table: Card[];
-    costs: number[];
     objectives: number[];
 }
 
@@ -62,12 +61,6 @@ interface EnteringPlayCardArgs {
 
 interface EnteringPlayHandCardArgs {
     canPlaceOnLine: Card[];
-}
-
-// newRound
-interface NotifNewRoundArgs {
-    number: number;
-    costs: number[];
 }
 
 // selectedCard

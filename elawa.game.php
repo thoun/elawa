@@ -20,6 +20,7 @@
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 
 require_once('modules/php/objects/card.php');
+require_once('modules/php/objects/token.php');
 require_once('modules/php/objects/player.php');
 require_once('modules/php/constants.inc.php');
 require_once('modules/php/utils.php');
@@ -45,7 +46,7 @@ class Elawa extends Table {
         parent::__construct();
         
         self::initGameStateLabels([
-            BONUS_OBJECTIVES_OPTION => BONUS_OBJECTIVES_OPTION,
+            CHIEFTAIN_OPTION => CHIEFTAIN_OPTION,
         ]);   
 		
         $this->cards = $this->getNew("module.common.deck");
@@ -78,11 +79,23 @@ class Elawa extends Table {
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_chief) VALUES ";
         $values = [];
+
+        $affectedChiefs = [];
+        $chiefs = [1, 2, 3, 4];
+
+        for ($i = 0; $i < count($players); $i++) {
+            $index = bga_rand(1, count($chiefs)) - 1;
+            $affectedChiefs[] = $chiefs[$index];
+            array_splice($chiefs, $index, 1);
+        }
+
         foreach( $players as $player_id => $player ) {
             $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+            $chief = array_shift( $affectedChiefs );
+
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $chief)";
         }
         $sql .= implode(',', $values);
         self::DbQuery( $sql );
@@ -105,7 +118,8 @@ class Elawa extends Table {
         }
 
         // setup the initial game situation here
-        $this->setupCards(array_keys($players));
+        $this->setupCards();
+        $this->setupTokens(count($players));
        
 
         // Activate first player (which is in general a good idea :) )
@@ -155,8 +169,6 @@ class Elawa extends Table {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);
             }
         }
-
-        $result['costs'] = $this->getGlobalVariable(COSTS, true);
 
         $selected = $this->getCardsByLocation('selected');
         $result['selected'] = array_map(fn($card) => $currentPlayerId == $card->locationArg ? $card : Card::onlyId($card), $selected);

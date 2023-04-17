@@ -8,7 +8,7 @@ class PlayerTable {
 
     private currentPlayer: boolean;
 
-    constructor(private game: ElawaGame, player: ElawaPlayer, costs: number[]) {
+    constructor(private game: ElawaGame, player: ElawaPlayer) {
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
 
@@ -51,8 +51,6 @@ class PlayerTable {
             
             this.hand.addCards(player.hand);
         }
-        
-        this.setCosts(costs);
 
         for (let i=0; i<5; i++) {
             const scoreDiv = document.getElementById(`player-table-${this.playerId}-score${i}-cards`);
@@ -66,24 +64,6 @@ class PlayerTable {
     
     public setSelectable(selectable: boolean) {
         document.getElementById(`player-table-${this.playerId}-hand`).classList.toggle('selectable', selectable);
-    }
-
-    public newRound(costs: number[]): void {
-        for (let i=0; i<5; i++) {
-            if (this.currentPlayer) {
-                this.hand.addCards(this.scores[i].getCards());
-            } else {
-                this.scores[i].removeAll();
-            }
-        }
-
-        this.setCosts(costs);
-    }
-    
-    public setCosts(costs: number[]): void {
-        for (let i=0; i<5; i++) {
-            document.getElementById(`player-table-${this.playerId}-score${i}`).dataset.cost = ''+costs[i];
-        }
     }
     
     public placeScoreCard(card: Card) {

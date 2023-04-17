@@ -56,7 +56,7 @@ $basicGameStates = [
         "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => [ "" => ST_NEW_ROUND ]
+        "transitions" => [ "" => ST_PLAYER_TAKE_CARD ]
     ],
    
     // Final state.
@@ -138,17 +138,6 @@ $playerActionsGameStates = [
 
 $gameGameStates = [
 
-    ST_NEW_ROUND => [
-        "name" => "newRound",
-        "description" => "",
-        "type" => "game",
-        "action" => "stNewRound",
-        "updateGameProgression" => true,
-        "transitions" => [
-            "next" => ST_PLAYER_TAKE_CARD,
-        ],
-    ],
-
     ST_NEXT_PLAYER => [
         "name" => "nextPlayer",
         "description" => "",
@@ -156,18 +145,6 @@ $gameGameStates = [
         "action" => "stNextPlayer",
         "transitions" => [
             "nextPlayer" => ST_PLAYER_TAKE_CARD,
-            "endRound" => ST_END_ROUND,
-        ],
-    ],
-
-    ST_END_ROUND => [
-        "name" => "endRound",
-        "description" => "",
-        "type" => "game",
-        "action" => "stEndRound",
-        "updateGameProgression" => true,
-        "transitions" => [
-            "newRound" => ST_NEW_ROUND,
             "endScore" => ST_END_SCORE,
         ],
     ],

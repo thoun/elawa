@@ -28,38 +28,17 @@ require_once("modules/php/constants.inc.php");
 
  $game_options = [
 
-    BONUS_OBJECTIVES_OPTION => [
-        'name' => totranslate('Bonus objectives'),
+    CHIEFTAIN_OPTION => [
+        'name' => totranslate('Chieftain cards'),
         'values' => [
-            0 => [
-                'name' => totranslate('Disabled'),
-            ],
             1 => [
-                'name' => totranslate('1 random objective'),
-                'tmdisplay' => totranslate('1 random objective'),
-                'description' => totranslate('1 random objective (changing each round)'),
+                'name' => totranslate('Normal side'),
             ],
             2 => [
-                'name' => totranslate('2 random objectives'),
-                'tmdisplay' => totranslate('2 random objectives'),
-                'description' => totranslate('2 random objectives (changing each round)'),
-            ],
-            3 => [
-                'name' => totranslate('3 random objectives'),
-                'tmdisplay' => totranslate('3 random objectives'),
-                'description' => totranslate('3 random objectives (set for the entire game)'),
-            ],
-            4 => [
-                'name' => totranslate('4 random objectives'),
-                'tmdisplay' => totranslate('4 random objectives'),
-                'description' => totranslate('4 random objectives (set for the entire game)'),
-            ],
-            5 => [
-                'name' => totranslate('5 random objectives'),
-                'tmdisplay' => totranslate('5 random objectives'),
-                'description' => totranslate('5 random objectives (set for the entire game)'),
+                'name' => totranslate('Advanced side'),
+                'tmdisplay' => totranslate('Advanced chieftain side'),
             ],
         ],
-        'default' => 0,
+        'default' => 1,
     ],
 ];

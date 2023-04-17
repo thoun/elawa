@@ -1366,7 +1366,7 @@ var isDebug = window.location.host == 'studio.boardgamearena.com' || window.loca
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var PlayerTable = /** @class */ (function () {
-    function PlayerTable(game, player, costs) {
+    function PlayerTable(game, player) {
         var _this = this;
         this.game = game;
         this.scores = [];
@@ -1395,7 +1395,6 @@ var PlayerTable = /** @class */ (function () {
             };
             this.hand.addCards(player.hand);
         }
-        this.setCosts(costs);
         for (var i = 0; i < 5; i++) {
             var scoreDiv = document.getElementById("player-table-".concat(this.playerId, "-score").concat(i, "-cards"));
             this.scores[i] = new LineStock(this.game.cardsManager, scoreDiv, {
@@ -1407,22 +1406,6 @@ var PlayerTable = /** @class */ (function () {
     }
     PlayerTable.prototype.setSelectable = function (selectable) {
         document.getElementById("player-table-".concat(this.playerId, "-hand")).classList.toggle('selectable', selectable);
-    };
-    PlayerTable.prototype.newRound = function (costs) {
-        for (var i = 0; i < 5; i++) {
-            if (this.currentPlayer) {
-                this.hand.addCards(this.scores[i].getCards());
-            }
-            else {
-                this.scores[i].removeAll();
-            }
-        }
-        this.setCosts(costs);
-    };
-    PlayerTable.prototype.setCosts = function (costs) {
-        for (var i = 0; i < 5; i++) {
-            document.getElementById("player-table-".concat(this.playerId, "-score").concat(i)).dataset.cost = '' + costs[i];
-        }
     };
     PlayerTable.prototype.placeScoreCard = function (card) {
         this.scores[card.locationArg].addCard(card);
@@ -1557,7 +1540,7 @@ var Elawa = /** @class */ (function () {
         });
     };
     Elawa.prototype.createPlayerTable = function (gamedatas, playerId) {
-        var table = new PlayerTable(this, gamedatas.players[playerId], gamedatas.costs);
+        var table = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(table);
     };
     Elawa.prototype.setScore = function (playerId, score) {
@@ -1601,7 +1584,6 @@ var Elawa = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
-            ['newRound', 1],
             ['selectedCard', 1],
             ['delayBeforeReveal', ANIMATION_MS],
             ['revealCards', ANIMATION_MS * 2],
@@ -1617,11 +1599,6 @@ var Elawa = /** @class */ (function () {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
-    };
-    Elawa.prototype.notif_newRound = function (notif) {
-        console.log('notif_newRound', notif.args);
-        this.roundCounter.toValue(notif.args.number);
-        this.playersTables.forEach(function (table) { return table.newRound(notif.args.costs); });
     };
     Elawa.prototype.notif_selectedCard = function (notif) {
         var currentPlayer = this.getPlayerId() == notif.args.playerId;

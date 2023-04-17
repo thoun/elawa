@@ -128,25 +128,44 @@ trait UtilTrait {
         return array_map(fn($dbCard) => new Card($dbCard), array_values($dbResults));
     }
 
-    function setupCards(array $playersIds) {
+    function setupCards() {
         // number cards
         $cards = [];
-        for ($i = 1; $i <= 60; $i++) {
-            $cards[] = [ 'type' => 1, 'type_arg' => $i, 'nbr' => 1 ];
+        for ($color = 1; $color <= 5; $color++) {
+            for ($i = 1; $i <= 12; $i++) {
+                $cards[] = [ 'type' => $color, 'type_arg' => $i, 'nbr' => 1 ];
+            }
         }
         $this->cards->createCards($cards, 'deck');
         $this->cards->shuffle('deck');
 
-        foreach ($playersIds as $playerId) {
-            $this->cards->pickCards(7, 'deck', $playerId);
+        foreach ([1,2,3,4,5,6] as $pile) {
+            $this->cards->pickCardsForLocation(10, 'deck', 'pile'.$pile);
+            $this->cards->shuffle('pile'.$pile); // to give them a locationArg asc
+        }
+    }
+
+    function setupTokens(int $playerCount) {
+        $tokens = [
+            [ 'type' => BERRY, 'type_arg' => null, 'nbr' => 24 ],
+            [ 'type' => MEAT, 'type_arg' => null, 'nbr' => 20 ],
+            [ 'type' => FLINT, 'type_arg' => null, 'nbr' => 16 ],
+            [ 'type' => SKIN, 'type_arg' => null, 'nbr' => 12 ],
+            [ 'type' => BONE, 'type_arg' => null, 'nbr' => 8 ],
+        ];
+        for ($i = 1; $i <= 60; $i++) {
+            $cards[] = [ 'type' => 1, 'type_arg' => $i, 'nbr' => 1 ];
+        }
+        $this->tokens->createCards($tokens, 'deck');
+        $this->tokens->shuffle('deck');
+
+        foreach ([1,2,3,4,5,6] as $pile) {
+            $this->tokens->pickCardsForLocation(5, 'deck', 'pile'.$pile);
+            $this->tokens->shuffle('pile'.$pile); // to give them a locationArg asc
         }
 
-        $tableDb = $this->cards->getCardsOnTop(count($playersIds), 'deck');
-        $table = array_map(fn($dbCard) => new Card($dbCard), array_values($tableDb));
-        usort($table, fn($a, $b) => $a->number - $b->number);
-        foreach ($table as $index => $card) {
-            $this->cards->moveCard($card->id, 'table', $index);
-        }
+        $this->tokens->pickCardsForLocation($this->CENTER_RESOURCES_BY_PLAYER_COUNT[$playerCount], 'deck', 'center');
+        $this->tokens->shuffle('center'); // to give them a locationArg asc
     }
 
     function getCol(int $playerId, int $color) {
@@ -276,7 +295,7 @@ trait UtilTrait {
     }
 
     function getBonusObjectivesNumber() {
-        return intval($this->getGameStateValue(BONUS_OBJECTIVES_OPTION));
+        return intval($this->getGameStateValue(CHIEFTAIN_OPTION));
     }
 
     function setBonusObjectives(bool $firstRound) {

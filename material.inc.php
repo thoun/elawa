@@ -18,3 +18,9 @@
  * are available everywhere in your game logic code.
  *
  */
+
+$this->CENTER_RESOURCES_BY_PLAYER_COUNT = [
+    2 => 6,
+    3 => 8,
+    4 => 10,
+];
