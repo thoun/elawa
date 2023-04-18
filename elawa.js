@@ -1298,68 +1298,8 @@ var ObjectivesManager = /** @class */ (function (_super) {
 }(CardManager));
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
-        var _this = this;
         this.game = game;
-        var playersIds = (gamedatas.playerorder.length > 1 ? gamedatas.playerorder : Object.keys(gamedatas.players)).map(function (key) { return Number(key); });
-        var playerCount = playersIds.length;
-        var slotSettings = {
-            wrap: 'nowrap',
-            slotsIds: [],
-            mapCardToSlot: function (card) { return card.locationArg; },
-        };
-        for (var i = 0; i < playerCount; i++) {
-            slotSettings.slotsIds.push(i);
-        }
-        var playerCardsDiv = document.getElementById("player-cards");
-        this.playerCards = new SlotStock(this.game.cardsManager, playerCardsDiv, {
-            wrap: 'nowrap',
-            slotsIds: playersIds,
-            mapCardToSlot: function (card) { return card.locationArg; },
-        });
-        this.tableOver = new SlotStock(this.game.cardsManager, document.getElementById("table-over"), slotSettings);
-        this.tableUnder = new SlotStock(this.game.cardsManager, document.getElementById("table-under"), slotSettings);
-        gamedatas.selected.forEach(function (card) { return _this.playerCards.addCard(card, undefined, { visible: !!card.number }); });
-        this.tableOver.addCards(gamedatas.table);
-        playersIds.forEach(function (playerId) { return playerCardsDiv.querySelector("[data-slot-id=\"".concat(playerId, "\"]")).appendChild(_this.createPlayerBlock(playerId)); });
-        if (!gamedatas.objectives.length) {
-            document.getElementById("objectives").style.display = 'none';
-        }
-        this.objectivesManager = new ObjectivesManager(this.game);
-        this.objectives = new LineStock(this.objectivesManager, document.getElementById("objectives"));
-        this.changeObjectives(gamedatas.objectives);
     }
-    TableCenter.prototype.createPlayerBlock = function (playerId) {
-        var player = this.game.getPlayer(playerId);
-        var block = document.createElement('div');
-        block.classList.add('player-block');
-        var url = document.getElementById("avatar_".concat(playerId)).src;
-        // ? Custom image : Bga Image
-        //url = url.replace('_32', url.indexOf('data/avatar/defaults') > 0 ? '' : '_184');
-        block.innerHTML = "\n            <div class=\"player-block-avatar\" style=\"background-image: url('".concat(url, "');\"></div>\n            <div class=\"player-block-name\" style=\"color: #").concat(player.color, "\">").concat(player.name, "</div>\n        ");
-        return block;
-    };
-    TableCenter.prototype.setPlacedCard = function (card, currentPlayer) {
-        this.playerCards.addCard(card, currentPlayer ? undefined : { fromElement: document.getElementById("player-table-".concat(card.locationArg)) }, { visible: !!card.number });
-    };
-    TableCenter.prototype.cancelPlacedCard = function (card) {
-        this.playerCards.removeCard(card);
-    };
-    TableCenter.prototype.revealCards = function (cards) {
-        var _this = this;
-        cards.forEach(function (card) { return _this.playerCards.setCardVisible(card, true); });
-    };
-    TableCenter.prototype.placeCardUnder = function (playerId, card) {
-        this.tableUnder.addCard(card);
-        document.getElementById("table-under").querySelector("[data-slot-id=\"".concat(card.locationArg, "\"]")).appendChild(this.createPlayerBlock(playerId));
-    };
-    TableCenter.prototype.moveTableLine = function () {
-        this.tableOver.addCards(this.tableUnder.getCards());
-        Array.from(document.querySelectorAll("#table-under .player-block")).forEach(function (elem) { return elem.remove(); });
-    };
-    TableCenter.prototype.changeObjectives = function (objectives) {
-        this.objectives.removeAll();
-        this.objectives.addCards(objectives);
-    };
     return TableCenter;
 }());
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;

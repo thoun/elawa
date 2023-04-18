@@ -1,10 +1,10 @@
 .card {
     display: inline-block;
     position: relative;
-    width: 100px;
-    height: 152px;
+    width: 202px;
+    height: 282px;
     margin: 5px;
-    border-radius: 8px;
+    border-radius: 10px;
 
     &.disabled {
       cursor: not-allowed;
@@ -13,20 +13,20 @@
 
     .card-sides {
         .card-side {
-            border-radius: 8px;
+            border-radius: 10px;
 
             &>* {
                 pointer-events: none;
                 user-select: none;
             }
 
-            &.back {  
+            /*&.back {  
                 background-size: auto 100%;
                 background-image: url('img/card-back.jpg');
-            }
+            }*/
 
             &.front {
-                background-size: auto 600%;
+                background-size: auto 500%;
                 background-image: url('img/cards.jpg');
             }
         }
@@ -51,29 +51,35 @@
         }
     } */
 
-    @for $line from 0 through 5 {
-        @for $col from 1 through 10 {
-            .front[data-number="#{$line * 10 + $col}"] {
-                background-position: #{($col - 1) * 100% / 9} #{$line * 100% / 5};
+    @for $color from 1 through 5 {
+        @for $number from 1 through 12 {
+            .front[data-color="#{$color}"][data-number="#{$number}"] {
+                background-position: #{($number - 1) * 100% / 11} #{($color - 1) * 100% / 4};
             }
         }
     }
 
-    &.score {        
+    &.chief {        
         background-size: auto 100%;              
-        background-image: url('img/scoring-cards.jpg');
+        background-image: url('img/chiefs.jpg');
 
-        @for $cost from 1 through 5 {
-            &[data-cost="#{$cost}"] {
-                background-position-x: #{($cost - 1) * 100% / 4};
+        @for $number from 1 through 4 {
+            &[data-number="#{$number}"][data-level="1"] {
+                background-position-x: #{($number - 1) * 100% / 7};
+            }
+            &[data-number="#{$number}"][data-level="2"] {
+                background-position-x: #{($number + 3) * 100% / 7};
             }
         }
     }
 
-    &.objective {
+    &.token {
+        width: 68px;
+        height: 68px;
+        
         .card-sides {
             .card-side {
-                border-radius: 8px;
+                border-radius: 40%;
 
                 &>* {
                     pointer-events: none;
@@ -82,11 +88,11 @@
 
                 &.front {
                     background-size: auto 100%;
-                    background-image: url('img/variant-cards.jpg');
+                    background-image: url('img/tokens.png');
 
-                    @for $number from 1 through 14 {
+                    @for $number from 1 through 5 {
                         &[data-number="#{$number}"] {
-                            background-position-x: #{($number - 1) * 100% / 13};
+                            background-position-x: #{($number - 1) * 100% / 4};
                         }
                     }
                 }

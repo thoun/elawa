@@ -14,12 +14,6 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
-    public function d($playerId) {
-        $costs = $this->getGlobalVariable(COSTS, true);
-        $objectives = $this->getGlobalVariable(BONUS_OBJECTIVES, true) ?? [];
-        $this->updatePlayerScore($playerId, $costs, $objectives);
-    }
-
     public function debugReplacePlayersIds() {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;
