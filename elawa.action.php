@@ -39,11 +39,11 @@
       }
   	} 
 
-    public function chooseCard() {
+    public function takeCard() {
         self::setAjaxMode();     
 
-        $id = self::getArg("id", AT_posint, true);
-        $this->game->chooseCard($id);
+        $pile = self::getArg("pile", AT_posint, true);
+        $this->game->takeCard($pile);
 
         self::ajaxResponse();
     }

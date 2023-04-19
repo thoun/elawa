@@ -10,8 +10,22 @@ define('RED', 4);
 define('PURPLE', 5);
 
 /*
+ * Card type
+ */
+define('HOUSE', 1);
+define('STORAGE', 2);
+define('HUMAN', 3);
+define('TOOL', 4);
+
+define('POWER_CARD', 10);
+define('POWER_RESSOURCE', 11);
+
+/*
  * Tokens
  */
+define('DISCARD', 0); // special type, only for card resources array
+define('DIFFERENT', 0); // special type, only for storage
+
 define('BERRY', 1);
 define('MEAT', 2);
 define('FLINT', 3);

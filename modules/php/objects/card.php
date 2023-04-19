@@ -2,8 +2,33 @@
 
 require_once(__DIR__.'/../constants.inc.php');
 
+class CardType {
+    public int $tokens;
+    public int $points;
+    public int $cardType;
+    public array $resources;
+    public bool $discard;
+    public /*int|null*/ $power;
+    public /*int|null*/ $storageType;
+  
+    public function __construct(int $tokens, int $points, int $cardType, array $resources, /*int|null*/ $powerOrStorageType = null) {
+        $this->tokens = $tokens;
+        $this->points = $points;
+        $this->cardType = $cardType;
+        $this->resources = $resources;
+        $this->discard = count($this->resources) > 0 && $this->resources[0] == DISCARD;
+        if ($this->discard) {
+            $this->resources = array_slice($this->resources, 1);
+        }
+        if ($cardType == HUMAN) {
+            $this->power = $powerOrStorageType;
+        } else {
+            $this->storageType = $powerOrStorageType;
+        }
+    } 
+}
 
-class Card {
+class Card extends CardType {
 
     public int $id;
     public string $location;
@@ -11,12 +36,21 @@ class Card {
     public /*int|null*/ $color;
     public /*int|null*/ $number;
 
-    public function __construct($dbCard) {
+    public function __construct($dbCard, $CARDS) {
         $this->id = intval($dbCard['card_id'] ?? $dbCard['id']);
         $this->location = $dbCard['card_location'] ?? $dbCard['location'];
         $this->locationArg = intval($dbCard['card_location_arg'] ?? $dbCard['location_arg']);
         $this->color = array_key_exists('card_type', $dbCard) || array_key_exists('type', $dbCard) ? intval($dbCard['card_type'] ?? $dbCard['type']) : null;
         $this->number = array_key_exists('card_type_arg', $dbCard) || array_key_exists('type_arg', $dbCard) ? intval($dbCard['card_type_arg'] ?? $dbCard['type_arg']) : null;
+        
+        if ($this->number !== null) {
+            $cardType = $CARDS[$this->color][$this->number];
+            $this->tokens = $cardType->tokens;
+            $this->points = $cardType->points;
+            $this->cardType = $cardType->cardType;
+            $this->resources = $cardType->resources;
+            $this->power = $cardType->power;
+        }
     } 
 
     public static function onlyId(Card $card) {

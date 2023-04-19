@@ -13,16 +13,16 @@ trait ActionTrait {
 
     
 
-    public function chooseCard(int $id) {
-        //self::checkAction('chooseCard');
+    public function takeCard(int $pile) {
+        self::checkAction('takeCard');
 
         $playerId = intval($this->getCurrentPlayerId());
 
-        $playerHand = $this->getCardsByLocation('hand', $playerId);
-
-        if (!$this->array_some($playerHand, fn($card) => $card->id == $id)) {
-            throw new BgaUserException("You must choose a card in your hand");
+        if ($pile < 0 || $pile > 5) {
+            throw new BgaUserException("Invalid pile");
         }
+
+        $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
 
         if ($this->getPlayerSelectedCard($playerId) !== null) {
             $this->setPlayerSelectedCard($playerId, null);
@@ -30,14 +30,6 @@ trait ActionTrait {
 
         $this->setPlayerSelectedCard($playerId, $id);
 
-        $this->gamestate->setPlayerNonMultiactive($playerId, 'end');
-    }
-
-    public function cancelChooseCard() {
-        $playerId = intval($this->getCurrentPlayerId());
-
-        $this->setPlayerSelectedCard($playerId, null);
-
-        $this->gamestate->setPlayersMultiactive([$playerId], 'end', false);
+        $this->gamestate->nextState('next');
     }
 }

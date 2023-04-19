@@ -108,7 +108,7 @@ trait UtilTrait {
     function getCardById(int $id) {
         $sql = "SELECT * FROM `card` WHERE `card_id` = $id";
         $dbResults = $this->getCollectionFromDb($sql);
-        $cards = array_map(fn($dbCard) => new Card($dbCard), array_values($dbResults));
+        $cards = array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
         return count($cards) > 0 ? $cards[0] : null;
     }
 
@@ -125,7 +125,7 @@ trait UtilTrait {
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbCard) => new Card($dbCard), array_values($dbResults));
+        return array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
     }
 
     function setupCards() {
@@ -139,7 +139,7 @@ trait UtilTrait {
         $this->cards->createCards($cards, 'deck');
         $this->cards->shuffle('deck');
 
-        foreach ([1,2,3,4,5,6] as $pile) {
+        foreach ([0,1,2,3,4,5] as $pile) {
             $this->cards->pickCardsForLocation(10, 'deck', 'pile'.$pile);
             $this->cards->shuffle('pile'.$pile); // to give them a locationArg asc
         }
@@ -159,7 +159,7 @@ trait UtilTrait {
         $this->tokens->createCards($tokens, 'deck');
         $this->tokens->shuffle('deck');
 
-        foreach ([1,2,3,4,5,6] as $pile) {
+        foreach ([0,1,2,3,4,5] as $pile) {
             $this->tokens->pickCardsForLocation(5, 'deck', 'pile'.$pile);
             $this->tokens->shuffle('pile'.$pile); // to give them a locationArg asc
         }
