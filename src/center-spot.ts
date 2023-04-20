@@ -10,10 +10,12 @@ class CenterSpot {
         private game: ElawaGame,
         public pile: number,
         card: Card,
+        cardCount: number,
         token: Token,
+        tokenCount: number,
     ) { 
         let html = `
-        <div id="center-spot-${pile}" class="center-spot" style="transform: ${this.getSpotTransform()}">
+        <div id="center-spot-${pile}" class="center-spot" style="--angle: ${this.getSpotAngle()}">
             <div id="center-spot-${pile}-token"></div>
             <div id="center-spot-${pile}-card"></div>
         `;
@@ -25,13 +27,19 @@ class CenterSpot {
         this.visibleCard = new VisibleDeck<Card>(game.cardsManager, cardDeck, {
             width: 202,
             height: 282,
+            cardNumber: cardCount,
+            autoUpdateCardNumber: false,
         });
-        this.visibleCard.addCard(card);
+        if (card) {
+            this.visibleCard.addCard(card);
+        }
         cardDeck.addEventListener('click', () => this.game.onCenterCardClick(pile));
 
         this.visibleToken = new VisibleDeck<Token>(game.tokensManager, document.getElementById(`center-spot-${pile}-token`), {
             width: 68,
             height: 68,
+            cardNumber: tokenCount,
+            autoUpdateCardNumber: false,
         });
         this.visibleToken.addCard(token);
 
@@ -68,108 +76,22 @@ As such, it’s always the second card played on an ferry which defines the sequ
         this.updateCounter();*/
     }
 
-    private getSpotTransform() {
+    private getSpotAngle() {
         const angle = 60 * this.pile + 90;
-        return `rotate(${angle > 180 ? angle-360 : angle}deg) translateY(222px)`;
-    }
-
-    /*public setActive(active: boolean): void {
-        dojo.toggleClass(`center-spot-${this.position}`, 'active', active);
-    }
-
-    public addAnimal(animal: Animal, originId?: string, xShift: number = 0) {
-        const top = FIRST_ANIMAL_SHIFT + this.animals.length * CARD_OVERLAP;
-        const id = `center-spot-${this.position}-animal${animal.id}`;
-        let html = `<div id="${id}" data-id="${animal.id}" class="animal-card" style="top: ${top}px; background-position: ${getBackgroundPosition(animal)};`;
-        
-
-        if (originId) {
-            const originBR = document.getElementById(originId).getBoundingClientRect();
-            const destination = document.getElementById(`center-board`);
-            const destinationBR = destination.getBoundingClientRect();
-            const xdiff = originBR.x - destinationBR.x;
-            const ydiff = originBR.y - destinationBR.y + Number(destination.style.marginLeft.replace('px', ''));
-            let deg = -(72 * this.position + 90);
-            if (this.position > 1) {
-                deg += 360;
-            }
-
-            html += `transform: translate(2px, -${222 + top}px) rotate(${deg}deg) translate(-164px, -233px) translate(${xdiff + xShift}px, ${ydiff}px);`;
-        }
-
-        html += `"></div>`;
-
-        this.animals.push(animal);
-
-        dojo.place(html, `center-spot-${this.position}`);
-
-        const animalDiv = document.getElementById(id) as HTMLDivElement;
-        setupAnimalCard(this.game, animalDiv, getUniqueId(animal));
-        // animalDiv.style.transform = window.getComputedStyle(animalDiv).transform;
-
-        animalDiv.addEventListener('click', () => this.game.tableCardSelected(animal.id));
-
-        if (originId) {
-            const card = document.getElementById(`center-spot-${this.position}-animal${animal.id}`);
-            card.style.transition = `transform 0.5s`;
-            setTimeout(() => card.style.transform = `unset`);
-        }
-
-        this.updateCounter();
-    }
-
-    public removeAnimals() {
-        this.animals.forEach(animal => dojo.destroy(`center-spot-${this.position}-animal${animal.id}`));
-        this.animals = [];
-
-        this.updateCounter();
+        return `${angle > 180 ? angle-360 : angle}deg`;
     }
     
-    public removeFirstAnimalFromFerry() {
-        if (this.animals.length) {
-            const removedAnimalId = this.animals.shift().id;
-            dojo.destroy(`center-spot-${this.position}-animal${removedAnimalId}`);
-            this.animals.forEach((animal, index) => document.getElementById(`center-spot-${this.position}-animal${animal.id}`).style.top = `${FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP}px`);
-            this.updateCounter();
+    public setNewCard(newCard: Card, newCount: number) {
+        if (newCard) {
+            this.visibleCard.addCard(newCard);
         }
-    }
-
-    public departure() {
-        const counter = document.getElementById(`center-spot-${this.position}-weight-indicator`) as HTMLDivElement;
-        counter.parentElement?.removeChild(counter);
-
-        (Array.from(document.querySelectorAll(`[id^="center-spot-${this.position}"]`)) as HTMLDivElement[]).forEach(elem => 
-            elem.id = `departure-${elem.id}`
-        );
-
-        const spotDiv = document.getElementById(`departure-center-spot-${this.position}`);
-        spotDiv.addEventListener('transitionend', () => spotDiv.parentElement?.removeChild(spotDiv));
-        spotDiv.style.transform = `rotate(${72 * this.position + 90}deg) translateY(1500px)`;
-        spotDiv.style.opacity = '0';
-    }
-
-    private updateCounter() {
-        let text = '';
-        if (!this.empty) {
-            text = `${this.animals.reduce((sum, animal) => sum + animal.weight, 0)} / ${this.animals.some(animal => animal.power == 5) ? 13 : 21}`;
-        }
-        document.getElementById(`center-spot-${this.position}-weight-indicator`).innerHTML = text;
+        this.visibleCard.setCardNumber(newCount);
     }
     
-    public newRound(ferry: Ferry) {
-        this.empty = false;
-        dojo.removeClass(`center-spot-${this.position}-ferry-card`, 'empty');
-        this.removeAnimals();
-        ferry.animals.forEach(animal => this.addAnimal(animal, 'topbar'));
-
-        this.updateCounter();
+    public setNewToken(newToken: Token, newCount: number) {
+        if (newToken) {
+            this.visibleToken.addCard(newToken);
+        }
+        this.visibleToken.setCardNumber(newCount);
     }
-
-    public removeAnimalToDeck(animal: Animal) {
-        this.animals.splice(this.animals.findIndex(a => a.id == animal.id), 1);
-        this.updateCounter();
-
-        dojo.destroy(`center-spot-${this.position}-animal${animal.id}`);
-        this.animals.forEach((animal, index) => document.getElementById(`center-spot-${this.position}-animal${animal.id}`).style.top = `${FIRST_ANIMAL_SHIFT + index * CARD_OVERLAP}px`);
-    }*/
 }

@@ -159,6 +159,22 @@ trait UtilTrait {
         return new Token($dbCard);
     }
 
+    function getTokensByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $number = null) {
+        $sql = "SELECT * FROM `token` WHERE `card_location` = '$location'";
+        if ($location_arg !== null) {
+            $sql .= " AND `card_location_arg` = $location_arg";
+        }
+        if ($type !== null) {
+            $sql .= " AND `card_type` = $type";
+        }
+        if ($number !== null) {
+            $sql .= " AND `card_type_arg` = $number";
+        }
+        $sql .= " ORDER BY `card_location_arg`";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbCard) => $this->getTokenFromDb($dbCard), array_values($dbResults));
+    }
+
     function setupTokens(int $playerCount) {
         $tokens = [
             [ 'type' => BERRY, 'type_arg' => null, 'nbr' => 24 ],
@@ -346,6 +362,47 @@ trait UtilTrait {
         $playersIds = $this->getPlayersIds();
         $playerId = $playersIds[0];
         return count($this->getCardsByLocation('hand', $playerId));
+    }
+
+    function getPlayerResources(int $playerId) {
+        $tokens = $this->getTokensByLocation('player', $playerId);
+        $resources = [
+            1 => [],
+            2 => [],
+            3 => [],
+            4 => [],
+            5 => [],
+        ];
+        foreach($tokens as $token) {
+            $resources[$token->type][] = $token;
+        }
+
+        return $resources;
+    }
+
+    function tokensToPayForCard(Card $card, array $resources, /*array | null*/ $hand = null) {
+        if ($hand !== null && $card->discard && count($hand) <= 1) {
+            return null; // no card to discard
+        }
+
+        $tokensToPayForCard = [];
+        $missingResources = 0;
+        for ($i = 1; $i <= 4; $i++) {
+            $requiredForCard = count(array_filter($card->resources, fn($resource) => $resource == $i));
+            $available = count($resources[$i]);
+            $tokensToPayForCard = array_merge($tokensToPayForCard, array_slice($resources[$i], 0, min($requiredForCard, $available)));
+            if ($requiredForCard > $available) {
+                $missingResources += ($requiredForCard - $available);
+            }
+        }
+
+        if (count($resources[BONE]) >= $missingResources) {
+            $tokensToPayForCard = array_merge($tokensToPayForCard, array_slice($resources[BONE], 0, $missingResources));
+        } else {
+            return null;
+        }
+
+        return $tokensToPayForCard;
     }
     
 }

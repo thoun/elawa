@@ -2,7 +2,9 @@
 <div id="table">
     <div id="tables-and-center">
         <div id="table-center">
-            <div id="fire"></div>
+            <div id="fire">
+                <div id="center-stock"></div>
+            </div>
         </div>
         <div id="tables"></div>
     </div>

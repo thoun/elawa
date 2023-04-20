@@ -20,7 +20,7 @@ class Elawa implements ElawaGame {
     private gamedatas: ElawaGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
-    private roundCounter: Counter;
+    private handCounters: Counter[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -53,6 +53,7 @@ class Elawa implements ElawaGame {
         this.chiefsManager = new ChiefsManager(this);
         this.animationManager = new AnimationManager(this);
         this.tableCenter = new TableCenter(this, gamedatas);
+        this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
         
         this.zoomManager = new ZoomManager({
@@ -100,9 +101,12 @@ class Elawa implements ElawaGame {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     public onUpdateActionButtons(stateName: string, args: any) {
-        if (stateName === 'chooseCard') {
-            if (!(this as any).isCurrentPlayerActive() && Object.keys(this.gamedatas.players).includes(''+this.getPlayerId())) { // ignore spectators
-                (this as any).addActionButton(`cancelChooseSecretMissions-button`, _("I changed my mind"), () => this.cancelChooseCard(), null, null, 'gray');
+        
+        if ((this as any).isCurrentPlayerActive()) {
+            switch (stateName) {
+                case 'playCard':
+                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
+                    break;
             }
         }
     }
@@ -163,6 +167,28 @@ class Elawa implements ElawaGame {
         const playerIndex = players.findIndex(player => Number(player.id) === Number((this as any).player_id));
         const orderedPlayers = playerIndex > 0 ? [...players.slice(playerIndex), ...players.slice(0, playerIndex)] : players;
         return orderedPlayers;
+    }
+
+    private createPlayerPanels(gamedatas: ElawaGamedatas) {
+
+        Object.values(gamedatas.players).forEach(player => {
+            const playerId = Number(player.id);   
+
+            // hand + scored cards counter
+            dojo.place(`<div class="counters">
+                <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
+                    <div class="player-hand-card"></div> 
+                    <span id="playerhand-counter-${player.id}"></span>
+                </div>
+            </div>`, `player_board_${player.id}`);
+
+            const handCounter = new ebg.counter();
+            handCounter.create(`playerhand-counter-${playerId}`);
+            handCounter.setValue(player.handCount);
+            this.handCounters[playerId] = handCounter;
+        });
+
+        this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
     }
 
     private createPlayerTables(gamedatas: ElawaGamedatas) {
@@ -240,16 +266,9 @@ class Elawa implements ElawaGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            ['selectedCard', 1],
-            ['delayBeforeReveal', ANIMATION_MS],
-            ['revealCards', ANIMATION_MS * 2],
-            ['placeCardUnder', ANIMATION_MS],
-            ['delayAfterLineUnder', ANIMATION_MS * 2],
-            ['scoreCard', ANIMATION_MS * 2],
-            ['moveTableLine', ANIMATION_MS],
-            ['delayBeforeNewRound', ANIMATION_MS],
-            ['newCard', 1],
-            ['newObjectives', 1],
+            ['takeCard', ANIMATION_MS],
+            ['takeToken', ANIMATION_MS],
+            ['playCard', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -258,51 +277,26 @@ class Elawa implements ElawaGame {
         });
     }
 
-    notif_selectedCard(notif: Notif<NotifSelectedCardArgs>) {
+    notif_takeCard(notif: Notif<NotifTakeCardArgs>) {
         const currentPlayer = this.getPlayerId() == notif.args.playerId;
-        if (notif.args.card.number || !currentPlayer) {
-            if (notif.args.cancel) {
-                if (currentPlayer) {
-                    this.getCurrentPlayerTable().hand.addCard(notif.args.card);
-                } else {
-                    this.tableCenter.cancelPlacedCard(notif.args.card);
-                }
-            } else {
-                this.tableCenter.setPlacedCard(notif.args.card, currentPlayer);
-            }
-        }
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        (currentPlayer ? playerTable.hand : playerTable.voidStock).addCard(notif.args.card);
+        this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
     }
 
-    notif_delayBeforeReveal() {}
-
-    notif_revealCards(notif: Notif<NotifRevealCardsArgs>) {
-        this.tableCenter.revealCards(notif.args.cards);
+    notif_takeToken(notif: Notif<NotifTakeTokenArgs>) {
+        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token);
+        this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     }
 
-    notif_placeCardUnder(notif: Notif<NotifPlayerCardArgs>) {
-        this.tableCenter.placeCardUnder(notif.args.playerId, notif.args.card);
-    }
-    
-    notif_delayAfterLineUnder() {}
-
-    notif_scoreCard(notif: Notif<NotifScoredCardArgs>) {
-        this.getPlayerTable(notif.args.playerId).placeScoreCard(notif.args.card);
-
-        this.setScore(notif.args.playerId, notif.args.playerScore);
-    }
-
-    notif_moveTableLine() {
-        this.tableCenter.moveTableLine();
-    }
-
-    notif_delayBeforeNewRound() {}
-
-    notif_newCard(notif: Notif<NotifPlayerCardArgs>) {
-        this.getCurrentPlayerTable().hand.addCard(notif.args.card);
-    }
-
-    notif_newObjectives(notif: Notif<NotifNewObjectivesArgs>) {
-        this.tableCenter.changeObjectives(notif.args.objectives);
+    notif_playCard(notif: Notif<NotifPlayCardArgs>) {
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        const currentPlayer = this.getPlayerId() == notif.args.playerId;
+        playerTable.played.addCard(notif.args.card, {
+            fromElement: currentPlayer ? undefined : document.getElementById(`player-table-${notif.args.playerId}-name`)
+        });
+        notif.args.discardedTokens.forEach(token => playerTable.tokens.removeCard(token));
+        this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     }
 
     /*private getColorName(color: number) {

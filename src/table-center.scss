@@ -1,69 +1,21 @@
 #table-center {
     @import 'center-spot';
 
-    
-    border: 2px solid #ffd752;
-    padding: 5px; 
-    border-radius: 15px;
+    position: relative;
     background: #ffd75266;
-    margin: 5px;
+    width: 930px;
+    min-width: 930px;
+    height: 904px;
 
     #fire {
-        width: 128px;
-        height: 128px;
-        background-image: url('img/fire.png');
-    }
-  
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    //overflow: hidden;
-  
-    #center-board {
-      position: relative;
-      width: 444px;
-      height: 466px;
-      background: url('img/board.png');
-  
-      #noah {
-        background: url('img/noah.png');
-        z-index: 5;
-        box-shadow: 0 0 5px 5px white;
-      }
-  
-      .point-marker {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 40px;
-        height: 40px;
-        box-shadow: 1px 1px 1px 1px black;
-        border-radius: 50%;
-        transition: transform 0.5s;
-        background: url('img/tear.png') no-repeat;
-        background-position: center;
-      }
-  
-      #ferry-deck {
-        position: absolute;
-        top: 156px;
-        left: 130px;
-        background: url('img/ferry.jpg');
-        width: 179px;
-        height: 128px;
-        box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
-        cursor: default;
-  
-        &.roomates {
-          background: url('img/ferry-roomates.jpg');
-        }
-      }
-  
-      .remaining-counter {
-        position: absolute;
-        text-align: center;
-        white-space: nowrap;    
-      }
+      width: 128px;
+      height: 128px;
+      background-image: url('img/fire.png');
+      position: absolute;
+      top: 388px;
+      left: 400px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
   }

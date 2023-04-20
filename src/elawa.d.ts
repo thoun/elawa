@@ -20,9 +20,11 @@ interface Token {
 
 interface ElawaPlayer extends Player {
     playerNo: number;
+    handCount: number;
     hand?: Card[];
     chief: number;
     played: Card[];
+    tokens: Token[];
 }
 
 interface ElawaGamedatas {
@@ -39,7 +41,11 @@ interface ElawaGamedatas {
 
     // Add here variables you set up in getAllDatas
     centerCards: { [position: number]: Card };
+    centerCardsCount: { [position: number]: number };
     centerTokens: { [position: number]: Token };
+    centerTokensCount: { [position: number]: number };
+    fireToken: Token;
+    fireTokenCount: number;
 }
 
 interface ElawaGame extends Game {
@@ -73,29 +79,28 @@ interface EnteringPlayHandCardArgs {
     canPlaceOnLine: Card[];
 }
 
-// selectedCard
-interface NotifSelectedCardArgs {
+interface NotifTakeArgs {
     playerId: number;
-    card: Card;
-    cancel: boolean;
+    pile: number;
+    newCount: number;
 } 
 
-// revealCards
-interface NotifRevealCardsArgs {
-    cards: Card[];
-}
-
-// placeCardUnder
-interface NotifPlayerCardArgs {
+// takeCard
+interface NotifTakeCardArgs extends NotifTakeArgs {
     card: Card;
+    newCard: Card | null;
+} 
+
+// takeToken
+interface NotifTakeTokenArgs extends NotifTakeArgs {
+    token: Token;
+    newToken: Token | null;
+} 
+
+// playCard
+interface NotifPlayCardArgs {
     playerId: number;
-}
-
-interface NotifScoredCardArgs extends NotifPlayerCardArgs {
-    playerScore: number;
-    incScore: number;
-}
-
-interface NotifNewObjectivesArgs {
-    objectives: number[];
-}
+    newCount: number;
+    card: Card;
+    discardedTokens: Token[];
+} 

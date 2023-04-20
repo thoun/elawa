@@ -8,7 +8,7 @@ class Token {
     public int $id;
     public string $location;
     public int $locationArg;
-    public int $type;
+    public /*int | null*/ $type;
 
     public function __construct($dbCard) {
         $this->id = intval($dbCard['card_id'] ?? $dbCard['id']);
@@ -17,8 +17,8 @@ class Token {
         $this->type = array_key_exists('card_type', $dbCard) || array_key_exists('type', $dbCard) ? intval($dbCard['card_type'] ?? $dbCard['type']) : null;
     } 
 
-    public static function onlyId(Card $card) {
-        return new Card([
+    public static function onlyId(Token $card) {
+        return new Token([
             'card_id' => $card->id,
             'card_location' => $card->location,
             'card_location_arg' => $card->locationArg,

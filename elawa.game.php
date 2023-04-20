@@ -55,7 +55,7 @@ class Elawa extends Table {
 		
         $this->tokens = $this->getNew("module.common.deck");
         $this->tokens->init("token");
-        $this->tokens->autoreshuffle = false;   
+        $this->tokens->autoreshuffle = true;   
 	}
 	
     protected function getGameName() {
@@ -158,6 +158,8 @@ class Elawa extends Table {
             $player['playerNo'] = intval($player['playerNo']);
             $player['chief'] = intval($player['chief']);
             $player['played'] = $this->getCardsByLocation('played'.$playerId);
+            $player['tokens'] = $this->getTokensByLocation('player', $playerId);
+            $player['handCount'] = intval($this->cards->countCardInLocation('hand', $playerId));
 
             if ($currentPlayerId == $playerId) {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);
@@ -165,18 +167,21 @@ class Elawa extends Table {
         }
         
         $centerCards = [];
+        $centerCardsCount = [];
         $centerTokens = [];
+        $centerTokensCount = [];
         for ($pile=0; $pile<6; $pile++) {
             $centerCards[$pile] = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
+            $centerCardsCount[$pile] = intval($this->cards->countCardInLocation('pile'.$pile));
             $centerTokens[$pile] = $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$pile));
+            $centerTokensCount[$pile] = intval($this->tokens->countCardInLocation('pile'.$pile));
         }
         $result['centerCards'] = $centerCards;
+        $result['centerCardsCount'] = $centerCardsCount;
         $result['centerTokens'] = $centerTokens;
-
-        $selected = $this->getCardsByLocation('selected');
-        $result['selected'] = array_map(fn($card) => $currentPlayerId == $card->locationArg ? $card : Card::onlyId($card), $selected);
-        $result['table'] = $this->getCardsByLocation('table');
-        $result['objectives'] = $this->getGlobalVariable(BONUS_OBJECTIVES, true) ?? [];
+        $result['centerTokensCount'] = $centerTokensCount;
+        $result['fireToken'] = Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center')));
+        $result['fireTokenCount'] = intval($this->tokens->countCardInLocation('center'));
   
         return $result;
     }
@@ -192,15 +197,9 @@ class Elawa extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        $roundNumber = intval($this->getStat('roundNumber'));
-
-        if ($roundNumber >= 3) {
-            return 100;
-        }
-        
-        $remainingCardsInHand = $this->getRemainingCardsInHand();
-        $playedCards = [7, 15, 24][$roundNumber] - $remainingCardsInHand; // 0 based, 24 cards played in total
-        return $playedCards * 100 / 24;
+        $max = $this->CENTER_RESOURCES_BY_PLAYER_COUNT[count($this->getPlayersIds())];
+        $current = intval($this->tokens->countCardInLocation('center'));
+        return ($max - $current) * 100 / $max;
     }
 
 //////////////////////////////////////////////////////////////////////////////

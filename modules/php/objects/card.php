@@ -49,7 +49,9 @@ class Card extends CardType {
             $this->points = $cardType->points;
             $this->cardType = $cardType->cardType;
             $this->resources = $cardType->resources;
+            $this->discard = $cardType->discard;
             $this->power = $cardType->power;
+            $this->storageType = $cardType->storageType;
         }
     } 
 

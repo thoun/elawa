@@ -19,8 +19,14 @@ trait ArgsTrait {
     }
    
     function argPlayCard() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $hand = $this->getCardsByLocation('hand', $playerId);
+        $resources = $this->getPlayerResources($playerId);
+        $playableCards = array_values(array_filter($hand, fn($card) => $this->tokensToPayForCard($card, $resources, $hand) !== null));
+
         return [
-            // TODO
+            'playableCards' => $playableCards,
         ];
     }
    

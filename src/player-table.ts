@@ -3,9 +3,11 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class PlayerTable {
     public playerId: number;
+    public voidStock: VoidStock<Card>;
     public hand?: LineStock<Card>;
     public chief: LineStock<number>;
     public played: LineStock<Card>;
+    public tokens: LineStock<Token>;
 
     private currentPlayer: boolean;
 
@@ -15,7 +17,7 @@ class PlayerTable {
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table" style="--player-color: #${player.color};">
-            <div class="name-wrapper">${player.name}</div>
+            <div id="player-table-${this.playerId}-name" class="name-wrapper">${player.name}</div>
         `;
         if (this.currentPlayer) {
             html += `
@@ -27,6 +29,7 @@ class PlayerTable {
         html += `
         <div id="player-table-${this.playerId}-chief" class="cards"></div>
         <div id="player-table-${this.playerId}-played" class="cards"></div>
+        <div id="player-table-${this.playerId}-tokens" class=""></div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -46,10 +49,15 @@ class PlayerTable {
             this.hand.addCards(player.hand);
 
         }
+        this.voidStock = new VoidStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-name`));
+
         this.chief = new LineStock<number>(this.game.chiefsManager, document.getElementById(`player-table-${this.playerId}-chief`));
         this.chief.addCard(player.chief);
         
         this.played = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-played`));
         this.played.addCards(player.played);
+        
+        this.tokens = new LineStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens`));
+        this.tokens.addCards(player.tokens);
     }
 }
