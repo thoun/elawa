@@ -105,10 +105,17 @@ trait UtilTrait {
         ]);
     }
 
+    function getCardFromDb(array $dbCard) {
+        if ($dbCard == null) {
+            return null;
+        }
+        return new Card($dbCard, $this->CARDS);
+    }
+
     function getCardById(int $id) {
         $sql = "SELECT * FROM `card` WHERE `card_id` = $id";
         $dbResults = $this->getCollectionFromDb($sql);
-        $cards = array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
+        $cards = array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbResults));
         return count($cards) > 0 ? $cards[0] : null;
     }
 
@@ -125,7 +132,7 @@ trait UtilTrait {
         }
         $sql .= " ORDER BY `card_location_arg`";
         $dbResults = $this->getCollectionFromDb($sql);
-        return array_map(fn($dbCard) => new Card($dbCard, $this->CARDS), array_values($dbResults));
+        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbResults));
     }
 
     function setupCards() {
@@ -143,6 +150,13 @@ trait UtilTrait {
             $this->cards->pickCardsForLocation(10, 'deck', 'pile'.$pile);
             $this->cards->shuffle('pile'.$pile); // to give them a locationArg asc
         }
+    }
+
+    function getTokenFromDb(array $dbCard) {
+        if ($dbCard == null) {
+            return null;
+        }
+        return new Token($dbCard);
     }
 
     function setupTokens(int $playerCount) {

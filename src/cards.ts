@@ -3,6 +3,7 @@ class CardsManager extends CardManager<Card> {
         super(game, {
             getId: (card) => `card-${card.id}`,
             setupDiv: (card: Card, div: HTMLElement) => {
+                div.classList.add('elawa-card');
                 div.dataset.cardId = ''+card.id;
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => { 

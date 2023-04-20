@@ -1,9 +1,9 @@
-class ObjectivesManager extends CardManager<number> {
+class ChiefsManager extends CardManager<number> {
     constructor (public game: ElawaGame) {
         super(game, {
-            getId: (card) => `objective-${card}`,
+            getId: (card) => `chief-${card}`,
             setupDiv: (card: number, div: HTMLElement) => { 
-                div.classList.add('objective');
+                div.classList.add('chief');
                 game.setTooltip(div.id, this.getTooltip(card));
             },
             setupFrontDiv: (card: number, div: HTMLElement) => { 

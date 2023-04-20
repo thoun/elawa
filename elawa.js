@@ -1212,6 +1212,7 @@ var CardsManager = /** @class */ (function (_super) {
         var _this = _super.call(this, game, {
             getId: function (card) { return "card-".concat(card.id); },
             setupDiv: function (card, div) {
+                div.classList.add('elawa-card');
                 div.dataset.cardId = '' + card.id;
             },
             setupFrontDiv: function (card, div) {
@@ -1224,13 +1225,31 @@ var CardsManager = /** @class */ (function (_super) {
     }
     return CardsManager;
 }(CardManager));
-var ObjectivesManager = /** @class */ (function (_super) {
-    __extends(ObjectivesManager, _super);
-    function ObjectivesManager(game) {
+var TokensManager = /** @class */ (function (_super) {
+    __extends(TokensManager, _super);
+    function TokensManager(game) {
         var _this = _super.call(this, game, {
-            getId: function (card) { return "objective-".concat(card); },
+            getId: function (card) { return "token-".concat(card.id); },
             setupDiv: function (card, div) {
-                div.classList.add('objective');
+                div.classList.add('token');
+                div.dataset.cardId = '' + card.id;
+            },
+            setupFrontDiv: function (card, div) {
+                div.dataset.type = '' + card.type;
+            },
+        }) || this;
+        _this.game = game;
+        return _this;
+    }
+    return TokensManager;
+}(CardManager));
+var ChiefsManager = /** @class */ (function (_super) {
+    __extends(ChiefsManager, _super);
+    function ChiefsManager(game) {
+        var _this = _super.call(this, game, {
+            getId: function (card) { return "chief-".concat(card); },
+            setupDiv: function (card, div) {
+                div.classList.add('chief');
                 game.setTooltip(div.id, _this.getTooltip(card));
             },
             setupFrontDiv: function (card, div) {
@@ -1240,7 +1259,7 @@ var ObjectivesManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
-    ObjectivesManager.prototype.getTooltip = function (number) {
+    ChiefsManager.prototype.getTooltip = function (number) {
         var message = '';
         switch (number) {
             case 1:
@@ -1294,11 +1313,86 @@ var ObjectivesManager = /** @class */ (function (_super) {
         console.log(message);
         return message;
     };
-    return ObjectivesManager;
+    return ChiefsManager;
 }(CardManager));
+var CARD_OVERLAP = 40;
+var FIRST_ANIMAL_SHIFT = 28;
+var CenterSpot = /** @class */ (function () {
+    function CenterSpot(game, pile, card, token) {
+        var _this = this;
+        this.game = game;
+        this.pile = pile;
+        var html = "\n        <div id=\"center-spot-".concat(pile, "\" class=\"center-spot\" style=\"transform: ").concat(this.getSpotTransform(), "\">\n            <div id=\"center-spot-").concat(pile, "-token\"></div>\n            <div id=\"center-spot-").concat(pile, "-card\"></div>\n        ");
+        html += "</div>";
+        dojo.place(html, 'table-center');
+        var cardDeck = document.getElementById("center-spot-".concat(pile, "-card"));
+        this.visibleCard = new VisibleDeck(game.cardsManager, cardDeck, {
+            width: 202,
+            height: 282,
+        });
+        this.visibleCard.addCard(card);
+        cardDeck.addEventListener('click', function () { return _this.game.onCenterCardClick(pile); });
+        this.visibleToken = new VisibleDeck(game.tokensManager, document.getElementById("center-spot-".concat(pile, "-token")), {
+            width: 68,
+            height: 68,
+        });
+        this.visibleToken.addCard(token);
+        /*dojo.toggleClass(`center-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
+        let tooltip = `
+        <h3>${_('Ferry')}</h3>
+        <div>${_('Animals are loaded into Ferries.')}</div>
+        <h4>${_('Gender')}</h4>
+        <div class="noah-tooltip-with-list">${_(`In a given ferry, there must be:
+<ul>
+    <li>EITHER animals from a single gender</li>
+    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>
+</ul>
+As such, it’s always the second card played on an ferry which defines the sequence to be played!`)}</div>
+
+        <h4>${_('Weight')}</h4>
+        <div>${_('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).')}</div>`;
+        if (ferry?.roomates) {
+            tooltip += `<h4>${_('Roomates')}</h4>
+            <div>${_('in the Ark, it is impossible to place twice the same animal, whether male or female.')}</div>`;
+        }
+        game.setTooltip(`center-spot-${position}-ferry-card`, tooltip);
+
+        if (token) {
+            setTimeout(() => document.getElementById(`center-spot-${position}`).style.transform = this.getFerryTransform());
+        }
+
+        if (ferry) {
+            ferry.animals?.forEach(animal => this.addAnimal(animal));
+        } else {
+            this.empty = true;
+            dojo.addClass(`center-spot-${this.position}-ferry-card`, 'empty');
+        }
+        this.updateCounter();*/
+    }
+    CenterSpot.prototype.getSpotTransform = function () {
+        var angle = 60 * this.pile + 90;
+        return "rotate(".concat(angle > 180 ? angle - 360 : angle, "deg) translateY(222px)");
+    };
+    return CenterSpot;
+}());
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         this.game = game;
+        this.spots = [];
+        var html = '';
+        for (var i = 0; i < 6; i++) {
+            this.spots.push(new CenterSpot(game, i, gamedatas.centerCards[i], gamedatas.centerTokens[i]));
+        }
+        /*this.ferriesCounter = new ebg.counter();
+        this.ferriesCounter.create('remaining-ferry-counter');
+        this.ferriesCounter.setValue(remainingFerries);
+        this.sentFerriesCounter = new ebg.counter();
+        this.sentFerriesCounter.create('sent-ferry-counter');
+        this.sentFerriesCounter.setValue(sentFerries);
+        
+        if (topFerry) {
+            dojo.toggleClass(`ferry-deck`, 'roomates', topFerry.roomates);
+        }*/
     }
     return TableCenter;
 }());
@@ -1309,47 +1403,32 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         var _this = this;
         this.game = game;
-        this.scores = [];
         this.playerId = Number(player.id);
         this.currentPlayer = this.playerId == this.game.getPlayerId();
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table\" style=\"--player-color: #").concat(player.color, ";\">\n            <div class=\"name-wrapper\">").concat(player.name, "</div>\n        ");
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "<div class=\"score cards\">";
-        for (var i = 0; i < 5; i++) {
-            html += "\n            <div class=\"score-card-wrapper\">\n                <div id=\"player-table-".concat(this.playerId, "-score").concat(i, "\" class=\"score card\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-score").concat(i, "-cards\" class=\"cards\"></div>\n            </div>");
-        }
-        html += "\n            </div>\n        </div>\n        ";
+        html += "\n        <div id=\"player-table-".concat(this.playerId, "-chief\" class=\"cards\"></div>\n        <div id=\"player-table-").concat(this.playerId, "-played\" class=\"cards\"></div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
-            var handDiv_1 = document.getElementById("player-table-".concat(this.playerId, "-hand"));
-            this.hand = new LineStock(this.game.cardsManager, handDiv_1, {
+            var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
+            this.hand = new LineStock(this.game.cardsManager, handDiv, {
                 sort: function (a, b) { return a.number - b.number; },
             });
             this.hand.onCardClick = function (card) {
-                if (handDiv_1.classList.contains('selectable')) {
-                    _this.game.onHandCardClick(card);
-                    _this.hand.getCards().forEach(function (c) { return _this.hand.getCardElement(c).classList.toggle('selected', c.id == card.id); });
-                }
+                //if (handDiv.classList.contains('selectable')) {
+                _this.game.onHandCardClick(card);
+                //this.hand.getCards().forEach(c => this.hand.getCardElement(c).classList.toggle('selected', c.id == card.id));
+                //}
             };
             this.hand.addCards(player.hand);
         }
-        for (var i = 0; i < 5; i++) {
-            var scoreDiv = document.getElementById("player-table-".concat(this.playerId, "-score").concat(i, "-cards"));
-            this.scores[i] = new LineStock(this.game.cardsManager, scoreDiv, {
-                direction: 'column',
-            });
-            scoreDiv.style.setProperty('--card-overlap', '125px');
-            this.scores[i].addCards(player.scoresCards[i]);
-        }
+        this.chief = new LineStock(this.game.chiefsManager, document.getElementById("player-table-".concat(this.playerId, "-chief")));
+        this.chief.addCard(player.chief);
+        this.played = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-played")));
+        this.played.addCards(player.played);
     }
-    PlayerTable.prototype.setSelectable = function (selectable) {
-        document.getElementById("player-table-".concat(this.playerId, "-hand")).classList.toggle('selectable', selectable);
-    };
-    PlayerTable.prototype.placeScoreCard = function (card) {
-        this.scores[card.locationArg].addCard(card);
-    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -1377,6 +1456,8 @@ var Elawa = /** @class */ (function () {
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
         this.cardsManager = new CardsManager(this);
+        this.tokensManager = new TokensManager(this);
+        this.chiefsManager = new ChiefsManager(this);
         this.animationManager = new AnimationManager(this);
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
@@ -1487,22 +1568,33 @@ var Elawa = /** @class */ (function () {
         var _a;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(score);
     };
-    Elawa.prototype.onHandCardClick = function (card) {
-        this.chooseCard(card.id);
+    Elawa.prototype.onCenterCardClick = function (pile) {
+        this.takeCard(pile);
     };
-    Elawa.prototype.chooseCard = function (id) {
-        /*if(!(this as any).checkAction('chooseCard')) {
+    Elawa.prototype.onHandCardClick = function (card) {
+        this.playCard(card.id);
+    };
+    Elawa.prototype.takeCard = function (pile) {
+        if (!this.checkAction('takeCard')) {
             return;
-        }*/
-        this.takeAction('chooseCard', {
+        }
+        this.takeAction('takeCard', {
+            pile: pile
+        });
+    };
+    Elawa.prototype.playCard = function (id) {
+        if (!this.checkAction('playCard')) {
+            return;
+        }
+        this.takeAction('playCard', {
             id: id
         });
     };
-    Elawa.prototype.cancelChooseCard = function () {
-        /*if(!(this as any).checkAction('cancelChooseCard')) {
+    Elawa.prototype.pass = function () {
+        if (!this.checkAction('pass')) {
             return;
-        }*/
-        this.takeAction('cancelChooseCard');
+        }
+        this.takeAction('pass');
     };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};

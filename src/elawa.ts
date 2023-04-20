@@ -12,6 +12,8 @@ const LOCAL_STORAGE_ZOOM_KEY = 'Elawa-zoom';
 
 class Elawa implements ElawaGame {
     public cardsManager: CardsManager;
+    public tokensManager: TokensManager;
+    public chiefsManager: ChiefsManager;
 
     private zoomManager: ZoomManager;
     private animationManager: AnimationManager;
@@ -47,6 +49,8 @@ class Elawa implements ElawaGame {
 
 
         this.cardsManager = new CardsManager(this);
+        this.tokensManager = new TokensManager(this);
+        this.chiefsManager = new ChiefsManager(this);
         this.animationManager = new AnimationManager(this);
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerTables(gamedatas);
@@ -178,26 +182,40 @@ class Elawa implements ElawaGame {
         (this as any).scoreCtrl[playerId]?.toValue(score);
     }
 
+    public onCenterCardClick(pile: number): void {
+        this.takeCard(pile);
+    }
+
     public onHandCardClick(card: Card): void {
-        this.chooseCard(card.id);
+        this.playCard(card.id);
     }
   	
-    public chooseCard(id: number) {
-        /*if(!(this as any).checkAction('chooseCard')) {
+    public takeCard(pile: number) {
+        if(!(this as any).checkAction('takeCard')) {
             return;
-        }*/
+        }
 
-        this.takeAction('chooseCard', {
+        this.takeAction('takeCard', {
+            pile
+        });
+    }
+  	
+    public playCard(id: number) {
+        if(!(this as any).checkAction('playCard')) {
+            return;
+        }
+
+        this.takeAction('playCard', {
             id
         });
     }
   	
-    public cancelChooseCard() {
-        /*if(!(this as any).checkAction('cancelChooseCard')) {
+    public pass() {
+        if(!(this as any).checkAction('pass')) {
             return;
-        }*/
+        }
 
-        this.takeAction('cancelChooseCard');
+        this.takeAction('pass');
     }
 
     public takeAction(action: string, data?: any) {

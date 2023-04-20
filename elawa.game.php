@@ -147,7 +147,7 @@ class Elawa extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_score_aux scoreAux, player_no playerNo FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_chief chief FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
         // Gather all information about current game situation (visible by player $current_player_id).
@@ -156,19 +156,22 @@ class Elawa extends Table {
         
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
-            if (!$isEndScore) {
-                $player['score'] = intval($player['score']) + intval($player['scoreAux']);
-            }
-
-            $player['scoresCards'] = [];
-            for ($i=0; $i<5; $i++) {
-                $player['scoresCards'][$i] = $this->getCardsByLocation('score'.$playerId, $i);
-            }
+            $player['chief'] = intval($player['chief']);
+            $player['played'] = $this->getCardsByLocation('played'.$playerId);
 
             if ($currentPlayerId == $playerId) {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);
             }
         }
+        
+        $centerCards = [];
+        $centerTokens = [];
+        for ($pile=0; $pile<6; $pile++) {
+            $centerCards[$pile] = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
+            $centerTokens[$pile] = $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$pile));
+        }
+        $result['centerCards'] = $centerCards;
+        $result['centerTokens'] = $centerTokens;
 
         $selected = $this->getCardsByLocation('selected');
         $result['selected'] = array_map(fn($card) => $currentPlayerId == $card->locationArg ? $card : Card::onlyId($card), $selected);

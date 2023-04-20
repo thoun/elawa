@@ -11,10 +11,18 @@ interface Card {
     number: number;
 }
 
+interface Token {
+    id: number;
+    location: string;
+    locationArg: number;
+    type: number;
+}
+
 interface ElawaPlayer extends Player {
     playerNo: number;
-    scoresCards: Card[][];
     hand?: Card[];
+    chief: number;
+    played: Card[];
 }
 
 interface ElawaGamedatas {
@@ -30,18 +38,20 @@ interface ElawaGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
-    selected: Card[];
-    table: Card[];
-    objectives: number[];
+    centerCards: { [position: number]: Card };
+    centerTokens: { [position: number]: Token };
 }
 
 interface ElawaGame extends Game {
     cardsManager: CardsManager;
+    tokensManager: TokensManager;
+    chiefsManager: ChiefsManager;
 
     getPlayerId(): number;
     getPlayer(playerId: number): ElawaPlayer;
 
     setTooltip(id: string, html: string): void;
+    onCenterCardClick(pile: number): void;
     onHandCardClick(card: Card): void;
 }
 

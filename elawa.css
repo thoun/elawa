@@ -241,7 +241,7 @@ body > .card {
   top: calc((var(--height) + var(--shift)) * var(--order));
 }
 
-.card {
+.elawa-card {
   display: inline-block;
   position: relative;
   width: 202px;
@@ -267,261 +267,375 @@ body > .card {
       }
   } */
 }
-.card.disabled {
+.elawa-card.disabled {
   cursor: not-allowed;
   filter: contrast(0.6);
 }
-.card .card-sides .card-side {
+.elawa-card .card-sides .card-side {
   border-radius: 10px;
   /*&.back {  
       background-size: auto 100%;
       background-image: url('img/card-back.jpg');
   }*/
 }
-.card .card-sides .card-side > * {
+.elawa-card .card-sides .card-side > * {
   pointer-events: none;
   user-select: none;
 }
-.card .card-sides .card-side.front {
+.elawa-card .card-sides .card-side.front {
   background-size: auto 500%;
   background-image: url("img/cards.jpg");
 }
-.card .front[data-color="1"][data-number="1"] {
+.elawa-card .front[data-color="1"][data-number="1"] {
   background-position: 0% 0%;
 }
-.card .front[data-color="1"][data-number="2"] {
+.elawa-card .front[data-color="1"][data-number="2"] {
   background-position: 9.0909090909% 0%;
 }
-.card .front[data-color="1"][data-number="3"] {
+.elawa-card .front[data-color="1"][data-number="3"] {
   background-position: 18.1818181818% 0%;
 }
-.card .front[data-color="1"][data-number="4"] {
+.elawa-card .front[data-color="1"][data-number="4"] {
   background-position: 27.2727272727% 0%;
 }
-.card .front[data-color="1"][data-number="5"] {
+.elawa-card .front[data-color="1"][data-number="5"] {
   background-position: 36.3636363636% 0%;
 }
-.card .front[data-color="1"][data-number="6"] {
+.elawa-card .front[data-color="1"][data-number="6"] {
   background-position: 45.4545454545% 0%;
 }
-.card .front[data-color="1"][data-number="7"] {
+.elawa-card .front[data-color="1"][data-number="7"] {
   background-position: 54.5454545455% 0%;
 }
-.card .front[data-color="1"][data-number="8"] {
+.elawa-card .front[data-color="1"][data-number="8"] {
   background-position: 63.6363636364% 0%;
 }
-.card .front[data-color="1"][data-number="9"] {
+.elawa-card .front[data-color="1"][data-number="9"] {
   background-position: 72.7272727273% 0%;
 }
-.card .front[data-color="1"][data-number="10"] {
+.elawa-card .front[data-color="1"][data-number="10"] {
   background-position: 81.8181818182% 0%;
 }
-.card .front[data-color="1"][data-number="11"] {
+.elawa-card .front[data-color="1"][data-number="11"] {
   background-position: 90.9090909091% 0%;
 }
-.card .front[data-color="1"][data-number="12"] {
+.elawa-card .front[data-color="1"][data-number="12"] {
   background-position: 100% 0%;
 }
-.card .front[data-color="2"][data-number="1"] {
+.elawa-card .front[data-color="2"][data-number="1"] {
   background-position: 0% 25%;
 }
-.card .front[data-color="2"][data-number="2"] {
+.elawa-card .front[data-color="2"][data-number="2"] {
   background-position: 9.0909090909% 25%;
 }
-.card .front[data-color="2"][data-number="3"] {
+.elawa-card .front[data-color="2"][data-number="3"] {
   background-position: 18.1818181818% 25%;
 }
-.card .front[data-color="2"][data-number="4"] {
+.elawa-card .front[data-color="2"][data-number="4"] {
   background-position: 27.2727272727% 25%;
 }
-.card .front[data-color="2"][data-number="5"] {
+.elawa-card .front[data-color="2"][data-number="5"] {
   background-position: 36.3636363636% 25%;
 }
-.card .front[data-color="2"][data-number="6"] {
+.elawa-card .front[data-color="2"][data-number="6"] {
   background-position: 45.4545454545% 25%;
 }
-.card .front[data-color="2"][data-number="7"] {
+.elawa-card .front[data-color="2"][data-number="7"] {
   background-position: 54.5454545455% 25%;
 }
-.card .front[data-color="2"][data-number="8"] {
+.elawa-card .front[data-color="2"][data-number="8"] {
   background-position: 63.6363636364% 25%;
 }
-.card .front[data-color="2"][data-number="9"] {
+.elawa-card .front[data-color="2"][data-number="9"] {
   background-position: 72.7272727273% 25%;
 }
-.card .front[data-color="2"][data-number="10"] {
+.elawa-card .front[data-color="2"][data-number="10"] {
   background-position: 81.8181818182% 25%;
 }
-.card .front[data-color="2"][data-number="11"] {
+.elawa-card .front[data-color="2"][data-number="11"] {
   background-position: 90.9090909091% 25%;
 }
-.card .front[data-color="2"][data-number="12"] {
+.elawa-card .front[data-color="2"][data-number="12"] {
   background-position: 100% 25%;
 }
-.card .front[data-color="3"][data-number="1"] {
+.elawa-card .front[data-color="3"][data-number="1"] {
   background-position: 0% 50%;
 }
-.card .front[data-color="3"][data-number="2"] {
+.elawa-card .front[data-color="3"][data-number="2"] {
   background-position: 9.0909090909% 50%;
 }
-.card .front[data-color="3"][data-number="3"] {
+.elawa-card .front[data-color="3"][data-number="3"] {
   background-position: 18.1818181818% 50%;
 }
-.card .front[data-color="3"][data-number="4"] {
+.elawa-card .front[data-color="3"][data-number="4"] {
   background-position: 27.2727272727% 50%;
 }
-.card .front[data-color="3"][data-number="5"] {
+.elawa-card .front[data-color="3"][data-number="5"] {
   background-position: 36.3636363636% 50%;
 }
-.card .front[data-color="3"][data-number="6"] {
+.elawa-card .front[data-color="3"][data-number="6"] {
   background-position: 45.4545454545% 50%;
 }
-.card .front[data-color="3"][data-number="7"] {
+.elawa-card .front[data-color="3"][data-number="7"] {
   background-position: 54.5454545455% 50%;
 }
-.card .front[data-color="3"][data-number="8"] {
+.elawa-card .front[data-color="3"][data-number="8"] {
   background-position: 63.6363636364% 50%;
 }
-.card .front[data-color="3"][data-number="9"] {
+.elawa-card .front[data-color="3"][data-number="9"] {
   background-position: 72.7272727273% 50%;
 }
-.card .front[data-color="3"][data-number="10"] {
+.elawa-card .front[data-color="3"][data-number="10"] {
   background-position: 81.8181818182% 50%;
 }
-.card .front[data-color="3"][data-number="11"] {
+.elawa-card .front[data-color="3"][data-number="11"] {
   background-position: 90.9090909091% 50%;
 }
-.card .front[data-color="3"][data-number="12"] {
+.elawa-card .front[data-color="3"][data-number="12"] {
   background-position: 100% 50%;
 }
-.card .front[data-color="4"][data-number="1"] {
+.elawa-card .front[data-color="4"][data-number="1"] {
   background-position: 0% 75%;
 }
-.card .front[data-color="4"][data-number="2"] {
+.elawa-card .front[data-color="4"][data-number="2"] {
   background-position: 9.0909090909% 75%;
 }
-.card .front[data-color="4"][data-number="3"] {
+.elawa-card .front[data-color="4"][data-number="3"] {
   background-position: 18.1818181818% 75%;
 }
-.card .front[data-color="4"][data-number="4"] {
+.elawa-card .front[data-color="4"][data-number="4"] {
   background-position: 27.2727272727% 75%;
 }
-.card .front[data-color="4"][data-number="5"] {
+.elawa-card .front[data-color="4"][data-number="5"] {
   background-position: 36.3636363636% 75%;
 }
-.card .front[data-color="4"][data-number="6"] {
+.elawa-card .front[data-color="4"][data-number="6"] {
   background-position: 45.4545454545% 75%;
 }
-.card .front[data-color="4"][data-number="7"] {
+.elawa-card .front[data-color="4"][data-number="7"] {
   background-position: 54.5454545455% 75%;
 }
-.card .front[data-color="4"][data-number="8"] {
+.elawa-card .front[data-color="4"][data-number="8"] {
   background-position: 63.6363636364% 75%;
 }
-.card .front[data-color="4"][data-number="9"] {
+.elawa-card .front[data-color="4"][data-number="9"] {
   background-position: 72.7272727273% 75%;
 }
-.card .front[data-color="4"][data-number="10"] {
+.elawa-card .front[data-color="4"][data-number="10"] {
   background-position: 81.8181818182% 75%;
 }
-.card .front[data-color="4"][data-number="11"] {
+.elawa-card .front[data-color="4"][data-number="11"] {
   background-position: 90.9090909091% 75%;
 }
-.card .front[data-color="4"][data-number="12"] {
+.elawa-card .front[data-color="4"][data-number="12"] {
   background-position: 100% 75%;
 }
-.card .front[data-color="5"][data-number="1"] {
+.elawa-card .front[data-color="5"][data-number="1"] {
   background-position: 0% 100%;
 }
-.card .front[data-color="5"][data-number="2"] {
+.elawa-card .front[data-color="5"][data-number="2"] {
   background-position: 9.0909090909% 100%;
 }
-.card .front[data-color="5"][data-number="3"] {
+.elawa-card .front[data-color="5"][data-number="3"] {
   background-position: 18.1818181818% 100%;
 }
-.card .front[data-color="5"][data-number="4"] {
+.elawa-card .front[data-color="5"][data-number="4"] {
   background-position: 27.2727272727% 100%;
 }
-.card .front[data-color="5"][data-number="5"] {
+.elawa-card .front[data-color="5"][data-number="5"] {
   background-position: 36.3636363636% 100%;
 }
-.card .front[data-color="5"][data-number="6"] {
+.elawa-card .front[data-color="5"][data-number="6"] {
   background-position: 45.4545454545% 100%;
 }
-.card .front[data-color="5"][data-number="7"] {
+.elawa-card .front[data-color="5"][data-number="7"] {
   background-position: 54.5454545455% 100%;
 }
-.card .front[data-color="5"][data-number="8"] {
+.elawa-card .front[data-color="5"][data-number="8"] {
   background-position: 63.6363636364% 100%;
 }
-.card .front[data-color="5"][data-number="9"] {
+.elawa-card .front[data-color="5"][data-number="9"] {
   background-position: 72.7272727273% 100%;
 }
-.card .front[data-color="5"][data-number="10"] {
+.elawa-card .front[data-color="5"][data-number="10"] {
   background-position: 81.8181818182% 100%;
 }
-.card .front[data-color="5"][data-number="11"] {
+.elawa-card .front[data-color="5"][data-number="11"] {
   background-position: 90.9090909091% 100%;
 }
-.card .front[data-color="5"][data-number="12"] {
+.elawa-card .front[data-color="5"][data-number="12"] {
   background-position: 100% 100%;
 }
-.card.chief {
+.elawa-card.chief {
   background-size: auto 100%;
   background-image: url("img/chiefs.jpg");
 }
-.card.chief[data-number="1"][data-level="1"] {
+.elawa-card.chief[data-number="1"][data-level="1"] {
   background-position-x: 0%;
 }
-.card.chief[data-number="1"][data-level="2"] {
+.elawa-card.chief[data-number="1"][data-level="2"] {
   background-position-x: 57.1428571429%;
 }
-.card.chief[data-number="2"][data-level="1"] {
+.elawa-card.chief[data-number="2"][data-level="1"] {
   background-position-x: 14.2857142857%;
 }
-.card.chief[data-number="2"][data-level="2"] {
+.elawa-card.chief[data-number="2"][data-level="2"] {
   background-position-x: 71.4285714286%;
 }
-.card.chief[data-number="3"][data-level="1"] {
+.elawa-card.chief[data-number="3"][data-level="1"] {
   background-position-x: 28.5714285714%;
 }
-.card.chief[data-number="3"][data-level="2"] {
+.elawa-card.chief[data-number="3"][data-level="2"] {
   background-position-x: 85.7142857143%;
 }
-.card.chief[data-number="4"][data-level="1"] {
+.elawa-card.chief[data-number="4"][data-level="1"] {
   background-position-x: 42.8571428571%;
 }
-.card.chief[data-number="4"][data-level="2"] {
+.elawa-card.chief[data-number="4"][data-level="2"] {
   background-position-x: 100%;
 }
-.card.token {
+
+/*@keyframes selectable-card-animation {
+    0% { 
+      //background: var(--background-lighter);
+      box-shadow: 0 0 3px 2px #FFFFFF;
+    }
+    100% { 
+      //background: var(--background-darker);
+      box-shadow: 0 0 5px 3px #FFFFFF;
+    }
+}*/
+.token {
+  display: inline-block;
+  position: relative;
   width: 68px;
   height: 68px;
+  margin: 5px;
+  /*&.selectable:not(.disabled) {
+      cursor: pointer;
+      &:not(.selected) {
+          animation: selectable-card-animation 1s alternate infinite ease-in-out;
+      }
+
+      .card-side {
+          box-shadow: unset;
+      }
+  }    
+
+  &.selected:not(.disabled) {
+      box-shadow: 0 0 5px 8px #e273f5;
+
+      .card-side {
+          box-shadow: unset;
+      }
+  } */
 }
-.card.token .card-sides .card-side {
-  border-radius: 40%;
+.token.disabled {
+  cursor: not-allowed;
+  filter: contrast(0.6);
 }
-.card.token .card-sides .card-side > * {
-  pointer-events: none;
-  user-select: none;
-}
-.card.token .card-sides .card-side.front {
+.token .card-sides .card-side {
+  border-radius: 10px;
   background-size: auto 100%;
   background-image: url("img/tokens.png");
 }
-.card.token .card-sides .card-side.front[data-number="1"] {
+.token .card-sides .card-side > * {
+  pointer-events: none;
+  user-select: none;
+}
+.token .front[data-type="1"] {
+  background-position-x: 20%;
+}
+.token .front[data-type="2"] {
+  background-position-x: 40%;
+}
+.token .front[data-type="3"] {
+  background-position-x: 60%;
+}
+.token .front[data-type="4"] {
+  background-position-x: 80%;
+}
+.token .front[data-type="5"] {
+  background-position-x: 100%;
+}
+
+/*@keyframes selectable-card-animation {
+    0% { 
+      //background: var(--background-lighter);
+      box-shadow: 0 0 3px 2px #FFFFFF;
+    }
+    100% { 
+      //background: var(--background-darker);
+      box-shadow: 0 0 5px 3px #FFFFFF;
+    }
+}*/
+.chief {
+  display: inline-block;
+  position: relative;
+  width: 202px;
+  height: 282px;
+  margin: 5px;
+  border-radius: 10px;
+  /*&.selectable:not(.disabled) {
+      cursor: pointer;
+      &:not(.selected) {
+          animation: selectable-card-animation 1s alternate infinite ease-in-out;
+      }
+
+      .card-side {
+          box-shadow: unset;
+      }
+  }    
+
+  &.selected:not(.disabled) {
+      box-shadow: 0 0 5px 8px #e273f5;
+
+      .card-side {
+          box-shadow: unset;
+      }
+  } */
+}
+.chief.disabled {
+  cursor: not-allowed;
+  filter: contrast(0.6);
+}
+.chief .card-sides .card-side {
+  border-radius: 10px;
+  /*&.back {  
+      background-size: auto 100%;
+      background-image: url('img/card-back.jpg');
+  }*/
+}
+.chief .card-sides .card-side > * {
+  pointer-events: none;
+  user-select: none;
+}
+.chief .card-sides .card-side.front {
+  background-size: auto 100%;
+  background-image: url("img/chiefs.jpg");
+}
+.chief .card-sides .card-side.front[data-number="1"][data-level="1"] {
   background-position-x: 0%;
 }
-.card.token .card-sides .card-side.front[data-number="2"] {
-  background-position-x: 25%;
+.chief .card-sides .card-side.front[data-number="1"][data-level="2"] {
+  background-position-x: 57.1428571429%;
 }
-.card.token .card-sides .card-side.front[data-number="3"] {
-  background-position-x: 50%;
+.chief .card-sides .card-side.front[data-number="2"][data-level="1"] {
+  background-position-x: 14.2857142857%;
 }
-.card.token .card-sides .card-side.front[data-number="4"] {
-  background-position-x: 75%;
+.chief .card-sides .card-side.front[data-number="2"][data-level="2"] {
+  background-position-x: 71.4285714286%;
 }
-.card.token .card-sides .card-side.front[data-number="5"] {
+.chief .card-sides .card-side.front[data-number="3"][data-level="1"] {
+  background-position-x: 28.5714285714%;
+}
+.chief .card-sides .card-side.front[data-number="3"][data-level="2"] {
+  background-position-x: 85.7142857143%;
+}
+.chief .card-sides .card-side.front[data-number="4"][data-level="1"] {
+  background-position-x: 42.8571428571%;
+}
+.chief .card-sides .card-side.front[data-number="4"][data-level="2"] {
   background-position-x: 100%;
 }
 
@@ -541,11 +655,129 @@ body > .card {
   border-radius: 15px;
   background: rgba(255, 215, 82, 0.4);
   margin: 5px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#table-center .center-spot {
+  top: 233px;
+  left: 130px;
+  position: absolute;
+  width: 185px;
+  transform-origin: top center;
+  border-radius: 10px;
+  transition: box-shadow 0.5s, background-color 0.5s, transform 1s ease-in, opacity 1s ease-in;
+}
+#table-center .center-spot.active {
+  background-color: rgba(255, 255, 255, 0.7333333333);
+  animation: 2s ease-in-out infinite alternate glow;
+}
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px 10px rgba(255, 255, 255, 0.7333333333);
+  }
+  to {
+    box-shadow: 0 0 20px 20px rgba(255, 255, 255, 0.7333333333);
+  }
+}
+#table-center .center-spot .ferry-card {
+  background: url("img/ferry.jpg");
+  width: 179px;
+  height: 128px;
+  cursor: default;
+  margin: 0;
+}
+#table-center .center-spot .ferry-card.empty {
+  display: none;
+}
+#table-center .center-spot .ferry-card.roomates {
+  background: url("img/ferry-roomates.jpg");
+}
+#table-center .center-spot .animal-card {
+  transform-origin: top center;
+  position: absolute;
+  left: 25px;
+  width: 128px;
+  height: 179px;
+  background-image: url("img/cards.jpg");
+  border-radius: 10px;
+}
+#table-center .center-spot .animal-card.unselectable {
+  filter: contrast(0.6);
+}
+#table-center .center-spot .animal-card.selectable {
+  cursor: pointer;
+}
+#table-center .remaining-counter.weight-indicator {
+  text-shadow: 0 0 2px #1577c6, 0 0 4px #1577c6, 0 0 6px #1577c6;
+  color: white;
+}
+#table-center .remaining-counter.weight-indicator[data-position="0"] {
+  top: 322px;
+  right: 444px;
+}
+#table-center .remaining-counter.weight-indicator[data-position="1"] {
+  top: 18px;
+  right: 383px;
+}
+#table-center .remaining-counter.weight-indicator[data-position="2"] {
+  top: -2px;
+  right: 79px;
+}
+#table-center .remaining-counter.weight-indicator[data-position="3"] {
+  bottom: 160px;
+  left: 473px;
+}
+#table-center .remaining-counter.weight-indicator[data-position="4"] {
+  top: 480px;
+  left: 236px;
 }
 #table-center #fire {
   width: 128px;
   height: 128px;
   background-image: url("img/fire.png");
+}
+#table-center #center-board {
+  position: relative;
+  width: 444px;
+  height: 466px;
+  background: url("img/board.png");
+}
+#table-center #center-board #noah {
+  background: url("img/noah.png");
+  z-index: 5;
+  box-shadow: 0 0 5px 5px white;
+}
+#table-center #center-board .point-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  box-shadow: 1px 1px 1px 1px black;
+  border-radius: 50%;
+  transition: transform 0.5s;
+  background: url("img/tear.png") no-repeat;
+  background-position: center;
+}
+#table-center #center-board #ferry-deck {
+  position: absolute;
+  top: 156px;
+  left: 130px;
+  background: url("img/ferry.jpg");
+  width: 179px;
+  height: 128px;
+  box-shadow: 3px 3px 0px 0px #333, 5px 5px 3px black;
+  cursor: default;
+}
+#table-center #center-board #ferry-deck.roomates {
+  background: url("img/ferry-roomates.jpg");
+}
+#table-center #center-board .remaining-counter {
+  position: absolute;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .player-board {

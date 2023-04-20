@@ -17,4 +17,16 @@ trait ArgsTrait {
             'available' => [1,2,3,4,5,6], // TODO
         ];
     }
+   
+    function argPlayCard() {
+        return [
+            // TODO
+        ];
+    }
+   
+    function argStoreToken() {
+        return [
+            // TODO
+        ];
+    }
 } 

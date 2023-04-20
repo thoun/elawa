@@ -46,12 +46,21 @@
         $this->game->takeCard($pile);
 
         self::ajaxResponse();
-    }
+    } 
 
-    public function cancelChooseCard() {
+    public function playCard() {
         self::setAjaxMode();     
 
-        $this->game->cancelChooseCard();
+        $id = self::getArg("id", AT_posint, true);
+        $this->game->playCard($id);
+
+        self::ajaxResponse();
+    }
+
+    public function pass() {
+        self::setAjaxMode();     
+
+        $this->game->pass();
 
         self::ajaxResponse();
     }

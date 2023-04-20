@@ -4,7 +4,8 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 class PlayerTable {
     public playerId: number;
     public hand?: LineStock<Card>;
-    public scores: LineStock<Card>[] = [];
+    public chief: LineStock<number>;
+    public played: LineStock<Card>;
 
     private currentPlayer: boolean;
 
@@ -23,16 +24,9 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-hand" class="hand cards"></div>
             </div>`;
         }
-        html += `<div class="score cards">`;
-        for (let i=0; i<5; i++) {
-            html += `
-            <div class="score-card-wrapper">
-                <div id="player-table-${this.playerId}-score${i}" class="score card"></div>
-                <div id="player-table-${this.playerId}-score${i}-cards" class="cards"></div>
-            </div>`;
-        }
         html += `
-            </div>
+        <div id="player-table-${this.playerId}-chief" class="cards"></div>
+        <div id="player-table-${this.playerId}-played" class="cards"></div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -43,30 +37,19 @@ class PlayerTable {
                 sort: (a: Card, b: Card) => a.number - b.number,
             });
             this.hand.onCardClick = (card: Card) => {
-                if (handDiv.classList.contains('selectable')) {
+                //if (handDiv.classList.contains('selectable')) {
                     this.game.onHandCardClick(card);
-                    this.hand.getCards().forEach(c => this.hand.getCardElement(c).classList.toggle('selected', c.id == card.id));
-                }
+                    //this.hand.getCards().forEach(c => this.hand.getCardElement(c).classList.toggle('selected', c.id == card.id));
+                //}
             }
             
             this.hand.addCards(player.hand);
-        }
 
-        for (let i=0; i<5; i++) {
-            const scoreDiv = document.getElementById(`player-table-${this.playerId}-score${i}-cards`);
-            this.scores[i] = new LineStock<Card>(this.game.cardsManager, scoreDiv, {
-                direction: 'column',
-            });
-            scoreDiv.style.setProperty('--card-overlap', '125px');
-            this.scores[i].addCards(player.scoresCards[i]);
         }
-    } 
-    
-    public setSelectable(selectable: boolean) {
-        document.getElementById(`player-table-${this.playerId}-hand`).classList.toggle('selectable', selectable);
-    }
-    
-    public placeScoreCard(card: Card) {
-        this.scores[card.locationArg].addCard(card);
+        this.chief = new LineStock<number>(this.game.chiefsManager, document.getElementById(`player-table-${this.playerId}-chief`));
+        this.chief.addCard(player.chief);
+        
+        this.played = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-played`));
+        this.played.addCards(player.played);
     }
 }
