@@ -561,6 +561,30 @@ body > .card {
   background-position-x: 100%;
 }
 
+.token-icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: auto 100%;
+  background-image: url("img/tokens.png");
+  vertical-align: middle;
+}
+.token-icon[data-type="1"] {
+  background-position-x: 20%;
+}
+.token-icon[data-type="2"] {
+  background-position-x: 40%;
+}
+.token-icon[data-type="3"] {
+  background-position-x: 60%;
+}
+.token-icon[data-type="4"] {
+  background-position-x: 80%;
+}
+.token-icon[data-type="5"] {
+  background-position-x: 100%;
+}
+
 /*@keyframes selectable-card-animation {
     0% { 
       //background: var(--background-lighter);
@@ -789,7 +813,7 @@ body > .card {
   }
 }
 html, .mode_3d #game_play_area_background {
-  background: url("img/background.jpg");
+  background: lightgoldenrodyellow;
   background-size: 100% auto;
   background-repeat: repeat;
 }

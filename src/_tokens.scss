@@ -51,6 +51,21 @@
     }
 }
 
+.token-icon {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-size: auto 100%;
+    background-image: url('img/tokens.png');
+    vertical-align: middle;
+
+    @for $type from 1 through 5 {
+        &[data-type="#{$type}"] {
+            background-position-x: #{($type) * 100% / 5};
+        }
+    }
+}
+
 /*@keyframes selectable-card-animation {
     0% { 
       //background: var(--background-lighter);

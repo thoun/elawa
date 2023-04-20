@@ -55,7 +55,7 @@ define('END_SCORE', 100);
 /*
  * Constants
  */
-
+define('LAST_TURN', 10);
 
 /*
  * Options

@@ -140,6 +140,10 @@ class Elawa implements ElawaGame {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
     }
 
+    public getChieftainOption(): number {
+        return this.gamedatas.chieftainOption;
+    }
+
     private setupPreferences() {
         // Extract the ID and value from the UI control
         const onchange = (e) => {
@@ -315,21 +319,15 @@ class Elawa implements ElawaGame {
         try {
             if (log && args && !args.processed) {
 
-                ['scoredCard', 'cardOver', 'cardUnder', 'addedCard'].forEach(attr => {
-                    if ((typeof args[attr] !== 'string' || args[attr][0] !== '<') && args[attr + 'Obj']) {
-                        const obj: Card = args[attr + 'Obj'];
-                        args[attr] = `<strong data-color="${obj.color}">${obj.number}</strong>`;
-                        if (obj.points != 0) {
-                            args[attr] += ` <div class="points-circle" data-negative="${(obj.points < 0).toString()}">${obj.points > 0 ? '+' : ''}${obj.points}</div>`;
-                        }
-                    }
-                });
+                if (typeof args.type !== 'string' || args.type[0] !== '<') {
+                    args.type = `<div class="token-icon" data-type="${args.type}"></div>`;
+                }
 
-                for (const property in args) {
+                /*for (const property in args) {
                     if (['column', 'incScoreColumn', 'incScoreCard', 'roundNumber', 'totalScore', 'roundScore'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }
-                }
+                }*/
                 
             }
         } catch (e) {

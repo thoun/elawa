@@ -1254,6 +1254,7 @@ var ChiefsManager = /** @class */ (function (_super) {
             },
             setupFrontDiv: function (card, div) {
                 div.dataset.number = '' + card;
+                div.dataset.level = '' + game.getChieftainOption();
             },
         }) || this;
         _this.game = game;
@@ -1556,6 +1557,9 @@ var Elawa = /** @class */ (function () {
         var _this = this;
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === _this.getPlayerId(); });
     };
+    Elawa.prototype.getChieftainOption = function () {
+        return this.gamedatas.chieftainOption;
+    };
     Elawa.prototype.setupPreferences = function () {
         var _this = this;
         // Extract the ID and value from the UI control
@@ -1698,20 +1702,14 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                ['scoredCard', 'cardOver', 'cardUnder', 'addedCard'].forEach(function (attr) {
-                    if ((typeof args[attr] !== 'string' || args[attr][0] !== '<') && args[attr + 'Obj']) {
-                        var obj = args[attr + 'Obj'];
-                        args[attr] = "<strong data-color=\"".concat(obj.color, "\">").concat(obj.number, "</strong>");
-                        if (obj.points != 0) {
-                            args[attr] += " <div class=\"points-circle\" data-negative=\"".concat((obj.points < 0).toString(), "\">").concat(obj.points > 0 ? '+' : '').concat(obj.points, "</div>");
-                        }
-                    }
-                });
-                for (var property in args) {
-                    if (['column', 'incScoreColumn', 'incScoreCard', 'roundNumber', 'totalScore', 'roundScore'].includes(property) && args[property][0] != '<') {
-                        args[property] = "<strong>".concat(_(args[property]), "</strong>");
-                    }
+                if (typeof args.type !== 'string' || args.type[0] !== '<') {
+                    args.type = "<div class=\"token-icon\" data-type=\"".concat(args.type, "\"></div>");
                 }
+                /*for (const property in args) {
+                    if (['column', 'incScoreColumn', 'incScoreCard', 'roundNumber', 'totalScore', 'roundScore'].includes(property) && args[property][0] != '<') {
+                        args[property] = `<strong>${_(args[property])}</strong>`;
+                    }
+                }*/
             }
         }
         catch (e) {

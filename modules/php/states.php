@@ -41,7 +41,12 @@ trait StateTrait {
 
         $this->giveExtraTime($playerId);
 
-        $this->gamestate->nextState('nextPlayer');
+        $endGame = false;
+        if (boolval($this->getGameStateValue(LAST_TURN)) && $this->getPlayer($playerId)->chief == intval($this->getUniqueValueFromDB("SELECT min(player_chief) FROM player"))) {
+            $endGame = true;
+        }
+
+        $this->gamestate->nextState($endGame ? 'endScore' : 'nextPlayer');
     }
 
     function stEndScore() {

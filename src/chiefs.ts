@@ -8,7 +8,7 @@ class ChiefsManager extends CardManager<number> {
             },
             setupFrontDiv: (card: number, div: HTMLElement) => { 
                 div.dataset.number = ''+card;
-
+                div.dataset.level = ''+game.getChieftainOption();
             },
         });
     }

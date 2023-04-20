@@ -46,6 +46,7 @@ interface ElawaGamedatas {
     centerTokensCount: { [position: number]: number };
     fireToken: Token;
     fireTokenCount: number;
+    chieftainOption: number;
 }
 
 interface ElawaGame extends Game {
@@ -55,6 +56,7 @@ interface ElawaGame extends Game {
 
     getPlayerId(): number;
     getPlayer(playerId: number): ElawaPlayer;
+    getChieftainOption(): number;
 
     setTooltip(id: string, html: string): void;
     onCenterCardClick(pile: number): void;

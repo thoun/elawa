@@ -34,7 +34,8 @@ trait ActionTrait {
         ]);
 
         if ($newCount == 0) {
-            // TODO trigger last turn
+            $this->setGameStateValue(LAST_TURN, 1);
+            // TODO notif last turn
         }
         
         return $token;

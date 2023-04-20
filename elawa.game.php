@@ -46,6 +46,8 @@ class Elawa extends Table {
         parent::__construct();
         
         self::initGameStateLabels([
+            LAST_TURN => LAST_TURN,
+
             CHIEFTAIN_OPTION => CHIEFTAIN_OPTION,
         ]);   
 		
@@ -105,6 +107,7 @@ class Elawa extends Table {
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
+        $this->setGameStateInitialValue(LAST_TURN, 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -182,6 +185,7 @@ class Elawa extends Table {
         $result['centerTokensCount'] = $centerTokensCount;
         $result['fireToken'] = Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center')));
         $result['fireTokenCount'] = intval($this->tokens->countCardInLocation('center'));
+        $result['chieftainOption'] = $this->getChieftainOption();
   
         return $result;
     }
