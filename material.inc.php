@@ -30,8 +30,8 @@ $this->CENTER_RESOURCES_BY_PLAYER_COUNT = [
 
 $this->CARDS = [    
     BLUE => [
-        1 => new CardType(2, 3, HOUSE, [BERRY, MEAT, SKIN]),
-        2 => new CardType(1, 2, HOUSE, [BERRY, MEAT]),
+        1 => new CardType(2, 3, HOUSE, [BERRY, MEAT, SKIN], BLUE),
+        2 => new CardType(1, 2, HOUSE, [BERRY, MEAT], BLUE),
         3 => new CardType(1, 4, STORAGE, [SKIN], FLINT),
         4 => new CardType(2, 3, STORAGE, [MEAT], FLINT),
         5 => new CardType(2, 2, STORAGE, [], FLINT),
@@ -45,8 +45,8 @@ $this->CARDS = [
     ],
 
     YELLOW => [
-        1 => new CardType(3, 3, HOUSE, [BERRY, BERRY, FLINT, FLINT]),
-        2 => new CardType(2, 2, HOUSE, [BERRY, MEAT, FLINT]),
+        1 => new CardType(3, 3, HOUSE, [BERRY, BERRY, FLINT, FLINT], YELLOW),
+        2 => new CardType(2, 2, HOUSE, [BERRY, MEAT, FLINT], YELLOW),
         3 => new CardType(1, 4, STORAGE, [BERRY], SKIN),
         4 => new CardType(1, 3, STORAGE, [], SKIN),
         5 => new CardType(1, 8, HUMAN, [MEAT, FLINT]),
@@ -60,8 +60,8 @@ $this->CARDS = [
     ],
 
     GREEN => [
-        1 => new CardType(2, 3, HOUSE, [MEAT, FLINT, SKIN]),
-        2 => new CardType(2, 2, HOUSE, [FLINT, SKIN]),
+        1 => new CardType(2, 3, HOUSE, [MEAT, FLINT, SKIN], GREEN),
+        2 => new CardType(2, 2, HOUSE, [FLINT, SKIN], GREEN),
         3 => new CardType(1, 4, STORAGE, [MEAT, MEAT], BERRY),
         4 => new CardType(1, 3, STORAGE, [FLINT], BERRY),
         5 => new CardType(2, 2, STORAGE, [MEAT], BERRY),
@@ -75,8 +75,8 @@ $this->CARDS = [
     ],
 
     RED => [
-        1 => new CardType(2, 3, HOUSE, [BERRY, FLINT, SKIN]),
-        2 => new CardType(2, 2, HOUSE, [BERRY, SKIN]),
+        1 => new CardType(2, 3, HOUSE, [BERRY, FLINT, SKIN], RED),
+        2 => new CardType(2, 2, HOUSE, [BERRY, SKIN], RED),
         3 => new CardType(1, 4, STORAGE, [BERRY, BERRY], MEAT),
         4 => new CardType(2, 3, STORAGE, [FLINT], MEAT),
         5 => new CardType(1, 2, STORAGE, [], MEAT),
@@ -91,12 +91,12 @@ $this->CARDS = [
     ],
 
     PURPLE => [
-        1 => new CardType(2, 4, HOUSE, [BERRY, MEAT, FLINT, SKIN]),
-        2 => new CardType(1, 3, HOUSE, [BERRY, FLINT]),
-        3 => new CardType(3, 4, HOUSE, [SKIN, SKIN]),
-        4 => new CardType(2, 4, HOUSE, [FLINT, FLINT]),
-        5 => new CardType(3, 4, HOUSE, [MEAT, MEAT, MEAT]),
-        6 => new CardType(2, 4, HOUSE, [BERRY, BERRY, BERRY]),
+        1 => new CardType(2, 4, HOUSE, [BERRY, MEAT, FLINT, SKIN], PURPLE),
+        2 => new CardType(1, 3, HOUSE, [BERRY, FLINT], PURPLE),
+        3 => new CardType(3, 4, HOUSE, [SKIN, SKIN], YELLOW),
+        4 => new CardType(2, 4, HOUSE, [FLINT, FLINT], BLUE),
+        5 => new CardType(3, 4, HOUSE, [MEAT, MEAT, MEAT], RED),
+        6 => new CardType(2, 4, HOUSE, [BERRY, BERRY, BERRY], GREEN),
         7 => new CardType(1, 7, HUMAN, [BERRY, BERRY, SKIN, SKIN]),
         8 => new CardType(1, 9, HUMAN, [MEAT, MEAT, FLINT]),
         9 => new CardType(2, 3, HUMAN, [BERRY]),

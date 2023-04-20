@@ -14,6 +14,10 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
+    function debugLastTurn() {
+        $this->setGameStateValue(LAST_TURN, 1);
+    }
+
     public function debugReplacePlayersIds() {
         if ($this->getBgaEnvironment() != 'studio') { 
             return;

@@ -50,6 +50,19 @@ trait StateTrait {
     }
 
     function stEndScore() {
+        $playersIds = $this->getPlayersIds();
+
+        foreach($playersIds as $playerId) {
+            $playedCards = $this->getCardsByLocation('played'.$playerId);
+            $score = 0;
+            foreach ($playedCards as $card) {
+                $score += $this->getCardScore($card, $playedCards);
+            }
+
+            $scoreAux = count($this->getTokensByLocation('player', $playerId));
+            $this->DbQuery("UPDATE player SET player_score = $score, player_score_aux = $scoreAux WHERE player_id = $playerId");
+        }
+
         $this->gamestate->nextState('endGame');
     }
 }

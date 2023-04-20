@@ -223,5 +223,18 @@ trait UtilTrait {
 
         return $tokensToPayForCard;
     }
+
+    function getCardScore(Card $card, array $cards) {
+        switch ($card->cardType) {
+            case HOUSE:
+                return $card->points * count(array_filter($cards, fn($c) => $c->color == $card->storageType));
+            case STORAGE:
+                return $card->points * intval($this->tokens->countCardInLocation('card', $card->id));
+            case HUMAN:
+                return $card->points;
+            case TOOL:
+                return $card->points * count(array_filter($cards, fn($c) => $c->cardType == $card->storageType));
+        }
+    }
     
 }
