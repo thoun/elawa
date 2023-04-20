@@ -675,9 +675,14 @@ body > .card {
       box-shadow: 0 0 5px 3px #FFFFFF;
     }
 }*/
+#table-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #table-center {
   position: relative;
-  background: rgba(255, 215, 82, 0.4);
   width: 930px;
   min-width: 930px;
   height: 904px;
@@ -716,13 +721,6 @@ body > .card {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.player-board {
-  background-color: white;
-}
-.player-board.spectator-mode * {
-  background: white !important;
 }
 
 .counters {
@@ -813,7 +811,7 @@ body > .card {
   }
 }
 html, .mode_3d #game_play_area_background {
-  background: lightgoldenrodyellow;
+  background: url("img/background.jpg");
   background-size: 100% auto;
   background-repeat: repeat;
 }
@@ -878,9 +876,9 @@ html, .mode_3d #game_play_area_background {
   flex-direction: column;
 }
 
-@media (min-width: 1500px) {
+@media (min-width: 1800px) {
   #tables-and-center {
-    flex-direction: row-reverse;
+    flex-direction: row;
     justify-content: center;
     align-items: start;
   }

@@ -1,8 +1,13 @@
+#table-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #table-center {
     @import 'center-spot';
 
     position: relative;
-    background: #ffd75266;
     width: 930px;
     min-width: 930px;
     height: 904px;

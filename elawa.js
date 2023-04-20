@@ -1491,7 +1491,7 @@ var Elawa = /** @class */ (function () {
             element: document.getElementById('table'),
             smooth: false,
             zoomControls: {
-                color: 'white',
+                color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });

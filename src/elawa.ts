@@ -60,7 +60,7 @@ class Elawa implements ElawaGame {
             element: document.getElementById('table'),
             smooth: false,
             zoomControls: {
-                color: 'white',
+                color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });

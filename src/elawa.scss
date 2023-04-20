@@ -16,8 +16,7 @@
 }
 
 html, .mode_3d #game_play_area_background {
-  // TODO TEMP background: url('img/background.jpg');
-  background: lightgoldenrodyellow;
+  background: url('img/background.jpg');
   background-size: 100% auto;
   background-repeat: repeat;
 }
@@ -89,14 +88,14 @@ html, .mode_3d #game_play_area_background {
   }
 }
 
-@media (min-width: 1500px) { 
+@media (min-width: 1800px) { 
   #tables-and-center {
-    flex-direction: row-reverse;
+    flex-direction: row;
     justify-content: center;
     align-items: start;
 
     &>div {
-      flex: 1
+      flex: 1;
     }
   }
 }

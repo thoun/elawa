@@ -1,15 +1,3 @@
-
-
-.player-board {
-  background-color: white;
-
-  &.spectator-mode {
-    * {
-      background: white !important;
-    }
-  }
-}
-
 .counters {
   display: flex;
   align-items: center;

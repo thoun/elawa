@@ -1,9 +1,11 @@
 {OVERALL_GAME_HEADER}
 <div id="table">
     <div id="tables-and-center">
-        <div id="table-center">
-            <div id="fire">
-                <div id="center-stock"></div>
+        <div id="table-center-wrapper">
+            <div id="table-center">
+                <div id="fire">
+                    <div id="center-stock"></div>
+                </div>
             </div>
         </div>
         <div id="tables"></div>
