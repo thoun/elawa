@@ -82,6 +82,15 @@
         self::ajaxResponse();
     }
 
+    public function storeTokens() {
+        self::setAjaxMode();     
+
+        $tokens = self::getArg( "tokens", AT_json, true );
+        $this->game->storeTokens($tokens);
+
+        self::ajaxResponse();
+    }
+
     public function keepSelectedTokens() {
         self::setAjaxMode();     
 

@@ -8,8 +8,12 @@ interface Card {
     locationArg: number;
     points: number;
     color: number;
+    cardType: number;
     number: number;
     tokens: number;
+    storageType?: number;
+    storedResources?: Token[];
+    canStoreResourceType?: boolean;
 }
 
 interface Token {
@@ -75,6 +79,15 @@ interface EnteringPlayCardArgs {
     playableCards: Card[];
 }
 
+interface EnteringDiscardCardArgs extends EnteringPlayCardArgs {
+    selectedCard: Card;
+}
+
+interface EnteringStoreTokensArgs {
+    storageCards: Card[];
+    canPlaceBone: boolean;
+}
+
 interface NotifTakeElementArgs {
     playerId: number;
     pile: number;
@@ -106,6 +119,12 @@ interface NotifDiscardCardArgs {
     playerId: number;
     card: Card;
 } 
+
+// storedTokens
+interface NotifStoredTokensArgs {
+    playerId: number;
+    tokens: { [cardId: number]: number };
+}
 
 // discardTokens
 interface NotifDiscardTokensArgs {

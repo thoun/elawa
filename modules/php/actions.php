@@ -190,6 +190,25 @@ trait ActionTrait {
         $this->gamestate->nextState('next');
     }
 
+    public function storeTokens(array $tokens) {
+        self::checkAction('storeTokens');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        foreach ($tokens as $cardId => $tokenId) {
+            $this->tokens->moveCard($tokenId, 'card', $cardId);
+        }
+
+        self::notifyAllPlayers('storedTokens', clienttranslate('${player_name} stores ${number} resource(s)'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'number' => count($tokens), // for logs
+            'tokens' => $tokens,
+        ]);
+
+        $this->gamestate->nextState('next');
+    }
+
     public function keepSelectedTokens(array $ids) {
         self::checkAction('keepSelectedTokens');
 

@@ -35,6 +35,9 @@ class Card extends CardType {
     public int $locationArg;
     public /*int|null*/ $color;
     public /*int|null*/ $number;
+    public /*array|null*/ $storedResources;
+
+    public /*bool|null*/ $canStoreResourceType; // only for front
 
     public function __construct($dbCard, $CARDS) {
         $this->id = intval($dbCard['card_id'] ?? $dbCard['id']);

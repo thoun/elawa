@@ -162,7 +162,7 @@ class Elawa extends Table {
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $player['chief'] = intval($player['chief']);
-            $player['played'] = $this->getCardsByLocation('played'.$playerId);
+            $player['played'] = $this->getPlayedCardWithStoredResources($playerId);
             $player['tokens'] = $this->getTokensByLocation('player', $playerId);
             $player['handCount'] = intval($this->cards->countCardInLocation('hand', $playerId));
 

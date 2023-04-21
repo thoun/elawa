@@ -46,9 +46,19 @@ trait ArgsTrait {
         ];
     }
    
-    function argStoreToken() {
+    function argStoreTokens() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $played = $this->getCardsByLocation('played'.$playerId);
+        $storageCards = array_values(array_filter($played, fn($card) => $card->cardType == STORAGE));
+        $resources = $this->getPlayerResources($playerId);
+        foreach ($storageCards as &$card) {
+            $card->canStoreResourceType = count($resources[$card->storageType]) > 0;
+        }
+
         return [
-            // TODO
+            'storageCards' => $storageCards,
+            'canPlaceBone' => count($resources[BONE]) > 0,
         ];
     }
 

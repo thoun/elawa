@@ -1,6 +1,8 @@
 const isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;;
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
+const BONE = 5;
+
 class PlayerTable {
     public playerId: number;
     public voidStock: VoidStock<Card>;
@@ -100,5 +102,81 @@ class PlayerTable {
 
     public setFreeTokensSelectable(selectable: boolean) {
         this.tokensFree.setSelectionMode(selectable ? 'multiple' : 'none');
+    }
+
+    private getTokenOfType(type: number): Token | null {
+        return this.tokensFree.getCards().find(card => card.type == type);
+    }
+
+    private updateStorageButtons() {
+        const someUsed = document.querySelectorAll('.storage-actions[data-used="true"]').length > 0;
+        document.getElementById(`storeTokens_button`).classList.toggle('disabled', !someUsed);
+        document.getElementById(`pass_button`).classList.toggle('disabled', someUsed);
+
+        document.querySelectorAll('.storage-action button').forEach((button: HTMLElement) => 
+            button.classList.toggle('disabled', (button.closest('.storage-actions') as HTMLElement).dataset.used == 'true' || this.getTokenOfType(Number(button.dataset.type)) == null)
+        );
+    }
+
+    private createStorageAction(storageActions: HTMLElement, type: number) {
+        const storageAction = document.createElement('div');
+        storageAction.classList.add('storage-action');
+        storageActions.appendChild(storageAction);
+        const button = document.createElement('button');
+        button.classList.add('bgabutton', 'bgabutton_blue');
+        button.dataset.type = ''+type;
+        storageAction.appendChild(button);
+        button.innerHTML = _("Store ${type}").replace('${type}', `<div class="token-icon" data-type="${type}"></div>`);        
+        const stock = new LineStock<Token>(this.game.tokensManager, storageAction);
+
+        button.addEventListener('click', () => {
+            const token = this.getTokenOfType(type);
+            stock.addCard(token);
+            storageActions.dataset.used = 'true';
+            storageActions.dataset.tokenId = ''+token.id;
+
+            const cancelButton = document.createElement('button');
+            cancelButton.classList.add('cancel');
+            cancelButton.innerText = '✖';
+            storageAction.appendChild(cancelButton);
+            cancelButton.addEventListener('click', () => {
+                storageActions.dataset.used = 'false';
+                this.tokensFree.addCard(stock.getCards()[0]);
+                button.classList.remove('hidden');
+                cancelButton.remove();
+                storageActions.dataset.tokenId = '';
+                this.updateStorageButtons();
+            });
+
+            setTimeout(() => {
+                button.classList.add('hidden');
+                this.updateStorageButtons();
+            });
+        })
+    } 
+
+    public setStoreButtons(storageCards: Card[], canPlaceBone: boolean) {
+        storageCards.filter(card => canPlaceBone || card.canStoreResourceType).forEach(card => {
+            const storageActions = document.createElement('div');
+            storageActions.dataset.cardId = ''+card.id;
+            storageActions.classList.add('storage-actions');
+            storageActions.dataset.tokenId = '';
+            this.game.cardsManager.getCardElement(card).appendChild(storageActions);
+
+            if (card.canStoreResourceType) {
+                this.createStorageAction(storageActions, card.storageType);
+            }
+            if (canPlaceBone) {
+                this.createStorageAction(storageActions, BONE);
+            }
+        });
+    }
+
+    public removeStoreButtons() {
+        document.getElementById(`player-table-${this.playerId}-played`).querySelectorAll('.storage-actions').forEach(elem => elem.remove());
+    }
+    
+    public storeTokens(tokens: { [cardId: number]: number; }) {
+        Object.entries(tokens).forEach(entry => this.game.cardsManager.addToken(Number(entry[0]), Number(entry[1])));
     }
 }

@@ -74,4 +74,49 @@
       }
     }
   }
+
+  .storage-actions {
+    position: absolute;
+    top: -30px;
+    height: 68px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 10px;
+    left: 0;
+    right: 0;
+
+    .storage-action {
+      position: relative;
+      width: 68px;
+      display: flex;
+      justify-content: center;
+      align-content: center;
+
+      button {
+        white-space: break-spaces;
+        width: 100%;
+        height: 100%;
+
+        &.hidden {
+          display: none;
+        }
+
+        &.cancel {
+          position: absolute;
+          width: 24px;
+          height: 24px;
+          background: white;
+          border-radius: 50%;
+          text-align: center;
+          line-height: 24px;
+          z-index: 1;
+          box-shadow: 0 0 3px 1px black;
+          right: 0;
+          top: -10px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
 }

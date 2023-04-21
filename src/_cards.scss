@@ -50,6 +50,14 @@
             box-shadow: unset;
         }
     }
+    
+    &.selected-discard {
+        outline: 4px solid orange;
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }
 
     @for $color from 1 through 5 {
         @for $number from 1 through 12 {

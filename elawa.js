@@ -1206,6 +1206,7 @@ var CardManager = /** @class */ (function () {
     };
     return CardManager;
 }());
+var STORAGE = 2;
 var CardsManager = /** @class */ (function (_super) {
     __extends(CardsManager, _super);
     function CardsManager(game) {
@@ -1218,11 +1219,20 @@ var CardsManager = /** @class */ (function (_super) {
             setupFrontDiv: function (card, div) {
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
+                if (card.cardType == STORAGE && card.storedResources) {
+                    div.style.alignItems = 'center';
+                    _this.storageStocks[card.id] = new LineStock(game.tokensManager, div);
+                    _this.storageStocks[card.id].addCards(card.storedResources);
+                }
             },
         }) || this;
         _this.game = game;
+        _this.storageStocks = [];
         return _this;
     }
+    CardsManager.prototype.addToken = function (cardId, tokenId) {
+        this.storageStocks[cardId].addCard({ id: tokenId });
+    };
     return CardsManager;
 }(CardManager));
 var TokensManager = /** @class */ (function (_super) {
@@ -1263,55 +1273,21 @@ var ChiefsManager = /** @class */ (function (_super) {
     ChiefsManager.prototype.getTooltip = function (number) {
         var message = '';
         switch (number) {
-            case 1:
-                message = _("(+2) if you have 1 or 3 orange cards.");
-                break;
-            case 2:
-                message = _("(-2) if orange cards are in the scoring column with either value (1) or value (2).");
-                break;
-            case 3:
-                message = _("(+2) if you have 2 or 4 blue cards.");
-                break;
-            case 4:
-                message = _("(+2) if blue is the colour you have the most cards of (or if blue is tied).");
-                break;
-            case 5:
-                message = _("(-2) if you are the player with the least pink cards (or are tied for the least pink cards).");
-                break;
-            case 6:
-                message = _("(+2) if you are the player with the most pink cards (or are tied for the most pink cards).");
-                break;
-            case 7:
-                message = _("(+2) if no colour is on the right of the green column.");
-                break;
-            case 8:
-                message = _("(+2) if green cards are in the scoring column with either value (4) or value (5).");
-                break;
-            case 9:
-                message = _("(+2) if you have more purple cards than orange cards (or the same number).");
-                break;
-            case 10:
-                message = _("(-2) if you are the player with the most purple cards (or are tied for the most purple cards).");
-                break;
-            case 11:
-                message = _("(+2) if you have cards in all 5 colours.");
-                break;
-            case 12:
-                message = _("(+2) if you have exactly 3 colours.");
-                break;
-            case 13:
-                message = _("(-2) if you have at least 1 colour with exactly 3 cards.");
-                break;
-            case 14:
-                message = _("(+2) if you have at least 1 colour with exactly 4 cards.");
-                break;
+            /* TODO case 1: message = _("(+2) if you have 1 or 3 orange cards."); break;
+            case 2: message = _("(-2) if orange cards are in the scoring column with either value (1) or value (2)."); break;
+            case 3: message = _("(+2) if you have 2 or 4 blue cards."); break;
+            case 4: message = _("(+2) if blue is the colour you have the most cards of (or if blue is tied)."); break;
+            case 5: message = _("(-2) if you are the player with the least pink cards (or are tied for the least pink cards)."); break;
+            case 6: message = _("(+2) if you are the player with the most pink cards (or are tied for the most pink cards)."); break;
+            case 7: message = _("(+2) if no colour is on the right of the green column."); break;
+            case 8: message = _("(+2) if green cards are in the scoring column with either value (4) or value (5)."); break;
+            case 9: message = _("(+2) if you have more purple cards than orange cards (or the same number)."); break;
+            case 10: message = _("(-2) if you are the player with the most purple cards (or are tied for the most purple cards)."); break;
+            case 11: message = _("(+2) if you have cards in all 5 colours."); break;
+            case 12: message = _("(+2) if you have exactly 3 colours."); break;
+            case 13: message = _("(-2) if you have at least 1 colour with exactly 3 cards."); break;
+            case 14: message = _("(+2) if you have at least 1 colour with exactly 4 cards."); break;*/
         }
-        message = message.replaceAll(/\(([+-]?\d)\)/g, function (a, b) {
-            console.log(a, b);
-            return "<div class=\"points-circle\" data-negative=\"".concat(Number(b) < 0, "\">").concat(b, "</div>");
-        });
-        //points-circle
-        console.log(message);
         return message;
     };
     return ChiefsManager;
@@ -1437,6 +1413,7 @@ var TableCenter = /** @class */ (function () {
 var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
+var BONE = 5;
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         var _this = this;
@@ -1503,6 +1480,75 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setFreeTokensSelectable = function (selectable) {
         this.tokensFree.setSelectionMode(selectable ? 'multiple' : 'none');
     };
+    PlayerTable.prototype.getTokenOfType = function (type) {
+        return this.tokensFree.getCards().find(function (card) { return card.type == type; });
+    };
+    PlayerTable.prototype.updateStorageButtons = function () {
+        var _this = this;
+        var someUsed = document.querySelectorAll('.storage-actions[data-used="true"]').length > 0;
+        document.getElementById("storeTokens_button").classList.toggle('disabled', !someUsed);
+        document.getElementById("pass_button").classList.toggle('disabled', someUsed);
+        document.querySelectorAll('.storage-action button').forEach(function (button) {
+            return button.classList.toggle('disabled', button.closest('.storage-actions').dataset.used == 'true' || _this.getTokenOfType(Number(button.dataset.type)) == null);
+        });
+    };
+    PlayerTable.prototype.createStorageAction = function (storageActions, type) {
+        var _this = this;
+        var storageAction = document.createElement('div');
+        storageAction.classList.add('storage-action');
+        storageActions.appendChild(storageAction);
+        var button = document.createElement('button');
+        button.classList.add('bgabutton', 'bgabutton_blue');
+        button.dataset.type = '' + type;
+        storageAction.appendChild(button);
+        button.innerHTML = _("Store ${type}").replace('${type}', "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"));
+        var stock = new LineStock(this.game.tokensManager, storageAction);
+        button.addEventListener('click', function () {
+            var token = _this.getTokenOfType(type);
+            stock.addCard(token);
+            storageActions.dataset.used = 'true';
+            storageActions.dataset.tokenId = '' + token.id;
+            var cancelButton = document.createElement('button');
+            cancelButton.classList.add('cancel');
+            cancelButton.innerText = '✖';
+            storageAction.appendChild(cancelButton);
+            cancelButton.addEventListener('click', function () {
+                storageActions.dataset.used = 'false';
+                _this.tokensFree.addCard(stock.getCards()[0]);
+                button.classList.remove('hidden');
+                cancelButton.remove();
+                storageActions.dataset.tokenId = '';
+                _this.updateStorageButtons();
+            });
+            setTimeout(function () {
+                button.classList.add('hidden');
+                _this.updateStorageButtons();
+            });
+        });
+    };
+    PlayerTable.prototype.setStoreButtons = function (storageCards, canPlaceBone) {
+        var _this = this;
+        storageCards.filter(function (card) { return canPlaceBone || card.canStoreResourceType; }).forEach(function (card) {
+            var storageActions = document.createElement('div');
+            storageActions.dataset.cardId = '' + card.id;
+            storageActions.classList.add('storage-actions');
+            storageActions.dataset.tokenId = '';
+            _this.game.cardsManager.getCardElement(card).appendChild(storageActions);
+            if (card.canStoreResourceType) {
+                _this.createStorageAction(storageActions, card.storageType);
+            }
+            if (canPlaceBone) {
+                _this.createStorageAction(storageActions, BONE);
+            }
+        });
+    };
+    PlayerTable.prototype.removeStoreButtons = function () {
+        document.getElementById("player-table-".concat(this.playerId, "-played")).querySelectorAll('.storage-actions').forEach(function (elem) { return elem.remove(); });
+    };
+    PlayerTable.prototype.storeTokens = function (tokens) {
+        var _this = this;
+        Object.entries(tokens).forEach(function (entry) { return _this.game.cardsManager.addToken(Number(entry[0]), Number(entry[1])); });
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -1568,6 +1614,12 @@ var Elawa = /** @class */ (function () {
             case 'playCard':
                 this.onEnteringPlayCard(args.args);
                 break;
+            case 'discardCard':
+                this.onEnteringDiscardCard(args.args);
+                break;
+            case 'storeTokens':
+                this.onEnteringStoreTokens(args.args);
+                break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
                     (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setFreeTokensSelectable(true);
@@ -1587,6 +1639,20 @@ var Elawa = /** @class */ (function () {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(true, args.playableCards);
         }
     };
+    Elawa.prototype.onEnteringDiscardCard = function (args) {
+        var _a;
+        if (this.isCurrentPlayerActive()) {
+            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(true, args.playableCards);
+            var selectedCardDiv = this.getCurrentPlayerTable().hand.getCardElement(args.selectedCard);
+            selectedCardDiv.classList.add('selected-discard');
+        }
+    };
+    Elawa.prototype.onEnteringStoreTokens = function (args) {
+        var _a;
+        if (this.isCurrentPlayerActive()) {
+            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setStoreButtons(args.storageCards, args.canPlaceBone);
+        }
+    };
     Elawa.prototype.onLeavingState = function (stateName) {
         var _a;
         log('Leaving state: ' + stateName);
@@ -1597,6 +1663,12 @@ var Elawa = /** @class */ (function () {
                 break;
             case 'playCard':
                 this.onLeavingPlayCard();
+                break;
+            case 'discardCard':
+                this.onLeavingDiscardCard();
+                break;
+            case 'storeTokens':
+                this.onLeavingStoreTokens();
                 break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
@@ -1612,6 +1684,13 @@ var Elawa = /** @class */ (function () {
         var _a;
         (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(false);
     };
+    Elawa.prototype.onLeavingDiscardCard = function () {
+        document.querySelectorAll('.selected-discard').forEach(function (elem) { return elem.classList.remove('selected-discard'); });
+    };
+    Elawa.prototype.onLeavingStoreTokens = function () {
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeStoreButtons();
+    };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -1625,8 +1704,10 @@ var Elawa = /** @class */ (function () {
                 case 'discardCard':
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); });
                     break;
-                case 'storeToken':
-                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); }); // TODO
+                case 'storeTokens':
+                    this.addActionButton("storeTokens_button", _("Confirm stored resources"), function () { return _this.storeTokens(); });
+                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
+                    document.getElementById("storeTokens_button").classList.add('disabled');
                     break;
                 case 'discardTokens':
                     this.addActionButton("keepSelectedTokens_button", _("Keep selected resources"), function () { return _this.keepSelectedTokens(); });
@@ -1771,6 +1852,20 @@ var Elawa = /** @class */ (function () {
         }
         this.takeAction('cancel');
     };
+    Elawa.prototype.storeTokens = function () {
+        if (!this.checkAction('storeTokens')) {
+            return;
+        }
+        var object = {};
+        document.querySelectorAll('.storage-actions').forEach(function (storageActions) {
+            if (storageActions.dataset.tokenId != '') {
+                object[Number(storageActions.dataset.cardId)] = Number(storageActions.dataset.tokenId);
+            }
+        });
+        this.takeAction('storeTokens', {
+            tokens: JSON.stringify(object),
+        });
+    };
     Elawa.prototype.keepSelectedTokens = function () {
         if (!this.checkAction('keepSelectedTokens')) {
             return;
@@ -1803,6 +1898,7 @@ var Elawa = /** @class */ (function () {
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
+            ['storedTokens', ANIMATION_MS],
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
@@ -1849,6 +1945,9 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.notif_discardCard = function (notif) {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
+    };
+    Elawa.prototype.notif_storedTokens = function (notif) {
+        this.getPlayerTable(notif.args.playerId).storeTokens(notif.args.tokens);
     };
     Elawa.prototype.notif_discardTokens = function (notif) {
         var playerTable = this.getPlayerTable(notif.args.playerId);

@@ -229,7 +229,7 @@ trait UtilTrait {
             case HOUSE:
                 return $card->points * count(array_filter($cards, fn($c) => $c->color == $card->storageType));
             case STORAGE:
-                return $card->points * intval($this->tokens->countCardInLocation('card', $card->id));
+                return $card->points * count($card->storedResources);
             case HUMAN:
                 return $card->points;
             case TOOL:
@@ -238,7 +238,7 @@ trait UtilTrait {
     }
 
     function getPlayerScore(int $playerId) {
-        $playedCards = $this->getCardsByLocation('played'.$playerId);
+        $playedCards = $this->getPlayedCardWithStoredResources($playerId);
         $score = 0;
         foreach ($playedCards as $card) {
             $score += $this->getCardScore($card, $playedCards);
@@ -255,6 +255,18 @@ trait UtilTrait {
             'playerId' => $playerId,
             'playerScore' => $playerScore,
         ]);
+    }
+
+    function getPlayedCardWithStoredResources(int $playerId) {
+        $played = $this->getCardsByLocation('played'.$playerId);
+
+        foreach($played as $card) {
+            if ($card->cardType == STORAGE) {
+                $card->storedResources = $this->getTokensByLocation('card', $card->id);
+            }
+        }
+
+        return $played;
     }
     
 }

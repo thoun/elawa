@@ -19,13 +19,12 @@ trait StateTrait {
         }
     }
 
-    function stStoreToken() {
-        $playerId = intval($this->getActivePlayerId());
+    function stStoreTokens() {
+        $args = $this->argStoreTokens();
 
-        $played = $this->getCardsByLocation('played'.$playerId);
-        $storageCards = array_values(array_filter($played, fn($card) => $card->cardType == STORAGE));
+        $canPlay = $args['canPlaceBone'] || $this->array_some($args['storageCards'], fn($card) => $card->canStoreResourceType);
 
-        if (count($storageCards) == 0) {
+        if (count($args['storageCards']) == 0 || !$canPlay) {
             $this->gamestate->nextState('next');
         }
     }

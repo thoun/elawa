@@ -16,7 +16,7 @@ class ChiefsManager extends CardManager<number> {
     private getTooltip(number: number): string {
         let message = '';
         switch (number) {
-            case 1: message = _("(+2) if you have 1 or 3 orange cards."); break;
+            /* TODO case 1: message = _("(+2) if you have 1 or 3 orange cards."); break;
             case 2: message = _("(-2) if orange cards are in the scoring column with either value (1) or value (2)."); break;
             case 3: message = _("(+2) if you have 2 or 4 blue cards."); break;
             case 4: message = _("(+2) if blue is the colour you have the most cards of (or if blue is tied)."); break;
@@ -29,14 +29,8 @@ class ChiefsManager extends CardManager<number> {
             case 11: message = _("(+2) if you have cards in all 5 colours."); break;
             case 12: message = _("(+2) if you have exactly 3 colours."); break;
             case 13: message = _("(-2) if you have at least 1 colour with exactly 3 cards."); break;
-            case 14: message = _("(+2) if you have at least 1 colour with exactly 4 cards."); break;
+            case 14: message = _("(+2) if you have at least 1 colour with exactly 4 cards."); break;*/
         }
-
-        message = message.replaceAll(/\(([+-]?\d)\)/g, (a, b) => { console.log(a, b); 
-            return `<div class="points-circle" data-negative="${Number(b) < 0}">${b}</div>`; 
-        });
-        //points-circle
-        console.log(message);
 
         return message;
         

@@ -101,7 +101,7 @@ $playerActionsGameStates = [
             "stay" => ST_PLAYER_PLAY_CARD,
             "takeCardPower" => ST_PLAYER_TAKE_CARD_POWER,
             "discard" => ST_PLAYER_DISCARD_CARD,
-            "next" => ST_PLAYER_STORE_TOKEN,
+            "next" => ST_PLAYER_STORE_TOKENS,
         ],
     ],
 
@@ -136,15 +136,15 @@ $playerActionsGameStates = [
         ]
     ],
 
-    ST_PLAYER_STORE_TOKEN => [
-        "name" => "storeToken",
-        "description" => clienttranslate('${actplayer} can place a resource on a storage tribe card'),
-        "descriptionmyturn" => clienttranslate('${you} can place a resource on a storage tribe card'),
+    ST_PLAYER_STORE_TOKENS => [
+        "name" => "storeTokens",
+        "description" => clienttranslate('${actplayer} can place resource on storage cards'),
+        "descriptionmyturn" => clienttranslate('${you} can place resource on storage cards'),
         "type" => "activeplayer",    
-        "args" => "argStoreToken",
-        "action" => "stStoreToken",
+        "args" => "argStoreTokens",
+        "action" => "stStoreTokens",
         "possibleactions" => [ 
-            "storeToken",
+            "storeTokens",
             "pass",
         ],
         "transitions" => [

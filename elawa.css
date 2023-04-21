@@ -283,6 +283,12 @@ body > .card {
 .elawa-card.selected:not(.disabled) .card-side {
   box-shadow: unset;
 }
+.elawa-card.selected-discard {
+  outline: 4px solid orange;
+}
+.elawa-card.selected-discard .card-side {
+  box-shadow: unset;
+}
 .elawa-card .front[data-color="1"][data-number="1"] {
   background-position: 0% 0%;
 }
@@ -500,44 +506,44 @@ body > .card {
     box-shadow: 0 0 5px 3px orange;
   }
 }
-.token {
+.card.token {
   display: inline-block;
   position: relative;
   width: 68px;
   height: 68px;
   box-shadow: none;
 }
-.token.disabled {
+.card.token.disabled {
   cursor: not-allowed;
   filter: contrast(0.6);
 }
-.token .card-sides .card-side {
+.card.token .card-sides .card-side {
   box-shadow: none;
   border-radius: 10px;
   background-size: auto 100%;
   background-image: url("img/tokens.png");
 }
-.token .card-sides .card-side > * {
+.card.token .card-sides .card-side > * {
   pointer-events: none;
   user-select: none;
 }
-.token.selected:not(.disabled) {
+.card.token.selected:not(.disabled) {
   box-shadow: 0 0 5px 5px orange;
   border-radius: 50%;
 }
-.token .front[data-type="1"] {
+.card.token .front[data-type="1"] {
   background-position-x: 20%;
 }
-.token .front[data-type="2"] {
+.card.token .front[data-type="2"] {
   background-position-x: 40%;
 }
-.token .front[data-type="3"] {
+.card.token .front[data-type="3"] {
   background-position-x: 60%;
 }
-.token .front[data-type="4"] {
+.card.token .front[data-type="4"] {
   background-position-x: 80%;
 }
-.token .front[data-type="5"] {
+.card.token .front[data-type="5"] {
   background-position-x: 100%;
 }
 
@@ -802,6 +808,46 @@ body > .card {
 .player-table .chief-and-tokens .chief-card .tokens-chief .slot {
   width: 68px;
   height: 68px;
+}
+.player-table .storage-actions {
+  position: absolute;
+  top: -30px;
+  height: 68px;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+  left: 0;
+  right: 0;
+}
+.player-table .storage-actions .storage-action {
+  position: relative;
+  width: 68px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+.player-table .storage-actions .storage-action button {
+  white-space: break-spaces;
+  width: 100%;
+  height: 100%;
+}
+.player-table .storage-actions .storage-action button.hidden {
+  display: none;
+}
+.player-table .storage-actions .storage-action button.cancel {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  z-index: 1;
+  box-shadow: 0 0 3px 1px black;
+  right: 0;
+  top: -10px;
+  cursor: pointer;
 }
 
 /* make space between buttons on touch devices */

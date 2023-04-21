@@ -92,6 +92,12 @@ class Elawa implements ElawaGame {
             case 'playCard':
                 this.onEnteringPlayCard(args.args);
                 break;
+            case 'discardCard':
+                this.onEnteringDiscardCard(args.args);
+                break;
+            case 'storeTokens':
+                this.onEnteringStoreTokens(args.args);
+                break;
             case 'discardTokens':
                     if ((this as any).isCurrentPlayerActive()) {
                         this.getCurrentPlayerTable()?.setFreeTokensSelectable(true);
@@ -113,6 +119,20 @@ class Elawa implements ElawaGame {
         }
     }
 
+    private onEnteringDiscardCard(args: EnteringDiscardCardArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.getCurrentPlayerTable()?.setCardsSelectable(true, args.playableCards);
+            const selectedCardDiv = this.getCurrentPlayerTable().hand.getCardElement(args.selectedCard);
+            selectedCardDiv.classList.add('selected-discard');
+        }
+    }
+
+    private onEnteringStoreTokens(args: EnteringStoreTokensArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.getCurrentPlayerTable()?.setStoreButtons(args.storageCards, args.canPlaceBone);
+        }
+    }
+
     public onLeavingState(stateName: string) {
         log( 'Leaving state: '+stateName );
 
@@ -123,6 +143,12 @@ class Elawa implements ElawaGame {
                 break;
             case 'playCard':
                 this.onLeavingPlayCard();
+                break;
+            case 'discardCard':
+                this.onLeavingDiscardCard();
+                break;
+            case 'storeTokens':
+                this.onLeavingStoreTokens();
                 break;
            case 'discardTokens':
                 if ((this as any).isCurrentPlayerActive()) {
@@ -140,6 +166,14 @@ class Elawa implements ElawaGame {
         this.getCurrentPlayerTable()?.setCardsSelectable(false);
     }
 
+    private onLeavingDiscardCard() {
+        document.querySelectorAll('.selected-discard').forEach(elem => elem.classList.remove('selected-discard'));
+    }
+
+    private onLeavingStoreTokens() {
+        this.getCurrentPlayerTable()?.removeStoreButtons();
+    }
+
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -153,8 +187,10 @@ class Elawa implements ElawaGame {
                 case 'discardCard':
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
                     break;
-                case 'storeToken':
-                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass()); // TODO
+                case 'storeTokens':
+                    (this as any).addActionButton(`storeTokens_button`, _("Confirm stored resources"), () => this.storeTokens());
+                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
+                    document.getElementById(`storeTokens_button`).classList.add('disabled');
                     break;
                 case 'discardTokens':
                     (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
@@ -339,6 +375,23 @@ class Elawa implements ElawaGame {
         this.takeAction('cancel');
     }
   	
+    public storeTokens() {
+        if(!(this as any).checkAction('storeTokens')) {
+            return;
+        }
+
+        const object = {};
+        document.querySelectorAll('.storage-actions').forEach((storageActions: HTMLElement) => {
+            if (storageActions.dataset.tokenId != '') {
+                object[Number(storageActions.dataset.cardId)] = Number(storageActions.dataset.tokenId);
+            }
+        });
+
+        this.takeAction('storeTokens', {
+            tokens: JSON.stringify(object),
+        });
+    }
+  	
     public keepSelectedTokens() {
         if(!(this as any).checkAction('keepSelectedTokens')) {
             return;
@@ -375,6 +428,7 @@ class Elawa implements ElawaGame {
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
+            ['storedTokens', ANIMATION_MS],
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
@@ -427,6 +481,10 @@ class Elawa implements ElawaGame {
 
     notif_discardCard(notif: Notif<NotifDiscardCardArgs>) {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
+    }
+
+    notif_storedTokens(notif: Notif<NotifStoredTokensArgs>) {
+        this.getPlayerTable(notif.args.playerId).storeTokens(notif.args.tokens);
     }
 
     notif_discardTokens(notif: Notif<NotifDiscardTokensArgs>) {
