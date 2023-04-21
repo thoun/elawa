@@ -1,6 +1,7 @@
 class TableCenter {
     private spots: CenterSpot[] = [];
     public hiddenToken: HiddenDeck<Token>;
+    public fireCounter: Counter;
         
     constructor(private game: ElawaGame, gamedatas: ElawaGamedatas) {
         for (let i=0;i<6;i++) {
@@ -14,6 +15,10 @@ class TableCenter {
             autoUpdateCardNumber: false,
         });
         this.hiddenToken.addCard(gamedatas.fireToken);
+
+        this.fireCounter = new ebg.counter();
+        this.fireCounter.create(`center-token-counter`);
+        this.fireCounter.setValue(gamedatas.fireTokenCount);
     }
 
     public setNewCard(pile: number, newCard: Card, newCount: number) {

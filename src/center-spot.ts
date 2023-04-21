@@ -6,6 +6,9 @@ class CenterSpot {
     public visibleCard: VisibleDeck<Card>;
     public visibleToken: VisibleDeck<Token>;
 
+    private cardCounter: Counter;
+    private tokenCounter: Counter;
+
     constructor(
         private game: ElawaGame,
         public pile: number,
@@ -16,8 +19,12 @@ class CenterSpot {
     ) { 
         let html = `
         <div id="center-spot-${pile}" class="center-spot" style="--angle: ${this.getSpotAngle()}">
-            <div id="center-spot-${pile}-token"></div>
-            <div id="center-spot-${pile}-card"></div>
+            <div id="center-spot-${pile}-token" class="center-spot-token">
+                <div id="center-spot-${pile}-token-counter" class="center-spot-counter token-counter"></div>
+            </div>
+            <div id="center-spot-${pile}-card" class="center-spot-card">
+            <div id="center-spot-${pile}-card-counter" class="center-spot-counter card-counter"></div>
+            </div>
         `;
         html += `</div>`;
 
@@ -34,6 +41,10 @@ class CenterSpot {
             this.visibleCard.addCard(card);
         }
         cardDeck.addEventListener('click', () => this.game.onCenterCardClick(pile));
+        
+        this.cardCounter = new ebg.counter();
+        this.cardCounter.create(`center-spot-${pile}-card-counter`);
+        this.cardCounter.setValue(cardCount);
 
         this.visibleToken = new VisibleDeck<Token>(game.tokensManager, document.getElementById(`center-spot-${pile}-token`), {
             width: 68,
@@ -42,6 +53,10 @@ class CenterSpot {
             autoUpdateCardNumber: false,
         });
         this.visibleToken.addCard(token);
+
+        this.tokenCounter = new ebg.counter();
+        this.tokenCounter.create(`center-spot-${pile}-token-counter`);
+        this.tokenCounter.setValue(tokenCount);
 
         /*dojo.toggleClass(`center-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
         let tooltip = `
@@ -86,6 +101,7 @@ As such, it’s always the second card played on an ferry which defines the sequ
             this.visibleCard.addCard(newCard);
         }
         this.visibleCard.setCardNumber(newCount);
+        this.cardCounter.toValue(newCount);
     }
     
     public setNewToken(newToken: Token, newCount: number) {
@@ -93,5 +109,6 @@ As such, it’s always the second card played on an ferry which defines the sequ
             this.visibleToken.addCard(newToken);
         }
         this.visibleToken.setCardNumber(newCount);
+        this.tokenCounter.toValue(newCount);
     }
 }

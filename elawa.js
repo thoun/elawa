@@ -1323,7 +1323,7 @@ var CenterSpot = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.pile = pile;
-        var html = "\n        <div id=\"center-spot-".concat(pile, "\" class=\"center-spot\" style=\"--angle: ").concat(this.getSpotAngle(), "\">\n            <div id=\"center-spot-").concat(pile, "-token\"></div>\n            <div id=\"center-spot-").concat(pile, "-card\"></div>\n        ");
+        var html = "\n        <div id=\"center-spot-".concat(pile, "\" class=\"center-spot\" style=\"--angle: ").concat(this.getSpotAngle(), "\">\n            <div id=\"center-spot-").concat(pile, "-token\" class=\"center-spot-token\">\n                <div id=\"center-spot-").concat(pile, "-token-counter\" class=\"center-spot-counter token-counter\"></div>\n            </div>\n            <div id=\"center-spot-").concat(pile, "-card\" class=\"center-spot-card\">\n            <div id=\"center-spot-").concat(pile, "-card-counter\" class=\"center-spot-counter card-counter\"></div>\n            </div>\n        ");
         html += "</div>";
         dojo.place(html, 'table-center');
         var cardDeck = document.getElementById("center-spot-".concat(pile, "-card"));
@@ -1337,6 +1337,9 @@ var CenterSpot = /** @class */ (function () {
             this.visibleCard.addCard(card);
         }
         cardDeck.addEventListener('click', function () { return _this.game.onCenterCardClick(pile); });
+        this.cardCounter = new ebg.counter();
+        this.cardCounter.create("center-spot-".concat(pile, "-card-counter"));
+        this.cardCounter.setValue(cardCount);
         this.visibleToken = new VisibleDeck(game.tokensManager, document.getElementById("center-spot-".concat(pile, "-token")), {
             width: 68,
             height: 68,
@@ -1344,6 +1347,9 @@ var CenterSpot = /** @class */ (function () {
             autoUpdateCardNumber: false,
         });
         this.visibleToken.addCard(token);
+        this.tokenCounter = new ebg.counter();
+        this.tokenCounter.create("center-spot-".concat(pile, "-token-counter"));
+        this.tokenCounter.setValue(tokenCount);
         /*dojo.toggleClass(`center-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
         let tooltip = `
         <h3>${_('Ferry')}</h3>
@@ -1385,12 +1391,14 @@ As such, it’s always the second card played on an ferry which defines the sequ
             this.visibleCard.addCard(newCard);
         }
         this.visibleCard.setCardNumber(newCount);
+        this.cardCounter.toValue(newCount);
     };
     CenterSpot.prototype.setNewToken = function (newToken, newCount) {
         if (newToken) {
             this.visibleToken.addCard(newToken);
         }
         this.visibleToken.setCardNumber(newCount);
+        this.tokenCounter.toValue(newCount);
     };
     return CenterSpot;
 }());
@@ -1408,6 +1416,9 @@ var TableCenter = /** @class */ (function () {
             autoUpdateCardNumber: false,
         });
         this.hiddenToken.addCard(gamedatas.fireToken);
+        this.fireCounter = new ebg.counter();
+        this.fireCounter.create("center-token-counter");
+        this.fireCounter.setValue(gamedatas.fireTokenCount);
     }
     TableCenter.prototype.setNewCard = function (pile, newCard, newCount) {
         this.spots[pile].setNewCard(newCard, newCount);
@@ -1663,6 +1674,7 @@ var Elawa = /** @class */ (function () {
             ['takeCard', ANIMATION_MS],
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
+            ['updateScore', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1687,6 +1699,9 @@ var Elawa = /** @class */ (function () {
         });
         notif.args.discardedTokens.forEach(function (token) { return playerTable.tokens.removeCard(token); });
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
+    };
+    Elawa.prototype.notif_updateScore = function (notif) {
+        this.setScore(notif.args.playerId, notif.args.playerScore);
     };
     /*private getColorName(color: number) {
         switch (color) {

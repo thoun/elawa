@@ -22,3 +22,17 @@
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
 }
+
+.center-spot-counter {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  z-index: 1;
+  box-shadow: 0 0 3px 1px black;
+  right: 0;
+  top: -10px;
+}

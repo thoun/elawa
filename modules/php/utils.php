@@ -76,10 +76,6 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
-    function getPlayerScore(int $playerId) {
-        return intval($this->getUniqueValueFromDB("SELECT player_score FROM player where `player_id` = $playerId"));
-    }
-
     function getPlayer(int $id) {
         $sql = "SELECT * FROM player WHERE player_id = $id";
         $dbResults = $this->getCollectionFromDb($sql);
@@ -235,6 +231,26 @@ trait UtilTrait {
             case TOOL:
                 return $card->points * count(array_filter($cards, fn($c) => $c->cardType == $card->storageType));
         }
+    }
+
+    function getPlayerScore(int $playerId) {
+        $playedCards = $this->getCardsByLocation('played'.$playerId);
+        $score = 0;
+        foreach ($playedCards as $card) {
+            $score += $this->getCardScore($card, $playedCards);
+        }
+        return $score;
+    }
+
+    function updateScore(int $playerId) {
+        $playerScore = $this->getPlayerScore($playerId);
+
+        $this->DbQuery("UPDATE player SET player_score = $playerScore WHERE player_id = $playerId");
+
+        self::notifyAllPlayers('updateScore', '', [
+            'playerId' => $playerId,
+            'playerScore' => $playerScore,
+        ]);
     }
     
 }

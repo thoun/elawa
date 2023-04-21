@@ -60,7 +60,7 @@ trait StateTrait {
             }
 
             $scoreAux = count($this->getTokensByLocation('player', $playerId));
-            $this->DbQuery("UPDATE player SET player_score = $score, player_score_aux = $scoreAux WHERE player_id = $playerId");
+            $this->DbQuery("UPDATE player SET player_score_aux = $scoreAux WHERE player_id = $playerId");
         }
 
         $this->gamestate->nextState('endGame');

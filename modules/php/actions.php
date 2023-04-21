@@ -22,7 +22,7 @@ trait ActionTrait {
         $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('center', 'player', $playerId));
         $newCount = intval($this->tokens->countCardInLocation('center'));
 
-        self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes token ${type} from center table (pile ${emptyPile} was empty)'), [
+        self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty)'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'emptyPile' => $pile, // for logs
@@ -66,7 +66,7 @@ trait ActionTrait {
             $tokenPile = ($pile + $i) % 6;
             $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('pile'.$tokenPile, 'player', $playerId));
 
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes token ${type}'), [
+            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'token' => $token,
@@ -97,7 +97,6 @@ trait ActionTrait {
 
         $this->cards->moveCard($card->id, 'played'.$playerId, intval($this->cards->countCardInLocation('played'.$playerId)) - 1);
 
-        $hand = $this->getCardsByLocation('hand', $playerId);
         $resources = $this->getPlayerResources($playerId);
         $tokens = $this->tokensToPayForCard($card, $resources);
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
@@ -109,6 +108,8 @@ trait ActionTrait {
             'newCount' => intval($this->cards->countCardInLocation('hand', $playerId)),
             'discardedTokens' => $tokens,
         ]);
+
+        $this->updateScore($playerId);
 
         $this->gamestate->nextState('next');
     }

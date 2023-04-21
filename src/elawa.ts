@@ -273,6 +273,7 @@ class Elawa implements ElawaGame {
             ['takeCard', ANIMATION_MS],
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
+            ['updateScore', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -302,6 +303,11 @@ class Elawa implements ElawaGame {
         notif.args.discardedTokens.forEach(token => playerTable.tokens.removeCard(token));
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     }
+
+    notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {
+        this.setScore(notif.args.playerId, notif.args.playerScore);
+    }
+
 
     /*private getColorName(color: number) {
         switch (color) {
