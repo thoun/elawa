@@ -7,7 +7,8 @@ class PlayerTable {
     public hand?: LineStock<Card>;
     public chief: LineStock<number>;
     public played: LineStock<Card>;
-    public tokens: LineStock<Token>;
+    public tokensFree: LineStock<Token>;
+    public tokensChief: SlotStock<Token>;
 
     private currentPlayer: boolean;
 
@@ -27,9 +28,16 @@ class PlayerTable {
             </div>`;
         }
         html += `
-        <div id="player-table-${this.playerId}-chief" class="cards"></div>
-        <div id="player-table-${this.playerId}-played" class="cards"></div>
-        <div id="player-table-${this.playerId}-tokens" class=""></div>
+            <div class="visible-cards">
+                <div id="player-table-${this.playerId}-played" class="cards">
+                    <div class="chief-and-tokens">
+                        <div id="player-table-${this.playerId}-tokens-free" class="tokens-free"></div>
+                        <div id="player-table-${this.playerId}-chief" class="chief-card">
+                            <div id="player-table-${this.playerId}-tokens-chief" class="tokens-chief"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         `;
         dojo.place(html, document.getElementById('tables'));
@@ -54,10 +62,32 @@ class PlayerTable {
         this.chief = new LineStock<number>(this.game.chiefsManager, document.getElementById(`player-table-${this.playerId}-chief`));
         this.chief.addCard(player.chief);
         
-        this.played = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-played`));
+        this.played = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-played`), {
+            center: false,
+        });
         this.played.addCards(player.played);
         
-        this.tokens = new LineStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens`));
-        this.tokens.addCards(player.tokens);
+        this.tokensFree = new LineStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens-free`), {
+            center: false,
+        });
+        this.tokensFree.onSelectionChange = (selection: Token[], lastChange: Token) => this.game.onTokenSelectionChange(selection);
+        this.tokensChief = new SlotStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens-chief`), {
+            gap: '4px',
+            direction: 'column',
+            slotsIds: this.game.getChieftainOption() == 2 ? [0, 1, 2] : [0, 1, 2, 3],
+        });
+        if (this.playerId == (this.game as any).getActivePlayerId()) {
+            this.tokensFree.addCards(player.tokens);
+        } else {
+            player.tokens.forEach((token, index) => this.tokensChief.addCard(token, undefined, { slot: index }));
+        }
+    }
+
+    public freeResources() {
+        this.tokensFree.addCards(this.tokensChief.getCards());
+    }
+
+    public setFreeTokensSelectable(selectable: boolean) {
+        this.tokensFree.setSelectionMode(selectable ? 'multiple' : 'none');
     }
 }

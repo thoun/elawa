@@ -510,26 +510,7 @@ body > .card {
   position: relative;
   width: 68px;
   height: 68px;
-  margin: 5px;
   box-shadow: none;
-  /*&.selectable:not(.disabled) {
-      cursor: pointer;
-      &:not(.selected) {
-          animation: selectable-card-animation 1s alternate infinite ease-in-out;
-      }
-
-      .card-side {
-          box-shadow: unset;
-      }
-  }    
-
-  &.selected:not(.disabled) {
-      box-shadow: 0 0 5px 8px #e273f5;
-
-      .card-side {
-          box-shadow: unset;
-      }
-  } */
 }
 .token.disabled {
   cursor: not-allowed;
@@ -544,6 +525,10 @@ body > .card {
 .token .card-sides .card-side > * {
   pointer-events: none;
   user-select: none;
+}
+.token.selected:not(.disabled) {
+  box-shadow: 0 0 5px 5px orange;
+  border-radius: 50%;
 }
 .token .front[data-type="1"] {
   background-position-x: 20%;
@@ -802,18 +787,26 @@ body > .card {
   background: rgba(255, 255, 255, 0.5333333333);
   border-radius: 10px;
 }
-.player-table .cards {
-  min-height: 152px;
+.player-table .chief-and-tokens {
+  display: grid;
+  grid-template-columns: 156px 202px;
 }
-.player-table .score.cards {
-  display: flex;
-  justify-content: center;
+.player-table .chief-and-tokens .tokens-free {
+  align-content: flex-start;
 }
-.player-table .score.cards .cards {
-  margin-top: -110px;
+.player-table .chief-and-tokens .chief-card {
+  position: relative;
 }
-.player-table .score.cards .cards .card:not(:first-child) {
-  margin-top: calc(-1 * var(--card-overlap));
+.player-table .chief-and-tokens .chief-card .tokens-chief {
+  position: absolute;
+  left: -38px;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.player-table .chief-and-tokens .chief-card .tokens-chief .slot {
+  width: 68px;
+  height: 68px;
 }
 
 /* make space between buttons on touch devices */

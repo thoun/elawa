@@ -1446,7 +1446,7 @@ var PlayerTable = /** @class */ (function () {
         if (this.currentPlayer) {
             html += "\n            <div class=\"block-with-text hand-wrapper\">\n                <div class=\"block-label\">".concat(_('Your hand'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-hand\" class=\"hand cards\"></div>\n            </div>");
         }
-        html += "\n        <div id=\"player-table-".concat(this.playerId, "-chief\" class=\"cards\"></div>\n        <div id=\"player-table-").concat(this.playerId, "-played\" class=\"cards\"></div>\n        <div id=\"player-table-").concat(this.playerId, "-tokens\" class=\"\"></div>\n        </div>\n        ");
+        html += "\n            <div class=\"visible-cards\">\n                <div id=\"player-table-".concat(this.playerId, "-played\" class=\"cards\">\n                    <div class=\"chief-and-tokens\">\n                        <div id=\"player-table-").concat(this.playerId, "-tokens-free\" class=\"tokens-free\"></div>\n                        <div id=\"player-table-").concat(this.playerId, "-chief\" class=\"chief-card\">\n                            <div id=\"player-table-").concat(this.playerId, "-tokens-chief\" class=\"tokens-chief\"></div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n        ");
         dojo.place(html, document.getElementById('tables'));
         if (this.currentPlayer) {
             var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
@@ -1464,11 +1464,32 @@ var PlayerTable = /** @class */ (function () {
         this.voidStock = new VoidStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-name")));
         this.chief = new LineStock(this.game.chiefsManager, document.getElementById("player-table-".concat(this.playerId, "-chief")));
         this.chief.addCard(player.chief);
-        this.played = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-played")));
+        this.played = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-played")), {
+            center: false,
+        });
         this.played.addCards(player.played);
-        this.tokens = new LineStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens")));
-        this.tokens.addCards(player.tokens);
+        this.tokensFree = new LineStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-free")), {
+            center: false,
+        });
+        this.tokensFree.onSelectionChange = function (selection, lastChange) { return _this.game.onTokenSelectionChange(selection); };
+        this.tokensChief = new SlotStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-chief")), {
+            gap: '4px',
+            direction: 'column',
+            slotsIds: this.game.getChieftainOption() == 2 ? [0, 1, 2] : [0, 1, 2, 3],
+        });
+        if (this.playerId == this.game.getActivePlayerId()) {
+            this.tokensFree.addCards(player.tokens);
+        }
+        else {
+            player.tokens.forEach(function (token, index) { return _this.tokensChief.addCard(token, undefined, { slot: index }); });
+        }
     }
+    PlayerTable.prototype.freeResources = function () {
+        this.tokensFree.addCards(this.tokensChief.getCards());
+    };
+    PlayerTable.prototype.setFreeTokensSelectable = function (selectable) {
+        this.tokensFree.setSelectionMode(selectable ? 'multiple' : 'none');
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -1524,8 +1545,13 @@ var Elawa = /** @class */ (function () {
         var _a;
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
-            case 'chooseCard':
-                (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setSelectable(true);
+            case 'takeCard':
+                this.getPlayerTable(args.args.playerId).freeResources();
+                break;
+            case 'discardTokens':
+                if (this.isCurrentPlayerActive()) {
+                    (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setFreeTokensSelectable(true);
+                }
                 break;
         }
     };
@@ -1533,8 +1559,10 @@ var Elawa = /** @class */ (function () {
         var _a;
         log('Leaving state: ' + stateName);
         switch (stateName) {
-            case 'chooseCard':
-                (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setSelectable(false);
+            case 'discardTokens':
+                if (this.isCurrentPlayerActive()) {
+                    (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setFreeTokensSelectable(false);
+                }
                 break;
         }
     };
@@ -1553,7 +1581,9 @@ var Elawa = /** @class */ (function () {
                     break;
                 case 'discardTokens':
                     this.addActionButton("keepSelectedTokens_button", _("Keep selected resources"), function () { return _this.keepSelectedTokens(); });
-                    // TODO disabled if select count doesn't match
+                    var button = document.getElementById("keepSelectedTokens_button");
+                    button.classList.add('disabled');
+                    button.dataset.max = args.number;
                     break;
             }
         }
@@ -1611,7 +1641,7 @@ var Elawa = /** @class */ (function () {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
-            // hand + scored cards counter
+            // hand counter
             dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>"), "player_board_".concat(player.id));
             var handCounter = new ebg.counter();
             handCounter.create("playerhand-counter-".concat(playerId));
@@ -1645,6 +1675,13 @@ var Elawa = /** @class */ (function () {
         else {
             this.playCard(card.id);
         }
+    };
+    Elawa.prototype.onTokenSelectionChange = function (selection) {
+        if (this.gamedatas.gamestate.name !== 'discardTokens') {
+            return;
+        }
+        var button = document.getElementById("keepSelectedTokens_button");
+        button.classList.toggle('disabled', selection.length != Number(button.dataset.max));
     };
     Elawa.prototype.takeCard = function (pile) {
         if (!this.checkAction('takeCard')) {
@@ -1686,7 +1723,9 @@ var Elawa = /** @class */ (function () {
         if (!this.checkAction('keepSelectedTokens')) {
             return;
         }
-        this.takeAction('keepSelectedTokens');
+        this.takeAction('keepSelectedTokens', {
+            ids: this.getCurrentPlayerTable().tokensFree.getSelection().map(function (token) { return token.id; }).join(','),
+        });
     };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -1727,7 +1766,7 @@ var Elawa = /** @class */ (function () {
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
     };
     Elawa.prototype.notif_takeToken = function (notif) {
-        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token, {
+        this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: notif.args.pile == -1 ? document.getElementById("center-stock") : undefined,
         });
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
@@ -1738,7 +1777,7 @@ var Elawa = /** @class */ (function () {
         playerTable.played.addCard(notif.args.card, {
             fromElement: currentPlayer ? undefined : document.getElementById("player-table-".concat(notif.args.playerId, "-name"))
         });
-        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokens.removeCard(token); });
+        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokensFree.removeCard(token); });
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     };
     Elawa.prototype.notif_discardCard = function (notif) {
@@ -1746,7 +1785,8 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.notif_discardTokens = function (notif) {
         var playerTable = this.getPlayerTable(notif.args.playerId);
-        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokens.removeCard(token); });
+        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokensFree.removeCard(token); });
+        notif.args.keptTokens.forEach(function (token, index) { return playerTable.tokensChief.addCard(token, undefined, { slot: index }); });
     };
     Elawa.prototype.notif_updateScore = function (notif) {
         this.setScore(notif.args.playerId, notif.args.playerScore);

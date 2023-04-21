@@ -115,6 +115,7 @@ $playerActionsGameStates = [
             "cancel",
         ],
         "transitions" => [
+            "stay" => ST_PLAYER_PLAY_CARD,
             "next" => ST_PLAYER_PLAY_CARD,
         ],
     ],

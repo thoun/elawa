@@ -35,9 +35,15 @@ trait StateTrait {
 
         $args = $this->argDiscardTokens();
         $max = $args['number'];
-        $tokens = intval($this->tokens->countCardInLocation('player', $playerId));
+        $tokens = $this->getTokensByLocation('player', $playerId);
 
-        if ($tokens <= $max) {
+        if (count($tokens) <= $max) {
+            self::notifyAllPlayers('discardTokens', '', [
+                'playerId' => $playerId,
+                'keptTokens' => $tokens,
+                'discardedTokens' => [],
+            ]);
+
             $this->gamestate->nextState('next');
         }
     }

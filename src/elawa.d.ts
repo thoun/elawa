@@ -61,6 +61,7 @@ interface ElawaGame extends Game {
     setTooltip(id: string, html: string): void;
     onCenterCardClick(pile: number): void;
     onHandCardClick(card: Card): void;
+    onTokenSelectionChange(selection: Token[]): void;
 }
 
 interface EnteringChooseMarketCardArgs {

@@ -3,7 +3,6 @@
     position: relative;
     width: 68px;
     height: 68px;
-    margin: 5px;
     box-shadow: none;
 
     &.disabled {
@@ -23,26 +22,12 @@
                 user-select: none;
             }
         }
-    }    
-
-    /*&.selectable:not(.disabled) {
-        cursor: pointer;
-        &:not(.selected) {
-            animation: selectable-card-animation 1s alternate infinite ease-in-out;
-        }
-
-        .card-side {
-            box-shadow: unset;
-        }
-    }    
+    } 
 
     &.selected:not(.disabled) {
-        box-shadow: 0 0 5px 8px #e273f5;
-
-        .card-side {
-            box-shadow: unset;
-        }
-    } */
+        box-shadow: 0 0 5px 5px orange;
+        border-radius: 50%;
+    }
 
     @for $type from 1 through 5 {
         .front[data-type="#{$type}"] {

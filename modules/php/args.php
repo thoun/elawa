@@ -13,7 +13,10 @@ trait ArgsTrait {
     */
    
     function argTakeCard() {
+        $playerId = intval($this->getActivePlayerId());
+
         return [
+            'playerId' => $playerId,
             'available' => [1,2,3,4,5,6], // TODO
         ];
     }

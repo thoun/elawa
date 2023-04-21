@@ -81,9 +81,14 @@ class Elawa implements ElawaGame {
         log('Entering state: ' + stateName, args.args);
 
         switch (stateName) {
-            case 'chooseCard':
-                this.getCurrentPlayerTable()?.setSelectable(true);
+            case 'takeCard':
+                this.getPlayerTable(args.args.playerId).freeResources();
                 break;
+            case 'discardTokens':
+                    if ((this as any).isCurrentPlayerActive()) {
+                        this.getCurrentPlayerTable()?.setFreeTokensSelectable(true);
+                    }
+                    break;
         }
     }
 
@@ -91,8 +96,10 @@ class Elawa implements ElawaGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-           case 'chooseCard':
-                this.getCurrentPlayerTable()?.setSelectable(false);
+           case 'discardTokens':
+                if ((this as any).isCurrentPlayerActive()) {
+                    this.getCurrentPlayerTable()?.setFreeTokensSelectable(false);
+                }
                 break;
         }
     }
@@ -112,7 +119,9 @@ class Elawa implements ElawaGame {
                     break;
                 case 'discardTokens':
                     (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
-                    // TODO disabled if select count doesn't match
+                    const button = document.getElementById(`keepSelectedTokens_button`);
+                    button.classList.add('disabled');
+                    button.dataset.max = args.number;
                     break;
                     
             }
@@ -186,7 +195,7 @@ class Elawa implements ElawaGame {
         Object.values(gamedatas.players).forEach(player => {
             const playerId = Number(player.id);   
 
-            // hand + scored cards counter
+            // hand counter
             dojo.place(`<div class="counters">
                 <div id="playerhand-counter-wrapper-${player.id}" class="playerhand-counter">
                     <div class="player-hand-card"></div> 
@@ -230,6 +239,15 @@ class Elawa implements ElawaGame {
         } else {
             this.playCard(card.id);
         }
+    }
+
+    public onTokenSelectionChange(selection: Token[]): void {
+        if (this.gamedatas.gamestate.name !== 'discardTokens') {
+            return;
+        }
+
+        const button = document.getElementById(`keepSelectedTokens_button`);
+        button.classList.toggle('disabled', selection.length != Number(button.dataset.max));
     }
   	
     public takeCard(pile: number) {
@@ -283,7 +301,9 @@ class Elawa implements ElawaGame {
             return;
         }
 
-        this.takeAction('keepSelectedTokens');
+        this.takeAction('keepSelectedTokens', {
+            ids: this.getCurrentPlayerTable().tokensFree.getSelection().map(token => token.id).join(','),
+        });
     }
 
     public takeAction(action: string, data?: any) {
@@ -330,7 +350,7 @@ class Elawa implements ElawaGame {
     }
 
     notif_takeToken(notif: Notif<NotifTakeTokenArgs>) {
-        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token, {
+        this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: notif.args.pile == -1 ? document.getElementById(`center-stock`) : undefined,
         });
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
@@ -342,7 +362,7 @@ class Elawa implements ElawaGame {
         playerTable.played.addCard(notif.args.card, {
             fromElement: currentPlayer ? undefined : document.getElementById(`player-table-${notif.args.playerId}-name`)
         });
-        notif.args.discardedTokens.forEach(token => playerTable.tokens.removeCard(token));
+        notif.args.discardedTokens.forEach(token => playerTable.tokensFree.removeCard(token));
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     }
 
@@ -352,7 +372,8 @@ class Elawa implements ElawaGame {
 
     notif_discardTokens(notif: Notif<NotifDiscardTokensArgs>) {
         const playerTable = this.getPlayerTable(notif.args.playerId);
-        notif.args.discardedTokens.forEach(token => playerTable.tokens.removeCard(token));
+        notif.args.discardedTokens.forEach(token => playerTable.tokensFree.removeCard(token));
+        notif.args.keptTokens.forEach((token, index) => playerTable.tokensChief.addCard(token, undefined, { slot: index }));
     }
 
     notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {
