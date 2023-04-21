@@ -30,7 +30,11 @@ trait ActionTrait {
 
             if ($newCount == 0) {
                 $this->setGameStateValue(LAST_TURN, 1);
-                // TODO notif last turn
+
+                self::notifyAllPlayers('lastTurn', clienttranslate('${player_name} took the last token on the fire, triggering the end of the game !'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                ]);
             }
         }
         

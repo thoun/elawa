@@ -14,7 +14,9 @@ class TableCenter {
             cardNumber: gamedatas.fireTokenCount,
             autoUpdateCardNumber: false,
         });
-        this.hiddenToken.addCard(gamedatas.fireToken);
+        if (gamedatas.fireToken) {
+            this.hiddenToken.addCard(gamedatas.fireToken);
+        }
 
         this.fireCounter = new ebg.counter();
         this.fireCounter.create(`center-token-counter`);

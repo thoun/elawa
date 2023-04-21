@@ -65,6 +65,10 @@ class Elawa implements ElawaGame {
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });
 
+        if (gamedatas.lastTurn) {
+            this.notif_lastTurn(false);
+        }
+
         this.setupNotifications();
         this.setupPreferences();
 
@@ -374,6 +378,7 @@ class Elawa implements ElawaGame {
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
+            ['lastTurn', 1],
         ];
     
         notifs.forEach((notif) => {
@@ -432,6 +437,15 @@ class Elawa implements ElawaGame {
 
     notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {
         this.setScore(notif.args.playerId, notif.args.playerScore);
+    }
+    
+    /** 
+     * Show last turn banner.
+     */ 
+    notif_lastTurn(animate: boolean = true) {
+        dojo.place(`<div id="last-round">
+            <span class="last-round-text ${animate ? 'animate' : ''}">${_("This is the final round!")}</span>
+        </div>`, 'page-title');
     }
 
     /*private getColorName(color: number) {

@@ -188,6 +188,8 @@ class Elawa extends Table {
         $result['fireToken'] = Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center')));
         $result['fireTokenCount'] = intval($this->tokens->countCardInLocation('center'));
         $result['chieftainOption'] = $this->getChieftainOption();
+
+        $result['lastTurn'] = !$isEndScore && boolval($this->getGameStateValue(LAST_TURN));
   
         return $result;
     }

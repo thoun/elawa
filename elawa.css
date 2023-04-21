@@ -887,31 +887,28 @@ html, .mode_3d #game_play_area_background {
     flex: 1;
   }
 }
-.log [data-color="1"], .dijitTooltipContents [data-color="1"] {
-  color: #f46d33;
-}
-.log [data-color="2"], .dijitTooltipContents [data-color="2"] {
-  color: #ef5c93;
-}
-.log [data-color="3"], .dijitTooltipContents [data-color="3"] {
-  color: #0079bc;
-}
-.log [data-color="4"], .dijitTooltipContents [data-color="4"] {
-  color: #6ab355;
-}
-.log [data-color="5"], .dijitTooltipContents [data-color="5"] {
-  color: #6967af;
-}
-.log .points-circle, .dijitTooltipContents .points-circle {
-  color: white;
-  border-radius: 50%;
-  background: #ffbb40;
-  display: inline-block;
-  height: 16px;
-  width: 16px;
+#last-round {
+  margin: 5px -5px -5px;
   text-align: center;
-  font-size: 90%;
+  background-color: #900;
+  color: white;
+  text-shadow: 0 0 1px #900, 0 0 5px #900, 0 0 6px #900, 0 0 7px #900;
 }
-.log .points-circle[data-negative=true], .dijitTooltipContents .points-circle[data-negative=true] {
-  background: #e94422;
+#last-round .last-round-text {
+  display: inline-block;
+}
+#last-round .last-round-text.animate {
+  animation: last-round-animation 2s 1 forwards ease-in-out;
+}
+
+@keyframes last-round-animation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

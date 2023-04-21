@@ -58,7 +58,9 @@ class CenterSpot {
             cardNumber: tokenCount,
             autoUpdateCardNumber: false,
         });
-        this.visibleToken.addCard(token);
+        if (token) {
+            this.visibleToken.addCard(token);
+        }
 
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create(`center-spot-${pile}-token-counter`);

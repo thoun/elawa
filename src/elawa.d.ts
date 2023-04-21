@@ -48,6 +48,7 @@ interface ElawaGamedatas {
     fireToken: Token;
     fireTokenCount: number;
     chieftainOption: number;
+    lastTurn: boolean;
 }
 
 interface ElawaGame extends Game {

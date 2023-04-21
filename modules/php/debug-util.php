@@ -14,6 +14,11 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
+    function debugEmptyFire($remaining = 1) {
+		$fireTokenCount = intval($this->tokens->countCardInLocation('center'));
+        $this->tokens->pickCardsForLocation($fireTokenCount - $remaining, 'center', 'discard');
+    }
+
     function debugLastTurn() {
         $this->setGameStateValue(LAST_TURN, 1);
     }

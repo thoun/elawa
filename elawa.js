@@ -1352,7 +1352,9 @@ var CenterSpot = /** @class */ (function () {
             cardNumber: tokenCount,
             autoUpdateCardNumber: false,
         });
-        this.visibleToken.addCard(token);
+        if (token) {
+            this.visibleToken.addCard(token);
+        }
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create("center-spot-".concat(pile, "-token-counter"));
         this.tokenCounter.setValue(tokenCount);
@@ -1400,7 +1402,9 @@ var TableCenter = /** @class */ (function () {
             cardNumber: gamedatas.fireTokenCount,
             autoUpdateCardNumber: false,
         });
-        this.hiddenToken.addCard(gamedatas.fireToken);
+        if (gamedatas.fireToken) {
+            this.hiddenToken.addCard(gamedatas.fireToken);
+        }
         this.fireCounter = new ebg.counter();
         this.fireCounter.create("center-token-counter");
         this.fireCounter.setValue(gamedatas.fireTokenCount);
@@ -1541,6 +1545,9 @@ var Elawa = /** @class */ (function () {
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
         });
+        if (gamedatas.lastTurn) {
+            this.notif_lastTurn(false);
+        }
         this.setupNotifications();
         this.setupPreferences();
         log("Ending game setup");
@@ -1799,6 +1806,7 @@ var Elawa = /** @class */ (function () {
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
+            ['lastTurn', 1],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -1849,6 +1857,13 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.notif_updateScore = function (notif) {
         this.setScore(notif.args.playerId, notif.args.playerScore);
+    };
+    /**
+     * Show last turn banner.
+     */
+    Elawa.prototype.notif_lastTurn = function (animate) {
+        if (animate === void 0) { animate = true; }
+        dojo.place("<div id=\"last-round\">\n            <span class=\"last-round-text ".concat(animate ? 'animate' : '', "\">").concat(_("This is the final round!"), "</span>\n        </div>"), 'page-title');
     };
     /*private getColorName(color: number) {
         switch (color) {
