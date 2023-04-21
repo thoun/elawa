@@ -32,4 +32,8 @@ class TableCenter {
             this.spots[pile].setNewToken(newToken, newCount);
         }
     }
+    
+    public setCardsSelectable(selectable: boolean) {
+        this.spots.forEach(spot => spot.setCardSelectable(selectable));
+    }
 }

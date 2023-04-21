@@ -57,38 +57,6 @@ class CenterSpot {
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create(`center-spot-${pile}-token-counter`);
         this.tokenCounter.setValue(tokenCount);
-
-        /*dojo.toggleClass(`center-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
-        let tooltip = `
-        <h3>${_('Ferry')}</h3>
-        <div>${_('Animals are loaded into Ferries.')}</div>
-        <h4>${_('Gender')}</h4>
-        <div class="noah-tooltip-with-list">${_(`In a given ferry, there must be:
-<ul>
-    <li>EITHER animals from a single gender</li>
-    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>
-</ul>
-As such, it’s always the second card played on an ferry which defines the sequence to be played!`)}</div>
-
-        <h4>${_('Weight')}</h4>
-        <div>${_('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).')}</div>`;
-        if (ferry?.roomates) {
-            tooltip += `<h4>${_('Roomates')}</h4>
-            <div>${_('in the Ark, it is impossible to place twice the same animal, whether male or female.')}</div>`;
-        }
-        game.setTooltip(`center-spot-${position}-ferry-card`, tooltip);
-
-        if (token) {
-            setTimeout(() => document.getElementById(`center-spot-${position}`).style.transform = this.getFerryTransform());
-        }
-
-        if (ferry) {
-            ferry.animals?.forEach(animal => this.addAnimal(animal));
-        } else {
-            this.empty = true;            
-            dojo.addClass(`center-spot-${this.position}-ferry-card`, 'empty');
-        }
-        this.updateCounter();*/
     }
 
     private getSpotAngle() {
@@ -110,5 +78,9 @@ As such, it’s always the second card played on an ferry which defines the sequ
         }
         this.visibleToken.setCardNumber(newCount);
         this.tokenCounter.toValue(newCount);
+    }
+    
+    public setCardSelectable(selectable: boolean): void {
+        this.visibleCard.setSelectionMode(selectable && this.cardCounter.getValue() > 0 ? 'single' : 'none');
     }
 }

@@ -64,38 +64,28 @@ interface ElawaGame extends Game {
     onTokenSelectionChange(selection: Token[]): void;
 }
 
-interface EnteringChooseMarketCardArgs {
-    canPlaceOnLine: Card[];
-    canAddToLine: boolean;
-    canAddToHand: boolean;
-    mustClose: boolean;
-    canClose: boolean;
+interface EnteringTakeCardArgs {
+    playerId: number;
 }
 
 interface EnteringPlayCardArgs {
-    canPlaceOnLine: Card[];
-    canClose: boolean;
-    onlyClose: boolean;
+    playableCards: Card[];
 }
 
-interface EnteringPlayHandCardArgs {
-    canPlaceOnLine: Card[];
-}
-
-interface NotifTakeArgs {
+interface NotifTakeElementArgs {
     playerId: number;
     pile: number;
     newCount: number;
 } 
 
 // takeCard
-interface NotifTakeCardArgs extends NotifTakeArgs {
+interface NotifTakeCardArgs extends NotifTakeElementArgs {
     card: Card;
     newCard: Card | null;
 } 
 
 // takeToken
-interface NotifTakeTokenArgs extends NotifTakeArgs {
+interface NotifTakeTokenArgs extends NotifTakeElementArgs {
     token: Token;
     newToken: Token | null;
 } 

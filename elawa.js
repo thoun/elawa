@@ -1350,37 +1350,6 @@ var CenterSpot = /** @class */ (function () {
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create("center-spot-".concat(pile, "-token-counter"));
         this.tokenCounter.setValue(tokenCount);
-        /*dojo.toggleClass(`center-spot-${position}-ferry-card`, 'roomates', ferry?.roomates);
-        let tooltip = `
-        <h3>${_('Ferry')}</h3>
-        <div>${_('Animals are loaded into Ferries.')}</div>
-        <h4>${_('Gender')}</h4>
-        <div class="noah-tooltip-with-list">${_(`In a given ferry, there must be:
-<ul>
-    <li>EITHER animals from a single gender</li>
-    <li>OR a perfect alternating order Male/Female (or Female/Male)</li>
-</ul>
-As such, it’s always the second card played on an ferry which defines the sequence to be played!`)}</div>
-
-        <h4>${_('Weight')}</h4>
-        <div>${_('In a given ferry, the total weight cannot exceed 21 (otherwise, the ferry capsizes).')}</div>`;
-        if (ferry?.roomates) {
-            tooltip += `<h4>${_('Roomates')}</h4>
-            <div>${_('in the Ark, it is impossible to place twice the same animal, whether male or female.')}</div>`;
-        }
-        game.setTooltip(`center-spot-${position}-ferry-card`, tooltip);
-
-        if (token) {
-            setTimeout(() => document.getElementById(`center-spot-${position}`).style.transform = this.getFerryTransform());
-        }
-
-        if (ferry) {
-            ferry.animals?.forEach(animal => this.addAnimal(animal));
-        } else {
-            this.empty = true;
-            dojo.addClass(`center-spot-${this.position}-ferry-card`, 'empty');
-        }
-        this.updateCounter();*/
     }
     CenterSpot.prototype.getSpotAngle = function () {
         var angle = 60 * this.pile + 90;
@@ -1399,6 +1368,9 @@ As such, it’s always the second card played on an ferry which defines the sequ
         }
         this.visibleToken.setCardNumber(newCount);
         this.tokenCounter.toValue(newCount);
+    };
+    CenterSpot.prototype.setCardSelectable = function (selectable) {
+        this.visibleCard.setSelectionMode(selectable && this.cardCounter.getValue() > 0 ? 'single' : 'none');
     };
     return CenterSpot;
 }());
@@ -1430,6 +1402,9 @@ var TableCenter = /** @class */ (function () {
         else {
             this.spots[pile].setNewToken(newToken, newCount);
         }
+    };
+    TableCenter.prototype.setCardsSelectable = function (selectable) {
+        this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
     };
     return TableCenter;
 }());
@@ -1470,6 +1445,7 @@ var PlayerTable = /** @class */ (function () {
         this.played.addCards(player.played);
         this.tokensFree = new LineStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-free")), {
             center: false,
+            sort: function (a, b) { return a.type - b.type; },
         });
         this.tokensFree.onSelectionChange = function (selection, lastChange) { return _this.game.onTokenSelectionChange(selection); };
         this.tokensChief = new SlotStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-chief")), {
@@ -1486,6 +1462,17 @@ var PlayerTable = /** @class */ (function () {
     }
     PlayerTable.prototype.freeResources = function () {
         this.tokensFree.addCards(this.tokensChief.getCards());
+    };
+    PlayerTable.prototype.setCardsSelectable = function (selectable, selectableCards) {
+        var _this = this;
+        if (selectableCards === void 0) { selectableCards = null; }
+        this.hand.setSelectionMode(selectable ? 'single' : 'none');
+        this.hand.getCards().forEach(function (card) {
+            var element = _this.hand.getCardElement(card);
+            var disabled = selectable && selectableCards != null && !selectableCards.some(function (s) { return s.id == card.id; });
+            element.classList.toggle('disabled', disabled);
+            element.classList.toggle('selectable', selectable && !disabled);
+        });
     };
     PlayerTable.prototype.setFreeTokensSelectable = function (selectable) {
         this.tokensFree.setSelectionMode(selectable ? 'multiple' : 'none');
@@ -1546,7 +1533,10 @@ var Elawa = /** @class */ (function () {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'takeCard':
-                this.getPlayerTable(args.args.playerId).freeResources();
+                this.onEnteringTakeCard(args.args);
+                break;
+            case 'playCard':
+                this.onEnteringPlayCard(args.args);
                 break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
@@ -1555,16 +1545,41 @@ var Elawa = /** @class */ (function () {
                 break;
         }
     };
+    Elawa.prototype.onEnteringTakeCard = function (args) {
+        this.getPlayerTable(args.playerId).freeResources();
+        if (this.isCurrentPlayerActive()) {
+            this.tableCenter.setCardsSelectable(true);
+        }
+    };
+    Elawa.prototype.onEnteringPlayCard = function (args) {
+        var _a;
+        if (this.isCurrentPlayerActive()) {
+            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(true, args.playableCards);
+        }
+    };
     Elawa.prototype.onLeavingState = function (stateName) {
         var _a;
         log('Leaving state: ' + stateName);
         switch (stateName) {
+            case 'takeCard':
+                this.onLeavingTakeCard();
+                break;
+            case 'playCard':
+                this.onLeavingPlayCard();
+                break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
                     (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setFreeTokensSelectable(false);
                 }
                 break;
         }
+    };
+    Elawa.prototype.onLeavingTakeCard = function () {
+        this.tableCenter.setCardsSelectable(false);
+    };
+    Elawa.prototype.onLeavingPlayCard = function () {
+        var _a;
+        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(false);
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).

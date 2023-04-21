@@ -82,7 +82,10 @@ class Elawa implements ElawaGame {
 
         switch (stateName) {
             case 'takeCard':
-                this.getPlayerTable(args.args.playerId).freeResources();
+                this.onEnteringTakeCard(args.args);
+                break;
+            case 'playCard':
+                this.onEnteringPlayCard(args.args);
                 break;
             case 'discardTokens':
                     if ((this as any).isCurrentPlayerActive()) {
@@ -92,16 +95,43 @@ class Elawa implements ElawaGame {
         }
     }
 
+    private onEnteringTakeCard(args: EnteringTakeCardArgs) {
+        this.getPlayerTable(args.playerId).freeResources();
+        if ((this as any).isCurrentPlayerActive()) {
+            this.tableCenter.setCardsSelectable(true);
+        }
+    }
+
+    private onEnteringPlayCard(args: EnteringPlayCardArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.getCurrentPlayerTable()?.setCardsSelectable(true, args.playableCards);
+        }
+    }
+
     public onLeavingState(stateName: string) {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
+            case 'takeCard':
+                this.onLeavingTakeCard();
+                break;
+            case 'playCard':
+                this.onLeavingPlayCard();
+                break;
            case 'discardTokens':
                 if ((this as any).isCurrentPlayerActive()) {
                     this.getCurrentPlayerTable()?.setFreeTokensSelectable(false);
                 }
                 break;
         }
+    }
+
+    private onLeavingTakeCard() {
+        this.tableCenter.setCardsSelectable(false);
+    }
+
+    private onLeavingPlayCard() {
+        this.getCurrentPlayerTable()?.setCardsSelectable(false);
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the

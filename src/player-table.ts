@@ -69,6 +69,7 @@ class PlayerTable {
         
         this.tokensFree = new LineStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens-free`), {
             center: false,
+            sort: (a: Token, b: Token) => a.type - b.type,
         });
         this.tokensFree.onSelectionChange = (selection: Token[], lastChange: Token) => this.game.onTokenSelectionChange(selection);
         this.tokensChief = new SlotStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens-chief`), {
@@ -85,6 +86,16 @@ class PlayerTable {
 
     public freeResources() {
         this.tokensFree.addCards(this.tokensChief.getCards());
+    }
+    
+    public setCardsSelectable(selectable: boolean, selectableCards: Card[] | null = null) {
+        this.hand.setSelectionMode(selectable ? 'single' : 'none');
+        this.hand.getCards().forEach(card => {
+            const element = this.hand.getCardElement(card);
+            const disabled = selectable && selectableCards != null && !selectableCards.some(s => s.id == card.id);
+            element.classList.toggle('disabled', disabled);
+            element.classList.toggle('selectable', selectable && !disabled);
+        });
     }
 
     public setFreeTokensSelectable(selectable: boolean) {

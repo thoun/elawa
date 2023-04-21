@@ -32,7 +32,7 @@
         }
     }    
 
-    /*&.selectable:not(.disabled) {
+    &.selectable:not(.disabled) {
         cursor: pointer;
         &:not(.selected) {
             animation: selectable-card-animation 1s alternate infinite ease-in-out;
@@ -44,12 +44,12 @@
     }    
 
     &.selected:not(.disabled) {
-        box-shadow: 0 0 5px 8px #e273f5;
+        box-shadow: 0 0 5px 5px orange;
 
         .card-side {
             box-shadow: unset;
         }
-    } */
+    }
 
     @for $color from 1 through 5 {
         @for $number from 1 through 12 {
@@ -74,13 +74,11 @@
     }
 }
 
-/*@keyframes selectable-card-animation {
-    0% { 
-      //background: var(--background-lighter);
-      box-shadow: 0 0 3px 2px #FFFFFF;
+@keyframes selectable-card-animation {
+    0% {
+      box-shadow: 0 0 3px 2px orange;
     }
     100% { 
-      //background: var(--background-darker);
-      box-shadow: 0 0 5px 3px #FFFFFF;
+      box-shadow: 0 0 5px 3px orange;
     }
-}*/
+}
