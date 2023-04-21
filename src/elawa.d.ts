@@ -9,6 +9,7 @@ interface Card {
     points: number;
     color: number;
     number: number;
+    tokens: number;
 }
 
 interface Token {

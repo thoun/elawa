@@ -363,6 +363,7 @@ class Elawa implements ElawaGame {
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
             ['discardTokens', 1],
+            ['refillTokens', 1],
             ['updateScore', 1],
         ];
     
@@ -383,6 +384,10 @@ class Elawa implements ElawaGame {
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: notif.args.pile == -1 ? document.getElementById(`center-stock`) : undefined,
         });
+        this.notif_refillTokens(notif);
+    }
+
+    notif_refillTokens(notif: Notif<NotifTakeTokenArgs>) {
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     }
 
@@ -430,11 +435,11 @@ class Elawa implements ElawaGame {
                     args.type = `<div class="token-icon" data-type="${args.type}"></div>`;
                 }
 
-                /*for (const property in args) {
-                    if (['column', 'incScoreColumn', 'incScoreCard', 'roundNumber', 'totalScore', 'roundScore'].includes(property) && args[property][0] != '<') {
+                for (const property in args) {
+                    if (['left'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }
-                }*/
+                }
                 
             }
         } catch (e) {

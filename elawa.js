@@ -1319,7 +1319,7 @@ var ChiefsManager = /** @class */ (function (_super) {
 var CARD_OVERLAP = 40;
 var FIRST_ANIMAL_SHIFT = 28;
 var CenterSpot = /** @class */ (function () {
-    function CenterSpot(game, pile, card, cardCount, token, tokenCount) {
+    function CenterSpot(game, tableCenter, pile, card, cardCount, token, tokenCount) {
         var _this = this;
         this.game = game;
         this.pile = pile;
@@ -1337,6 +1337,12 @@ var CenterSpot = /** @class */ (function () {
             this.visibleCard.addCard(card);
         }
         cardDeck.addEventListener('click', function () { return _this.game.onCenterCardClick(pile); });
+        cardDeck.addEventListener('mouseenter', function () {
+            var _a;
+            var card = _this.visibleCard.getCards()[0];
+            tableCenter.showLinkedTokens(pile, (_a = card === null || card === void 0 ? void 0 : card.tokens) !== null && _a !== void 0 ? _a : 0);
+        });
+        cardDeck.addEventListener('mouseleave', function () { return tableCenter.showLinkedTokens(pile, 0); });
         this.cardCounter = new ebg.counter();
         this.cardCounter.create("center-spot-".concat(pile, "-card-counter"));
         this.cardCounter.setValue(cardCount);
@@ -1372,6 +1378,13 @@ var CenterSpot = /** @class */ (function () {
     CenterSpot.prototype.setCardSelectable = function (selectable) {
         this.visibleCard.setSelectionMode(selectable && this.cardCounter.getValue() > 0 ? 'single' : 'none');
     };
+    CenterSpot.prototype.showLinked = function (linked) {
+        var _a;
+        var card = this.visibleToken.getCards()[0];
+        if (card) {
+            (_a = this.visibleToken.getCardElement(card)) === null || _a === void 0 ? void 0 : _a.classList.toggle('selected', linked);
+        }
+    };
     return CenterSpot;
 }());
 var TableCenter = /** @class */ (function () {
@@ -1379,7 +1392,7 @@ var TableCenter = /** @class */ (function () {
         this.game = game;
         this.spots = [];
         for (var i = 0; i < 6; i++) {
-            this.spots.push(new CenterSpot(game, i, gamedatas.centerCards[i], gamedatas.centerCardsCount[i], gamedatas.centerTokens[i], gamedatas.centerTokensCount[i]));
+            this.spots.push(new CenterSpot(game, this, i, gamedatas.centerCards[i], gamedatas.centerCardsCount[i], gamedatas.centerTokens[i], gamedatas.centerTokensCount[i]));
         }
         this.hiddenToken = new HiddenDeck(game.tokensManager, document.getElementById("center-stock"), {
             width: 68,
@@ -1405,6 +1418,13 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.setCardsSelectable = function (selectable) {
         this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
+    };
+    TableCenter.prototype.showLinkedTokens = function (pile, count) {
+        var linked = [];
+        for (var i = 1; i <= count; i++) {
+            linked.push((pile + i) % 6);
+        }
+        this.spots.forEach(function (spot) { return spot.showLinked(linked.includes(spot.pile)); });
     };
     return TableCenter;
 }());
@@ -1767,6 +1787,7 @@ var Elawa = /** @class */ (function () {
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
             ['discardTokens', 1],
+            ['refillTokens', 1],
             ['updateScore', 1],
         ];
         notifs.forEach(function (notif) {
@@ -1784,6 +1805,9 @@ var Elawa = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: notif.args.pile == -1 ? document.getElementById("center-stock") : undefined,
         });
+        this.notif_refillTokens(notif);
+    };
+    Elawa.prototype.notif_refillTokens = function (notif) {
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     };
     Elawa.prototype.notif_playCard = function (notif) {
@@ -1823,11 +1847,11 @@ var Elawa = /** @class */ (function () {
                 if (typeof args.type !== 'string' || args.type[0] !== '<') {
                     args.type = "<div class=\"token-icon\" data-type=\"".concat(args.type, "\"></div>");
                 }
-                /*for (const property in args) {
-                    if (['column', 'incScoreColumn', 'incScoreCard', 'roundNumber', 'totalScore', 'roundScore'].includes(property) && args[property][0] != '<') {
-                        args[property] = `<strong>${_(args[property])}</strong>`;
+                for (var property in args) {
+                    if (['left'].includes(property) && args[property][0] != '<') {
+                        args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
-                }*/
+                }
             }
         }
         catch (e) {

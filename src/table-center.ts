@@ -5,7 +5,7 @@ class TableCenter {
         
     constructor(private game: ElawaGame, gamedatas: ElawaGamedatas) {
         for (let i=0;i<6;i++) {
-            this.spots.push(new CenterSpot(game, i, gamedatas.centerCards[i], gamedatas.centerCardsCount[i], gamedatas.centerTokens[i], gamedatas.centerTokensCount[i]));
+            this.spots.push(new CenterSpot(game, this, i, gamedatas.centerCards[i], gamedatas.centerCardsCount[i], gamedatas.centerTokens[i], gamedatas.centerTokensCount[i]));
         }
 
         this.hiddenToken = new HiddenDeck<Token>(game.tokensManager, document.getElementById(`center-stock`), {
@@ -35,5 +35,14 @@ class TableCenter {
     
     public setCardsSelectable(selectable: boolean) {
         this.spots.forEach(spot => spot.setCardSelectable(selectable));
+    }
+    
+    public showLinkedTokens(pile: number, count: number) {
+        const linked = [];
+        for (let i=1;i<=count;i++) {
+            linked.push((pile + i) % 6);
+        }
+
+        this.spots.forEach(spot => spot.showLinked(linked.includes(spot.pile)));
     }
 }

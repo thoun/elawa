@@ -16,10 +16,11 @@ trait ActionTrait {
             $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('center', 'player', $playerId));
             $newCount = intval($this->tokens->countCardInLocation('center'));
 
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty)'), [
+            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty). There is ${left} resources remaining on the fire !'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'emptyPile' => $pile, // for logs
+                'left' => $newCount, // for logs
                 'token' => $token,
                 'pile' => -1,
                 'newToken' => Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center'))),
@@ -36,7 +37,12 @@ trait ActionTrait {
         $this->tokens->pickCardsForLocation(5, 'deck', 'pile'.$pile);
         $this->tokens->shuffle('pile'.$pile); // to give them a locationArg asc
 
-        // TODO notif refill
+        self::notifyAllPlayers('refillTokens', clienttranslate('Pile ${emptyPile} is refilled'), [
+            'emptyPile' => $pile, // for logs
+            'pile' => $pile,
+            'newToken' => $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$pile)),
+            'newCount' => $newCount,
+        ]);
         
         return $token;
     }

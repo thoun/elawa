@@ -11,6 +11,7 @@ class CenterSpot {
 
     constructor(
         private game: ElawaGame,
+        tableCenter: TableCenter,
         public pile: number,
         card: Card,
         cardCount: number,
@@ -41,6 +42,11 @@ class CenterSpot {
             this.visibleCard.addCard(card);
         }
         cardDeck.addEventListener('click', () => this.game.onCenterCardClick(pile));
+        cardDeck.addEventListener('mouseenter', () => {
+            const card = this.visibleCard.getCards()[0];
+            tableCenter.showLinkedTokens(pile, card?.tokens ?? 0)
+        });
+        cardDeck.addEventListener('mouseleave', () => tableCenter.showLinkedTokens(pile, 0));
         
         this.cardCounter = new ebg.counter();
         this.cardCounter.create(`center-spot-${pile}-card-counter`);
@@ -82,5 +88,12 @@ class CenterSpot {
     
     public setCardSelectable(selectable: boolean): void {
         this.visibleCard.setSelectionMode(selectable && this.cardCounter.getValue() > 0 ? 'single' : 'none');
+    }
+    
+    public showLinked(linked: boolean): void {
+        const card = this.visibleToken.getCards()[0];
+        if (card) {
+            this.visibleToken.getCardElement(card)?.classList.toggle('selected', linked);
+        }
     }
 }
