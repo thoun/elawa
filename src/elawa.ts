@@ -82,6 +82,7 @@ class Elawa implements ElawaGame {
 
         switch (stateName) {
             case 'takeCard':
+            case 'takeCardPower':
                 this.onEnteringTakeCard(args.args);
                 break;
             case 'playCard':
@@ -113,6 +114,7 @@ class Elawa implements ElawaGame {
 
         switch (stateName) {
             case 'takeCard':
+            case 'takeCardPower':
                 this.onLeavingTakeCard();
                 break;
             case 'playCard':
@@ -146,6 +148,9 @@ class Elawa implements ElawaGame {
                     break;
                 case 'discardCard':
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
+                    break;
+                case 'storeToken':
+                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass()); // TODO
                     break;
                 case 'discardTokens':
                     (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
@@ -189,6 +194,10 @@ class Elawa implements ElawaGame {
 
     public getChieftainOption(): number {
         return this.gamedatas.chieftainOption;
+    }
+
+    public getGameStateName(): string {
+        return this.gamedatas.gamestate.name;
     }
 
     private setupPreferences() {
@@ -392,7 +401,9 @@ class Elawa implements ElawaGame {
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: fromCenter ? document.getElementById(`center-stock`) : undefined,
         });
-        this.notif_refillTokens(notif);
+        if (notif.args.pile != -2) {
+            this.notif_refillTokens(notif);
+        }
     }
 
     notif_refillTokens(notif: Notif<NotifTakeTokenArgs>) {

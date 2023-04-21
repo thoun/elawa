@@ -58,6 +58,7 @@ interface ElawaGame extends Game {
     getPlayerId(): number;
     getPlayer(playerId: number): ElawaPlayer;
     getChieftainOption(): number;
+    getGameStateName(): string;
 
     setTooltip(id: string, html: string): void;
     onCenterCardClick(pile: number): void;

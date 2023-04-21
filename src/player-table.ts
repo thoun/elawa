@@ -73,7 +73,7 @@ class PlayerTable {
         });
         this.tokensFree.onSelectionChange = (selection: Token[], lastChange: Token) => this.game.onTokenSelectionChange(selection);
         this.tokensChief = new SlotStock<Token>(this.game.tokensManager, document.getElementById(`player-table-${this.playerId}-tokens-chief`), {
-            gap: '4px',
+            gap: `${this.game.getChieftainOption() == 2 ? 15 : 4}px`,
             direction: 'column',
             slotsIds: this.game.getChieftainOption() == 2 ? [0, 1, 2] : [0, 1, 2, 3],
         });

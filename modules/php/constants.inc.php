@@ -41,6 +41,7 @@ define('ST_PLAYER_TAKE_CARD', 10);
 
 define('ST_PLAYER_PLAY_CARD', 20);
 define('ST_PLAYER_DISCARD_CARD', 21);
+define('ST_PLAYER_TAKE_CARD_POWER', 25);
 
 define('ST_PLAYER_STORE_TOKEN', 60);
 

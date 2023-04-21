@@ -99,6 +99,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "stay" => ST_PLAYER_PLAY_CARD,
+            "takeCardPower" => ST_PLAYER_TAKE_CARD_POWER,
             "discard" => ST_PLAYER_DISCARD_CARD,
             "next" => ST_PLAYER_STORE_TOKEN,
         ],
@@ -116,8 +117,23 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "stay" => ST_PLAYER_PLAY_CARD,
+            "takeCardPower" => ST_PLAYER_TAKE_CARD_POWER,
             "next" => ST_PLAYER_PLAY_CARD,
         ],
+    ],
+
+    ST_PLAYER_TAKE_CARD_POWER => [
+        "name" => "takeCardPower",
+        "description" => clienttranslate('${actplayer} must take a tribe card on the table (played card power)'),
+        "descriptionmyturn" => clienttranslate('${you} must take a tribe card on the table (played card power)'),
+        "type" => "activeplayer",
+        "args" => "argTakeCard",
+        "possibleactions" => [ 
+            "takeCard",
+        ],
+        "transitions" => [
+            "next" => ST_PLAYER_PLAY_CARD,
+        ]
     ],
 
     ST_PLAYER_STORE_TOKEN => [

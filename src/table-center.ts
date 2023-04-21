@@ -39,8 +39,10 @@ class TableCenter {
     
     public showLinkedTokens(pile: number, count: number) {
         const linked = [];
-        for (let i=1;i<=count;i++) {
-            linked.push((pile + i) % 6);
+        if (this.game.getGameStateName() == 'takeCard') {
+            for (let i=1;i<=count;i++) {
+                linked.push((pile + i) % 6);
+            }
         }
 
         this.spots.forEach(spot => spot.showLinked(linked.includes(spot.pile)));

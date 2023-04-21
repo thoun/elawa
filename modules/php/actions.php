@@ -57,8 +57,13 @@ trait ActionTrait {
         }
 
         $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
+        $fromPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_POWER;
 
-        self::notifyAllPlayers('takeCard', clienttranslate('${player_name} takes a card associated with ${number} tokens'), [
+        $message = $fromPower ?
+            clienttranslate('${player_name} takes a card with played card power') :
+            clienttranslate('${player_name} takes a card associated with ${number} tokens');
+
+        self::notifyAllPlayers('takeCard', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => $card->tokens, // for logs
@@ -68,22 +73,24 @@ trait ActionTrait {
             'newCount' => intval($this->cards->countCardInLocation('pile'.$pile)),
         ]);
 
-        for ($i = 1; $i <= $card->tokens; $i++) {
-            $tokenPile = ($pile + $i) % 6;
-            $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('pile'.$tokenPile, 'player', $playerId));
+        if (!$fromPower) {
+            for ($i = 1; $i <= $card->tokens; $i++) {
+                $tokenPile = ($pile + $i) % 6;
+                $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('pile'.$tokenPile, 'player', $playerId));
 
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
-                'playerId' => $playerId,
-                'player_name' => $this->getPlayerName($playerId),
-                'token' => $token,
-                'pile' => $tokenPile,
-                'newToken' => $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$tokenPile)),
-                'newCount' => intval($this->tokens->countCardInLocation('pile'.$tokenPile)),
-                'type' => $token->type,
-            ]);
+                self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'token' => $token,
+                    'pile' => $tokenPile,
+                    'newToken' => $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$tokenPile)),
+                    'newCount' => intval($this->tokens->countCardInLocation('pile'.$tokenPile)),
+                    'type' => $token->type,
+                ]);
 
-            if (intval($this->tokens->countCardInLocation('pile'.$tokenPile)) == 0) {
-                $this->refillTokenPile($tokenPile, $playerId);
+                if (intval($this->tokens->countCardInLocation('pile'.$tokenPile)) == 0) {
+                    $this->refillTokenPile($tokenPile, $playerId);
+                }
             }
         }
 
@@ -107,7 +114,21 @@ trait ActionTrait {
 
         $this->updateScore($playerId);
 
-        $this->gamestate->nextState('stay');
+        if ($card->power == POWER_RESSOURCE) {
+            $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('deck', 'player', $playerId));
+
+            if ($token !== null) {
+                self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
+                    'playerId' => $playerId,
+                    'player_name' => $this->getPlayerName($playerId),
+                    'token' => $token,
+                    'pile' => -2,
+                    'type' => $token->type,
+                ]);
+            }
+        }
+
+        $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'stay');
     }
 
     public function playCard(int $id) {

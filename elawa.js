@@ -1421,8 +1421,10 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.showLinkedTokens = function (pile, count) {
         var linked = [];
-        for (var i = 1; i <= count; i++) {
-            linked.push((pile + i) % 6);
+        if (this.game.getGameStateName() == 'takeCard') {
+            for (var i = 1; i <= count; i++) {
+                linked.push((pile + i) % 6);
+            }
         }
         this.spots.forEach(function (spot) { return spot.showLinked(linked.includes(spot.pile)); });
     };
@@ -1469,7 +1471,7 @@ var PlayerTable = /** @class */ (function () {
         });
         this.tokensFree.onSelectionChange = function (selection, lastChange) { return _this.game.onTokenSelectionChange(selection); };
         this.tokensChief = new SlotStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-chief")), {
-            gap: '4px',
+            gap: "".concat(this.game.getChieftainOption() == 2 ? 15 : 4, "px"),
             direction: 'column',
             slotsIds: this.game.getChieftainOption() == 2 ? [0, 1, 2] : [0, 1, 2, 3],
         });
@@ -1553,6 +1555,7 @@ var Elawa = /** @class */ (function () {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'takeCard':
+            case 'takeCardPower':
                 this.onEnteringTakeCard(args.args);
                 break;
             case 'playCard':
@@ -1582,6 +1585,7 @@ var Elawa = /** @class */ (function () {
         log('Leaving state: ' + stateName);
         switch (stateName) {
             case 'takeCard':
+            case 'takeCardPower':
                 this.onLeavingTakeCard();
                 break;
             case 'playCard':
@@ -1613,6 +1617,9 @@ var Elawa = /** @class */ (function () {
                     break;
                 case 'discardCard':
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); });
+                    break;
+                case 'storeToken':
+                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); }); // TODO
                     break;
                 case 'discardTokens':
                     this.addActionButton("keepSelectedTokens_button", _("Keep selected resources"), function () { return _this.keepSelectedTokens(); });
@@ -1647,6 +1654,9 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.getChieftainOption = function () {
         return this.gamedatas.chieftainOption;
+    };
+    Elawa.prototype.getGameStateName = function () {
+        return this.gamedatas.gamestate.name;
     };
     Elawa.prototype.setupPreferences = function () {
         var _this = this;
@@ -1813,7 +1823,9 @@ var Elawa = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
             fromElement: fromCenter ? document.getElementById("center-stock") : undefined,
         });
-        this.notif_refillTokens(notif);
+        if (notif.args.pile != -2) {
+            this.notif_refillTokens(notif);
+        }
     };
     Elawa.prototype.notif_refillTokens = function (notif) {
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
