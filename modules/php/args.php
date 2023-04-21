@@ -48,4 +48,12 @@ trait ArgsTrait {
             // TODO
         ];
     }
+
+    function argDiscardTokens() {
+        $number = $this->getMaxKeepResources();
+
+        return [
+            'number' => $number,
+        ];
+    }
 } 

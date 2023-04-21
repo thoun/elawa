@@ -30,6 +30,18 @@ trait StateTrait {
         }
     }
 
+    function stDiscardTokens() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $args = $this->argDiscardTokens();
+        $max = $args['number'];
+        $tokens = intval($this->tokens->countCardInLocation('player', $playerId));
+
+        if ($tokens <= $max) {
+            $this->gamestate->nextState('next');
+        }
+    }
+
     function stNextPlayer() {     
         $playerId = $this->getActivePlayerId();
 

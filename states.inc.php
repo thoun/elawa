@@ -131,20 +131,19 @@ $playerActionsGameStates = [
             "pass",
         ],
         "transitions" => [
-            "next" => ST_NEXT_PLAYER,
+            "next" => ST_PLAYER_DISCARD_TOKENS,
         ],
     ],
 
     ST_PLAYER_DISCARD_TOKENS => [
         "name" => "discardTokens",
-        "description" => clienttranslate('${actplayer} must discard ${number} resource(s)'),
-        "descriptionmyturn" => clienttranslate('${you} must discard ${number} resource(s)'),
+        "description" => clienttranslate('${actplayer} must select ${number} resources to keep'),
+        "descriptionmyturn" => clienttranslate('${you} must select ${number} resources to keep'),
         "type" => "activeplayer",    
         "args" => "argDiscardTokens",
         "action" => "stDiscardTokens",
         "possibleactions" => [ 
-            "discardTokens",
-            "pass",
+            "keepSelectedTokens",
         ],
         "transitions" => [
             "next" => ST_NEXT_PLAYER,

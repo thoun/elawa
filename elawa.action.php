@@ -81,6 +81,16 @@
 
         self::ajaxResponse();
     }
+
+    public function keepSelectedTokens() {
+        self::setAjaxMode();     
+
+        /*$idsStr = self::getArg( "ids", AT_numberlist, true );
+        $ids = array_map(fn($str) => intval($str), explode(',', $idsStr));*/
+        $this->game->keepSelectedTokens(/*$ids*/[]);
+
+        self::ajaxResponse();
+    }
   }
   
 

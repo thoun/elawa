@@ -113,6 +113,13 @@ interface NotifDiscardCardArgs {
     card: Card;
 } 
 
+// discardTokens
+interface NotifDiscardTokensArgs {
+    playerId: number;
+    keptTokens: Token[];    
+    discardedTokens: Token[];
+}
+
 // updateScore
 interface NotifUpdateScoreArgs {
     playerId: number;

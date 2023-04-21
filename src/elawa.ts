@@ -110,6 +110,11 @@ class Elawa implements ElawaGame {
                 case 'discardCard':
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
                     break;
+                case 'discardTokens':
+                    (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
+                    // TODO disabled if select count doesn't match
+                    break;
+                    
             }
         }
     }
@@ -272,6 +277,14 @@ class Elawa implements ElawaGame {
 
         this.takeAction('cancel');
     }
+  	
+    public keepSelectedTokens() {
+        if(!(this as any).checkAction('keepSelectedTokens')) {
+            return;
+        }
+
+        this.takeAction('keepSelectedTokens');
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -299,6 +312,7 @@ class Elawa implements ElawaGame {
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
+            ['discardTokens', 1],
             ['updateScore', 1],
         ];
     
@@ -332,8 +346,13 @@ class Elawa implements ElawaGame {
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     }
 
-    notif_discardCard(notif: Notif<NotifPlayCardArgs>) {
+    notif_discardCard(notif: Notif<NotifDiscardCardArgs>) {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
+    }
+
+    notif_discardTokens(notif: Notif<NotifDiscardTokensArgs>) {
+        const playerTable = this.getPlayerTable(notif.args.playerId);
+        notif.args.discardedTokens.forEach(token => playerTable.tokens.removeCard(token));
     }
 
     notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {

@@ -158,4 +158,31 @@ trait ActionTrait {
 
         $this->gamestate->nextState('next');
     }
+
+    public function keepSelectedTokens(array $ids) {
+        self::checkAction('keepSelectedTokens');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        $args = $this->argDiscardTokens();
+        if (count($ids) != $args['number']) {
+            throw new BgaUserException("Invalid selected resource count");
+        }
+
+        $tokens = $this->getTokensByLocation('player', $playerId);
+        $keptTokens = array_values(array_filter($tokens, fn($token) => $this->array_some($ids, fn($id) => $token->id == $id)));
+        $discardedTokens = array_values(array_filter($tokens, fn($token) => !$this->array_some($ids, fn($id) => $token->id == $id)));
+
+        $this->tokens->moveCards(array_map(fn($token) => $token->id, $discardedTokens), 'discard');
+
+        self::notifyAllPlayers('discardTokens', clienttranslate('${player_name} discards ${number} resource(s)'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'number' => count($discardedTokens), // for logs
+            'keptTokens' => $keptTokens,
+            'discardedTokens' => $discardedTokens,
+        ]);
+
+        $this->gamestate->nextState('next');
+    }
 }
