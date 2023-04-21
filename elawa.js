@@ -1802,8 +1802,16 @@ var Elawa = /** @class */ (function () {
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
     };
     Elawa.prototype.notif_takeToken = function (notif) {
+        var fromCenter = notif.args.pile == -1;
+        if (fromCenter) {
+            this.tokensManager.flipCard(notif.args.token, {
+                updateData: true,
+                updateFront: true,
+                updateBack: false,
+            });
+        }
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
-            fromElement: notif.args.pile == -1 ? document.getElementById("center-stock") : undefined,
+            fromElement: fromCenter ? document.getElementById("center-stock") : undefined,
         });
         this.notif_refillTokens(notif);
     };

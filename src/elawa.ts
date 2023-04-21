@@ -381,8 +381,16 @@ class Elawa implements ElawaGame {
     }
 
     notif_takeToken(notif: Notif<NotifTakeTokenArgs>) {
+        const fromCenter = notif.args.pile == -1;
+        if (fromCenter) {
+            this.tokensManager.flipCard(notif.args.token, {
+                updateData: true,
+                updateFront: true,
+                updateBack: false,
+            });
+        }
         this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
-            fromElement: notif.args.pile == -1 ? document.getElementById(`center-stock`) : undefined,
+            fromElement: fromCenter ? document.getElementById(`center-stock`) : undefined,
         });
         this.notif_refillTokens(notif);
     }
