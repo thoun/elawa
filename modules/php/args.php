@@ -29,6 +29,19 @@ trait ArgsTrait {
             'playableCards' => $playableCards,
         ];
     }
+
+    function argDiscardCard() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $hand = $this->getCardsByLocation('hand', $playerId);
+        $selectedCard = $this->getCardFromDb($this->cards->getCard(intval($this->getGameStateValue(SELECTED_CARD))));
+        $playableCards = array_values(array_filter($hand, fn($card) => $card->id != $selectedCard->id));
+
+        return [
+            'selectedCard' => $selectedCard,
+            'playableCards' => $playableCards,
+        ];
+    }
    
     function argStoreToken() {
         return [

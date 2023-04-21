@@ -107,6 +107,9 @@ class Elawa implements ElawaGame {
                 case 'playCard':
                     (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
                     break;
+                case 'discardCard':
+                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
+                    break;
             }
         }
     }
@@ -217,7 +220,11 @@ class Elawa implements ElawaGame {
     }
 
     public onHandCardClick(card: Card): void {
-        this.playCard(card.id);
+        if (this.gamedatas.gamestate.name == 'discardCard') {
+            this.discardCard(card.id);
+        } else {
+            this.playCard(card.id);
+        }
     }
   	
     public takeCard(pile: number) {
@@ -247,6 +254,24 @@ class Elawa implements ElawaGame {
 
         this.takeAction('pass');
     }
+  	
+    public discardCard(id: number) {
+        if(!(this as any).checkAction('discardCard')) {
+            return;
+        }
+
+        this.takeAction('discardCard', {
+            id
+        });
+    }
+  	
+    public cancel() {
+        if(!(this as any).checkAction('cancel')) {
+            return;
+        }
+
+        this.takeAction('cancel');
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -273,6 +298,7 @@ class Elawa implements ElawaGame {
             ['takeCard', ANIMATION_MS],
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
+            ['discardCard', 1],
             ['updateScore', 1],
         ];
     
@@ -290,7 +316,9 @@ class Elawa implements ElawaGame {
     }
 
     notif_takeToken(notif: Notif<NotifTakeTokenArgs>) {
-        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token);
+        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token, {
+            fromElement: notif.args.pile == -1 ? document.getElementById(`center-stock`) : undefined,
+        });
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     }
 
@@ -304,10 +332,13 @@ class Elawa implements ElawaGame {
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
     }
 
+    notif_discardCard(notif: Notif<NotifPlayCardArgs>) {
+        this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
+    }
+
     notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {
         this.setScore(notif.args.playerId, notif.args.playerScore);
     }
-
 
     /*private getColorName(color: number) {
         switch (color) {

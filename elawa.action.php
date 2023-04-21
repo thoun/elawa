@@ -58,13 +58,29 @@
     }
 
     public function pass() {
-        self::setAjaxMode();     
+        self::setAjaxMode();
 
         $this->game->pass();
 
         self::ajaxResponse();
     }
 
+    public function discardCard() {
+        self::setAjaxMode();     
+
+        $id = self::getArg("id", AT_posint, true);
+        $this->game->discardCard($id);
+
+        self::ajaxResponse();
+    }
+
+    public function cancel() {
+        self::setAjaxMode();     
+
+        $this->game->cancel();
+
+        self::ajaxResponse();
+    }
   }
   
 

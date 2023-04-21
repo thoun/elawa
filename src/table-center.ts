@@ -26,6 +26,10 @@ class TableCenter {
     }
 
     public setNewToken(pile: number, newToken: Token, newCount: number) {
-        this.spots[pile].setNewToken(newToken, newCount);
+        if (pile == -1) {
+            this.fireCounter.toValue(newCount);
+        } else {
+            this.spots[pile].setNewToken(newToken, newCount);
+        }
     }
 }

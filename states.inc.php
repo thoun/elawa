@@ -99,7 +99,23 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "stay" => ST_PLAYER_PLAY_CARD,
+            "discard" => ST_PLAYER_DISCARD_CARD,
             "next" => ST_PLAYER_STORE_TOKEN,
+        ],
+    ],
+
+    ST_PLAYER_DISCARD_CARD => [
+        "name" => "discardCard",
+        "description" => clienttranslate('${actplayer} must discard a card to play selected card'),
+        "descriptionmyturn" => clienttranslate('${you} must discard a card from your hand to play selected card'),
+        "type" => "activeplayer",    
+        "args" => "argDiscardCard",
+        "possibleactions" => [ 
+            "discardCard",
+            "cancel",
+        ],
+        "transitions" => [
+            "next" => ST_PLAYER_PLAY_CARD,
         ],
     ],
 

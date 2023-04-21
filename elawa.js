@@ -1424,7 +1424,12 @@ var TableCenter = /** @class */ (function () {
         this.spots[pile].setNewCard(newCard, newCount);
     };
     TableCenter.prototype.setNewToken = function (pile, newToken, newCount) {
-        this.spots[pile].setNewToken(newToken, newCount);
+        if (pile == -1) {
+            this.fireCounter.toValue(newCount);
+        }
+        else {
+            this.spots[pile].setNewToken(newToken, newCount);
+        }
     };
     return TableCenter;
 }());
@@ -1543,6 +1548,9 @@ var Elawa = /** @class */ (function () {
                 case 'playCard':
                     this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
                     break;
+                case 'discardCard':
+                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); });
+                    break;
             }
         }
     };
@@ -1627,7 +1635,12 @@ var Elawa = /** @class */ (function () {
         this.takeCard(pile);
     };
     Elawa.prototype.onHandCardClick = function (card) {
-        this.playCard(card.id);
+        if (this.gamedatas.gamestate.name == 'discardCard') {
+            this.discardCard(card.id);
+        }
+        else {
+            this.playCard(card.id);
+        }
     };
     Elawa.prototype.takeCard = function (pile) {
         if (!this.checkAction('takeCard')) {
@@ -1650,6 +1663,20 @@ var Elawa = /** @class */ (function () {
             return;
         }
         this.takeAction('pass');
+    };
+    Elawa.prototype.discardCard = function (id) {
+        if (!this.checkAction('discardCard')) {
+            return;
+        }
+        this.takeAction('discardCard', {
+            id: id
+        });
+    };
+    Elawa.prototype.cancel = function () {
+        if (!this.checkAction('cancel')) {
+            return;
+        }
+        this.takeAction('cancel');
     };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -1674,6 +1701,7 @@ var Elawa = /** @class */ (function () {
             ['takeCard', ANIMATION_MS],
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
+            ['discardCard', 1],
             ['updateScore', 1],
         ];
         notifs.forEach(function (notif) {
@@ -1688,7 +1716,9 @@ var Elawa = /** @class */ (function () {
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
     };
     Elawa.prototype.notif_takeToken = function (notif) {
-        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token);
+        this.getPlayerTable(notif.args.playerId).tokens.addCard(notif.args.token, {
+            fromElement: notif.args.pile == -1 ? document.getElementById("center-stock") : undefined,
+        });
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     };
     Elawa.prototype.notif_playCard = function (notif) {
@@ -1699,6 +1729,9 @@ var Elawa = /** @class */ (function () {
         });
         notif.args.discardedTokens.forEach(function (token) { return playerTable.tokens.removeCard(token); });
         this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
+    };
+    Elawa.prototype.notif_discardCard = function (notif) {
+        this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
     };
     Elawa.prototype.notif_updateScore = function (notif) {
         this.setScore(notif.args.playerId, notif.args.playerScore);

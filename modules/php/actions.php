@@ -12,31 +12,31 @@ trait ActionTrait {
     */
 
     private function refillTokenPile(int $pile, int $playerId) {
+        if (intval($this->tokens->countCardInLocation('center')) > 0) {
+            $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('center', 'player', $playerId));
+            $newCount = intval($this->tokens->countCardInLocation('center'));
+
+            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty)'), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                'emptyPile' => $pile, // for logs
+                'token' => $token,
+                'pile' => -1,
+                'newToken' => Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center'))),
+                'newCount' => $newCount,
+                'type' => $token->type,
+            ]);
+
+            if ($newCount == 0) {
+                $this->setGameStateValue(LAST_TURN, 1);
+                // TODO notif last turn
+            }
+        }
+        
         $this->tokens->pickCardsForLocation(5, 'deck', 'pile'.$pile);
         $this->tokens->shuffle('pile'.$pile); // to give them a locationArg asc
 
-        if (intval($this->tokens->countCardInLocation('center')) == 0) {
-            return null;
-        }
-
-        $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('center', 'player', $playerId));
-        $newCount = intval($this->tokens->countCardInLocation('center'));
-
-        self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty)'), [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'emptyPile' => $pile, // for logs
-            'token' => $token,
-            'pile' => -1,
-            'newToken' => Token::onlyId($this->getTokenFromDb($this->tokens->getCardOnTop('center'))),
-            'newCount' => $newCount,
-            'type' => $token->type,
-        ]);
-
-        if ($newCount == 0) {
-            $this->setGameStateValue(LAST_TURN, 1);
-            // TODO notif last turn
-        }
+        // TODO notif refill
         
         return $token;
     }
@@ -84,17 +84,7 @@ trait ActionTrait {
         $this->gamestate->nextState('next');
     }
 
-    public function playCard(int $id) {
-        self::checkAction('playCard');
-
-        $playerId = intval($this->getActivePlayerId());
-
-        $card = $this->array_find($this->argPlayCard()['playableCards'], fn($c) => $c->id == $id);
-
-        if ($card == null || $card->location != 'hand' || $card->locationArg != $playerId) {
-            throw new BgaUserException("You can't play this card");
-        }
-
+    function applyPlayCard(int $playerId, Card $card) {
         $this->cards->moveCard($card->id, 'played'.$playerId, intval($this->cards->countCardInLocation('played'.$playerId)) - 1);
 
         $resources = $this->getPlayerResources($playerId);
@@ -111,11 +101,60 @@ trait ActionTrait {
 
         $this->updateScore($playerId);
 
-        $this->gamestate->nextState('next');
+        $this->gamestate->nextState('stay');
+    }
+
+    public function playCard(int $id) {
+        self::checkAction('playCard');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        $card = $this->array_find($this->argPlayCard()['playableCards'], fn($c) => $c->id == $id);
+
+        if ($card == null || $card->location != 'hand' || $card->locationArg != $playerId) {
+            throw new BgaUserException("You can't play this card");
+        }
+
+        if ($card->discard) {
+            $this->setGameStateValue(SELECTED_CARD, $id);
+            $this->gamestate->nextState('discard');
+            return;
+        } else {
+            $this->applyPlayCard($playerId, $card);
+        }        
     }
 
     public function pass() {
         self::checkAction('pass');
+
+        $this->gamestate->nextState('next');
+    }
+
+    public function discardCard(int $id) {
+        self::checkAction('discardCard');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        $args = $this->argDiscardCard();
+        $card = $this->array_find($args['playableCards'], fn($c) => $c->id == $id);
+
+        if ($card == null || $card->location != 'hand' || $card->locationArg != $playerId) {
+            throw new BgaUserException("You can't play this card");
+        }
+
+        $this->cards->moveCard($card->id, 'discard', $playerId);
+
+        self::notifyPlayer($playerId, 'discardCard', '', [
+            'playerId' => $playerId,
+            'card' => $card,
+        ]);
+
+        $this->applyPlayCard($playerId, $args['selectedCard']);
+        $this->setGameStateValue(SELECTED_CARD, -1);
+    }
+
+    public function cancel() {
+        self::checkAction('cancel');
 
         $this->gamestate->nextState('next');
     }

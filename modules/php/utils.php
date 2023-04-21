@@ -82,7 +82,7 @@ trait UtilTrait {
         return array_map(fn($dbResult) => new ElawaPlayer($dbResult), array_values($dbResults))[0];
     }
 
-    function getCardFromDb(array $dbCard) {
+    function getCardFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;
         }
@@ -129,7 +129,7 @@ trait UtilTrait {
         }
     }
 
-    function getTokenFromDb(array $dbCard) {
+    function getTokenFromDb(/*array|null*/ $dbCard) {
         if ($dbCard == null) {
             return null;
         }
@@ -177,6 +177,10 @@ trait UtilTrait {
 
     function getChieftainOption() {
         return intval($this->getGameStateValue(CHIEFTAIN_OPTION));
+    }
+
+    function getMaxKeepResources() {
+        return 5 - intval($this->getGameStateValue(CHIEFTAIN_OPTION));
     }
 
     function getPlayerResources(int $playerId) {

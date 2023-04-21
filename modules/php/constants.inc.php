@@ -40,6 +40,7 @@ define('ST_BGA_GAME_SETUP', 1);
 define('ST_PLAYER_TAKE_CARD', 10);
 
 define('ST_PLAYER_PLAY_CARD', 20);
+define('ST_PLAYER_DISCARD_CARD', 21);
 
 define('ST_PLAYER_STORE_TOKEN', 60);
 
@@ -56,6 +57,7 @@ define('END_SCORE', 100);
  * Constants
  */
 define('LAST_TURN', 10);
+define('SELECTED_CARD', 11);
 
 /*
  * Options
