@@ -3,7 +3,8 @@
   position: relative;
   background: #FFFFFF33;
   //box-shadow: 0 0 5px 2px var(--player-color);
-  border: 2px solid #FFFFFF88;
+  //border: 3px solid rgb(235 213 189);
+  border: 2px solid var(--player-color);
   border-radius: 15px;
   margin: 5px;
   font-size: 16pt;
@@ -13,10 +14,7 @@
     color: var(--player-color);
     position: relative;
     display: flex;
-    background: #FFFFFF88;
     padding: 5px;
-    //border-radius: 15px 15px 0 0;
-    border-radius: 15px;
     justify-content: center;
     align-items: center;
     font-size: 20pt;

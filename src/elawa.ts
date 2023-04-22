@@ -64,6 +64,10 @@ class Elawa implements ElawaGame {
                 color: 'black',
             },
             localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+            onDimensionsChange: () => {
+                const tablesAndCenter = document.getElementById('tables-and-center');
+                tablesAndCenter.classList.toggle('double-column', tablesAndCenter.clientWidth > 1600);
+            },
         });
 
         if (gamedatas.lastTurn) {

@@ -76,6 +76,7 @@ html, .mode_3d #game_play_area_background {
   align-items: stretch;
   gap: 20px;
   flex-direction: column;
+  margin-right: 10px;
 
   #tables {
     position: relative;
@@ -86,10 +87,8 @@ html, .mode_3d #game_play_area_background {
     gap: 20px;
     flex-direction: column;
   }
-}
 
-@media (min-width: 1800px) { 
-  #tables-and-center {
+  &.double-column {
     flex-direction: row;
     justify-content: center;
     align-items: start;
