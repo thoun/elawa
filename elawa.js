@@ -1676,6 +1676,7 @@ var Elawa = /** @class */ (function () {
     function Elawa() {
         this.playersTables = [];
         this.handCounters = [];
+        this.resourcesCounters = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
     }
     /*
@@ -1914,14 +1915,32 @@ var Elawa = /** @class */ (function () {
         var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
-            // hand counter
-            dojo.place("<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>"), "player_board_".concat(player.id));
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div><div class=\"counters\">");
+            for (var i = 1; i <= 5; i++) {
+                html += "\n                <div id=\"resource".concat(i, "-counter-wrapper-").concat(player.id, "\" class=\"resource-counter\">\n                    <div class=\"token-icon\" data-type=\"").concat(i, "\"></div>\n                    <span id=\"resource").concat(i, "-counter-").concat(player.id, "\"></span>\n                </div>");
+                if (i == 4) {
+                    html += "</div><div class=\"counters\">";
+                }
+            }
+            html += "\n            </div>";
+            dojo.place(html, "player_board_".concat(player.id));
             var handCounter = new ebg.counter();
             handCounter.create("playerhand-counter-".concat(playerId));
             handCounter.setValue(player.handCount);
             _this.handCounters[playerId] = handCounter;
+            _this.resourcesCounters[playerId] = [];
+            var _loop_3 = function (i) {
+                var resourceCounter = new ebg.counter();
+                resourceCounter.create("resource".concat(i, "-counter-").concat(playerId));
+                resourceCounter.setValue(player.tokens.filter(function (token) { return token.type == i; }).length);
+                _this.resourcesCounters[playerId][i] = resourceCounter;
+            };
+            for (var i = 1; i <= 5; i++) {
+                _loop_3(i);
+            }
         });
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
+        this.setTooltipToClass('resource-counter', _('Number of resources by type'));
     };
     Elawa.prototype.createPlayerTables = function (gamedatas) {
         var _this = this;
@@ -2064,32 +2083,40 @@ var Elawa = /** @class */ (function () {
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
     };
     Elawa.prototype.notif_takeToken = function (notif) {
+        var playerId = notif.args.playerId;
+        var token = notif.args.token;
         var fromCenter = notif.args.pile == -1;
         if (fromCenter) {
-            this.tokensManager.flipCard(notif.args.token, {
+            this.tokensManager.flipCard(token, {
                 updateData: true,
                 updateFront: true,
                 updateBack: false,
             });
         }
-        this.getPlayerTable(notif.args.playerId).tokensFree.addCard(notif.args.token, {
+        this.getPlayerTable(playerId).tokensFree.addCard(token, {
             fromElement: fromCenter ? document.getElementById("center-stock") : undefined,
         });
         if (notif.args.pile != -2) {
             this.notif_refillTokens(notif);
         }
+        this.resourcesCounters[playerId][token.type].incValue(1);
     };
     Elawa.prototype.notif_refillTokens = function (notif) {
         this.tableCenter.setNewToken(notif.args.pile, notif.args.newToken, notif.args.newCount);
     };
     Elawa.prototype.notif_playCard = function (notif) {
-        var playerTable = this.getPlayerTable(notif.args.playerId);
-        var currentPlayer = this.getPlayerId() == notif.args.playerId;
+        var _this = this;
+        var playerId = notif.args.playerId;
+        var playerTable = this.getPlayerTable(playerId);
+        var currentPlayer = this.getPlayerId() == playerId;
         playerTable.played.addCard(notif.args.card, {
-            fromElement: currentPlayer ? undefined : document.getElementById("player-table-".concat(notif.args.playerId, "-name"))
+            fromElement: currentPlayer ? undefined : document.getElementById("player-table-".concat(playerId, "-name"))
         });
-        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokensFree.removeCard(token); });
-        this.handCounters[notif.args.playerId].toValue(notif.args.newCount);
+        notif.args.discardedTokens.forEach(function (token) {
+            playerTable.tokensFree.removeCard(token);
+            _this.resourcesCounters[playerId][token.type].incValue(-1);
+        });
+        this.handCounters[playerId].toValue(notif.args.newCount);
     };
     Elawa.prototype.notif_discardCard = function (notif) {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
@@ -2098,8 +2125,13 @@ var Elawa = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).storeTokens(notif.args.tokens);
     };
     Elawa.prototype.notif_discardTokens = function (notif) {
-        var playerTable = this.getPlayerTable(notif.args.playerId);
-        notif.args.discardedTokens.forEach(function (token) { return playerTable.tokensFree.removeCard(token); });
+        var _this = this;
+        var playerId = notif.args.playerId;
+        var playerTable = this.getPlayerTable(playerId);
+        notif.args.discardedTokens.forEach(function (token) {
+            playerTable.tokensFree.removeCard(token);
+            _this.resourcesCounters[playerId][token.type].incValue(-1);
+        });
         notif.args.keptTokens.forEach(function (token, index) { return playerTable.tokensChief.addCard(token, undefined, { slot: index }); });
     };
     Elawa.prototype.notif_updateScore = function (notif) {
