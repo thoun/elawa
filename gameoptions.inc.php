@@ -36,7 +36,7 @@ require_once("modules/php/constants.inc.php");
             ],
             2 => [
                 'name' => totranslate('Advanced side'),
-                'tmdisplay' => totranslate('Advanced chieftain side'),
+                'tmdisplay' => totranslate('Advanced chieftain card side'),
             ],
         ],
         'default' => 1,

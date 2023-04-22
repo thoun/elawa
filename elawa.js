@@ -1398,7 +1398,7 @@ var ChiefsManager = /** @class */ (function (_super) {
     };
     ChiefsManager.prototype.getTooltip = function (number) {
         var level = this.game.getChieftainOption();
-        var message = _("The chieftain card allow to store ${number} resources between turns.").replace('${number}', "<strong>".concat(5 - level, "</strong>"));
+        var message = "<strong>".concat(_('Chieftain card'), "</strong> ").concat(number, " (").concat(level == 2 ? _('Advanced side') : _('Normal side'), ")<br><br>").concat(_("The chieftain card allow to store ${number} resources between turns.").replace('${number}', "<strong>".concat(5 - level, "</strong>")));
         if (level == 2) {
             message += "<br><br><strong>".concat(_('Power:'), "</strong> ").concat(this.getPower(number));
         }
