@@ -78,6 +78,11 @@ interface EnteringTakeCardArgs {
     playerId: number;
 }
 
+interface EnteringSkipResourceArgs {
+    pile: number;
+    resources: number[];
+}
+
 interface EnteringPlayCardArgs {
     playableCards: Card[];
 }

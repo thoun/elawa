@@ -57,6 +57,15 @@
         self::ajaxResponse();
     }
 
+    public function skipResource() {
+        self::setAjaxMode();     
+
+        $number = self::getArg("number", AT_posint, true);
+        $this->game->skipResource($number);
+
+        self::ajaxResponse();
+    }
+
     public function pass() {
         self::setAjaxMode();
 

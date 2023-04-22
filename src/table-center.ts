@@ -39,10 +39,13 @@ class TableCenter {
         this.spots.forEach(spot => spot.setCardSelectable(selectable));
     }
     
-    public showLinkedTokens(pile: number, count: number) {
+    public showLinkedTokens(pile: number, count: number, skip: number | null = null) {
         const linked = [];
-        if (this.game.getGameStateName() == 'takeCard') {
-            for (let i=1;i<=count;i++) {
+        if (this.game.getGameStateName() == 'takeCard' || skip !== null) {
+            for (let i=1;i<=count + (!skip ? 0 : 1);i++) {
+                if (i == skip) {
+                    continue;
+                }
                 linked.push((pile + i) % 6);
             }
         }

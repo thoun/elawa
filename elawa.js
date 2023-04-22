@@ -1513,10 +1513,14 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.setCardsSelectable = function (selectable) {
         this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
     };
-    TableCenter.prototype.showLinkedTokens = function (pile, count) {
+    TableCenter.prototype.showLinkedTokens = function (pile, count, skip) {
+        if (skip === void 0) { skip = null; }
         var linked = [];
-        if (this.game.getGameStateName() == 'takeCard') {
-            for (var i = 1; i <= count; i++) {
+        if (this.game.getGameStateName() == 'takeCard' || skip !== null) {
+            for (var i = 1; i <= count + (!skip ? 0 : 1); i++) {
+                if (i == skip) {
+                    continue;
+                }
                 linked.push((pile + i) % 6);
             }
         }
@@ -1815,6 +1819,28 @@ var Elawa = /** @class */ (function () {
                 case 'playCard':
                     this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
                     break;
+                case 'skipResource':
+                    var skipResourceArgs_1 = args;
+                    var _loop_2 = function (i) {
+                        var label = '';
+                        if (i == 0) {
+                            label = _("Don't skip resource, take ${resources}").replace('${resources}', skipResourceArgs_1.resources.slice(0, skipResourceArgs_1.resources.length - 1).map(function (type) { return "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"); }).join(''));
+                        }
+                        else {
+                            var resources = skipResourceArgs_1.resources.slice();
+                            var resource = resources.splice(i - 1, 1)[0];
+                            label = _("Skip ${resource}, take ${resources}").replace('${resource}', "<div class=\"token-icon\" data-type=\"".concat(resource, "\"></div>")).replace('${resources}', resources.map(function (type) { return "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"); }).join(''));
+                        }
+                        this_1.addActionButton("skipResource".concat(i, "_button"), label, function () { return _this.skipResource(i); });
+                        var skipResourceButton = document.getElementById("skipResource".concat(i, "_button"));
+                        skipResourceButton.addEventListener('mouseenter', function () { return _this.tableCenter.showLinkedTokens(skipResourceArgs_1.pile, skipResourceArgs_1.resources.length - 1, i); });
+                        skipResourceButton.addEventListener('mouseleave', function () { return _this.tableCenter.showLinkedTokens(skipResourceArgs_1.pile, 0); });
+                    };
+                    var this_1 = this;
+                    for (var i = 0; i < skipResourceArgs_1.resources.length; i++) {
+                        _loop_2(i);
+                    }
+                    break;
                 case 'discardCard':
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); });
                     break;
@@ -1944,6 +1970,14 @@ var Elawa = /** @class */ (function () {
         }
         this.takeAction('playCard', {
             id: id
+        });
+    };
+    Elawa.prototype.skipResource = function (number) {
+        if (!this.checkAction('skipResource')) {
+            return;
+        }
+        this.takeAction('skipResource', {
+            number: number
         });
     };
     Elawa.prototype.pass = function () {

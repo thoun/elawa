@@ -33,6 +33,23 @@ trait ArgsTrait {
         ];
     }
 
+    function argSkipResource() {
+        $skipResourceArray = $this->getGlobalVariable('skipResource', true);
+        $pile = $skipResourceArray[0];
+        $tokens = $skipResourceArray[1];
+
+        $resources = [];
+        for ($i = 1; $i <= $tokens + 1; $i++) {
+            $tokenPile = ($pile + $i) % 6;
+            $resources[] = $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$tokenPile))->type;
+        }
+
+        return [
+            'pile' => $pile,
+            'resources' => $resources,
+        ];
+    }
+
     function argDiscardCard() {
         $playerId = intval($this->getActivePlayerId());
 

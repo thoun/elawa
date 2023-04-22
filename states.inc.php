@@ -82,6 +82,21 @@ $playerActionsGameStates = [
             "takeCard",
         ],
         "transitions" => [
+            "skipResource" => ST_PLAYER_SKIP_RESOURCE,
+            "next" => ST_PLAYER_PLAY_CARD,
+        ]
+    ],
+
+    ST_PLAYER_SKIP_RESOURCE => [
+        "name" => "skipResource",
+        "description" => clienttranslate('${actplayer} can skip a pile'),
+        "descriptionmyturn" => clienttranslate('${you} can skip a pile'),
+        "type" => "activeplayer",
+        "args" => "argSkipResource",
+        "possibleactions" => [ 
+            "skipResource",
+        ],
+        "transitions" => [
             "next" => ST_PLAYER_PLAY_CARD,
         ]
     ],

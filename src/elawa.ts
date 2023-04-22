@@ -184,6 +184,23 @@ class Elawa implements ElawaGame {
                 case 'playCard':
                     (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
                     break;
+                case 'skipResource':
+                    const skipResourceArgs = args as EnteringSkipResourceArgs;
+                    for (let i=0; i < skipResourceArgs.resources.length; i++) {
+                        let label = '';
+                        if (i == 0) {
+                            label = _("Don't skip resource, take ${resources}").replace('${resources}', skipResourceArgs.resources.slice(0, skipResourceArgs.resources.length - 1).map(type => `<div class="token-icon" data-type="${type}"></div>`).join(''));
+                        } else {
+                            const resources = skipResourceArgs.resources.slice();
+                            const resource = resources.splice(i-1, 1)[0];
+                            label = _("Skip ${resource}, take ${resources}").replace('${resource}', `<div class="token-icon" data-type="${resource}"></div>`).replace('${resources}', resources.map(type => `<div class="token-icon" data-type="${type}"></div>`).join(''));
+                        }
+                        (this as any).addActionButton(`skipResource${i}_button`, label, () => this.skipResource(i));
+                        const skipResourceButton = document.getElementById(`skipResource${i}_button`);
+                        skipResourceButton.addEventListener('mouseenter', () => this.tableCenter.showLinkedTokens(skipResourceArgs.pile, skipResourceArgs.resources.length - 1, i));
+                        skipResourceButton.addEventListener('mouseleave', () => this.tableCenter.showLinkedTokens(skipResourceArgs.pile, 0));
+                    }
+                    break;
                 case 'discardCard':
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
                     break;
@@ -346,6 +363,16 @@ class Elawa implements ElawaGame {
 
         this.takeAction('playCard', {
             id
+        });
+    }
+  	
+    public skipResource(number: number) {
+        if(!(this as any).checkAction('skipResource')) {
+            return;
+        }
+
+        this.takeAction('skipResource', {
+            number
         });
     }
   	
