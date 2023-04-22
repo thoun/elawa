@@ -96,6 +96,10 @@ trait ActionTrait {
                     $this->refillTokenPile($tokenPile, $playerId);
                 }
             }
+
+            if ($card->tokens == 1 && $this->getChiefPower($playerId) == CHIEF_POWER_ADDITIONAL_RESOURCE) {
+                $this->takeRessourceFromPool($playerId);
+            }
         }
 
         $this->gamestate->nextState('next');
@@ -119,17 +123,7 @@ trait ActionTrait {
         $this->updateScore($playerId);
 
         if ($card->power == POWER_RESSOURCE) {
-            $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('deck', 'player', $playerId));
-
-            if ($token !== null) {
-                self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
-                    'playerId' => $playerId,
-                    'player_name' => $this->getPlayerName($playerId),
-                    'token' => $token,
-                    'pile' => -2,
-                    'type' => $token->type,
-                ]);
-            }
+            $this->takeRessourceFromPool($playerId);
         }
 
         $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'stay');

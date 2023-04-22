@@ -183,6 +183,10 @@ trait UtilTrait {
         return 5 - intval($this->getGameStateValue(CHIEFTAIN_OPTION));
     }
 
+    function getChiefPower(int $playerId) {
+        return $this->getChieftainOption() == 2 ? $this->getPlayer($playerId)->chief : 0;
+    }
+
     function getPlayerResources(int $playerId) {
         $tokens = $this->getTokensByLocation('player', $playerId);
         $resources = [
@@ -267,6 +271,20 @@ trait UtilTrait {
         }
 
         return $played;
+    }
+
+    function takeRessourceFromPool(int $playerId) {
+        $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('deck', 'player', $playerId));
+
+        if ($token !== null) {
+            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from resource pool'), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                'token' => $token,
+                'pile' => -2,
+                'type' => $token->type,
+            ]);
+        }
     }
     
 }

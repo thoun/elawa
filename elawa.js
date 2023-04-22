@@ -1206,7 +1206,10 @@ var CardManager = /** @class */ (function () {
     };
     return CardManager;
 }());
+var HOUSE = 1;
 var STORAGE = 2;
+var HUMAN = 3;
+var TOOL = 4;
 var CardsManager = /** @class */ (function (_super) {
     __extends(CardsManager, _super);
     function CardsManager(game) {
@@ -1215,6 +1218,7 @@ var CardsManager = /** @class */ (function (_super) {
             setupDiv: function (card, div) {
                 div.classList.add('elawa-card');
                 div.dataset.cardId = '' + card.id;
+                game.setTooltip(div.id, _this.getTooltip(card));
             },
             setupFrontDiv: function (card, div) {
                 div.dataset.color = '' + card.color;
@@ -1233,6 +1237,87 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.addToken = function (cardId, tokenId) {
         this.storageStocks[cardId].addCard({ id: tokenId });
     };
+    CardsManager.prototype.getType = function (type) {
+        var message = '';
+        switch (type) {
+            case 1:
+                message = _("House");
+                break;
+            case 2:
+                message = _("Storage");
+                break;
+            case 3:
+                message = _("Human");
+                break;
+            case 4:
+                message = _("Tool");
+                break;
+        }
+        return message;
+    };
+    CardsManager.prototype.getColor = function (color) {
+        var message = '';
+        switch (color) {
+            case 1:
+                message = _("Blue");
+                break;
+            case 2:
+                message = _("Yellow");
+                break;
+            case 3:
+                message = _("Green");
+                break;
+            case 4:
+                message = _("Red");
+                break;
+            case 5:
+                message = _("Purple");
+                break;
+        }
+        return message;
+    };
+    CardsManager.prototype.getPower = function (power) {
+        var message = '';
+        switch (power) {
+            case 10:
+                message = _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources.");
+                break;
+            case 11:
+                message = _("When a player places this card in front of them, they take 1 resource at random from the resource pool.");
+                break;
+        }
+        return message;
+    };
+    CardsManager.prototype.getTooltip = function (card) {
+        var _this = this;
+        var message = "<strong>".concat(_("Points:"), "</strong> ").concat(card.points);
+        if (card.cardType == HOUSE) {
+            message += " / ".concat(this.getColor(card.storageType));
+        }
+        else if (card.cardType == STORAGE) {
+            message += " / ".concat(this.game.tokensManager.getType(card.storageType));
+        }
+        else if (card.cardType == TOOL) {
+            message += " / ".concat(this.getType(card.storageType));
+        }
+        message += "\n        <br><br>\n        <strong>".concat(_("Type:"), "</strong> ").concat(this.getType(card.cardType), "\n        <br><br>\n        <strong>").concat(_("Color:"), "</strong> ").concat(this.getColor(card.color), "\n        <br><br>\n        <strong>").concat(_("Required resources:"), "</strong> ");
+        if (!card.discard && !card.resources.length) {
+            message += _('None');
+        }
+        else {
+            var resources_1 = [];
+            if (card.discard) {
+                resources_1.push(_('discard 1 tribe card from hand'));
+            }
+            card.resources.forEach(function (type) { return resources_1.push(_this.game.tokensManager.getType(type)); });
+            message += resources_1.join(', ');
+        }
+        if (card.power) {
+            message += "\n            <br><br>\n            <strong>".concat(_("Power:"), "</strong> ").concat(this.getPower(card.power));
+        }
+        message += "\n        <br><br>\n        <strong>".concat(_("Resources to take:"), "</strong> ").concat(card.tokens);
+        return message;
+    };
     return CardsManager;
 }(CardManager));
 var TokensManager = /** @class */ (function (_super) {
@@ -1245,12 +1330,35 @@ var TokensManager = /** @class */ (function (_super) {
                 div.dataset.cardId = '' + card.id;
             },
             setupFrontDiv: function (card, div) {
+                div.id = "".concat(_this.getId(card), "-front");
                 div.dataset.type = '' + card.type;
+                game.setTooltip(div.id, _this.getType(card.type));
             },
         }) || this;
         _this.game = game;
         return _this;
     }
+    TokensManager.prototype.getType = function (type) {
+        var message = '';
+        switch (type) {
+            case 1:
+                message = _("Berry");
+                break;
+            case 2:
+                message = _("Meat");
+                break;
+            case 3:
+                message = _("Flint");
+                break;
+            case 4:
+                message = _("Skin");
+                break;
+            case 5:
+                message = _("Bone");
+                break;
+        }
+        return message;
+    };
     return TokensManager;
 }(CardManager));
 var ChiefsManager = /** @class */ (function (_super) {
@@ -1270,23 +1378,29 @@ var ChiefsManager = /** @class */ (function (_super) {
         _this.game = game;
         return _this;
     }
-    ChiefsManager.prototype.getTooltip = function (number) {
+    ChiefsManager.prototype.getPower = function (number) {
         var message = '';
         switch (number) {
-            /* TODO case 1: message = _("(+2) if you have 1 or 3 orange cards."); break;
-            case 2: message = _("(-2) if orange cards are in the scoring column with either value (1) or value (2)."); break;
-            case 3: message = _("(+2) if you have 2 or 4 blue cards."); break;
-            case 4: message = _("(+2) if blue is the colour you have the most cards of (or if blue is tied)."); break;
-            case 5: message = _("(-2) if you are the player with the least pink cards (or are tied for the least pink cards)."); break;
-            case 6: message = _("(+2) if you are the player with the most pink cards (or are tied for the most pink cards)."); break;
-            case 7: message = _("(+2) if no colour is on the right of the green column."); break;
-            case 8: message = _("(+2) if green cards are in the scoring column with either value (4) or value (5)."); break;
-            case 9: message = _("(+2) if you have more purple cards than orange cards (or the same number)."); break;
-            case 10: message = _("(-2) if you are the player with the most purple cards (or are tied for the most purple cards)."); break;
-            case 11: message = _("(+2) if you have cards in all 5 colours."); break;
-            case 12: message = _("(+2) if you have exactly 3 colours."); break;
-            case 13: message = _("(-2) if you have at least 1 colour with exactly 3 cards."); break;
-            case 14: message = _("(+2) if you have at least 1 colour with exactly 4 cards."); break;*/
+            case 1:
+                message = _("When this player takes the resources associated with their chosen card, they may skip a pile.");
+                break;
+            case 2:
+                message = _("When this player places a second tribe card in front of them during their turn, they discard 1 less resource or sacrifice than required for that card.");
+                break;
+            case 3:
+                message = _("When this player finishes one of the 6 resource piles, in addition to taking a resource from the center pile, they take a visible card of their choice. They do not take the resources associated with that card.");
+                break;
+            case 4:
+                message = _("When this player chooses a tribe card that only allows them to take 1 resource, they take 1 additional resource at random from the resource pool.");
+                break;
+        }
+        return message;
+    };
+    ChiefsManager.prototype.getTooltip = function (number) {
+        var level = this.game.getChieftainOption();
+        var message = _("The chieftain card allow to store ${number} resources between turns.").replace('${number}', "<strong>".concat(5 - level, "</strong>"));
+        if (level == 2) {
+            message += "<br><br><strong>".concat(_('Power:'), "</strong> ").concat(this.getPower(number));
         }
         return message;
     };

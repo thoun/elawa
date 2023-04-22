@@ -8,9 +8,12 @@ interface Card {
     locationArg: number;
     points: number;
     color: number;
-    cardType: number;
     number: number;
+    cardType: number;
+    resources: number[];
+    discard: boolean;
     tokens: number;
+    power?: number;
     storageType?: number;
     storedResources?: Token[];
     canStoreResourceType?: boolean;

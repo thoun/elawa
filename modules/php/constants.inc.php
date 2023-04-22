@@ -33,6 +33,15 @@ define('SKIN', 4);
 define('BONE', 5);
 
 /*
+ * Chief powers
+ */
+
+define('CHIEF_POWER_SKIP_RESOURCE', 1);
+define('CHIEF_POWER_PAY_ONE_LESS_RESOURCE', 2);
+define('CHIEF_POWER_TAKE_CARD', 3);
+define('CHIEF_POWER_ADDITIONAL_RESOURCE', 4);
+
+/*
  * State constants
  */
 define('ST_BGA_GAME_SETUP', 1);
