@@ -28,7 +28,12 @@ class TableCenter {
     }
 
     public setNewToken(pile: number, newToken: Token, newCount: number) {
+        console.log(pile, newToken, newCount);
         if (pile == -1) {
+            this.hiddenToken.setCardNumber(newCount);
+            if (newToken) {
+                this.hiddenToken.addCard(newToken);
+            }
             this.fireCounter.toValue(newCount);
         } else {
             this.spots[pile].setNewToken(newToken, newCount);

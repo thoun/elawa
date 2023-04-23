@@ -53,7 +53,7 @@ trait ActionTrait {
             'emptyPile' => $pile, // for logs
             'pile' => $pile,
             'newToken' => $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$pile)),
-            'newCount' => $newCount,
+            'newCount' => intval($this->tokens->countCardInLocation('pile'.$pile)),
         ]);
         
         return $token;

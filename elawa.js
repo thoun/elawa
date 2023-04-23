@@ -1303,7 +1303,7 @@ var CardsManager = /** @class */ (function (_super) {
         else if (card.cardType == TOOL) {
             message += " / ".concat(this.getType(card.storageType));
         }
-        message += "\n        <br><br>\n        <strong>".concat(_("Type:"), "</strong> ").concat(this.getType(card.cardType), "\n        <br><br>\n        <strong>").concat(_("Color:"), "</strong> ").concat(this.getColor(card.color), "\n        <br><br>\n        <strong>").concat(_("Required resources:"), "</strong> ");
+        message += "\n        <br>\n        <strong>".concat(_("Type:"), "</strong> ").concat(this.getType(card.cardType), "\n        <br>\n        <strong>").concat(_("Color:"), "</strong> ").concat(this.getColor(card.color), "\n        <br>\n        <strong>").concat(_("Required resources:"), "</strong> ");
         if (!card.discard && !card.resources.length) {
             message += _('None');
         }
@@ -1316,9 +1316,9 @@ var CardsManager = /** @class */ (function (_super) {
             message += resources_1.join(', ');
         }
         if (card.power) {
-            message += "\n            <br><br>\n            <strong>".concat(_("Power:"), "</strong> ").concat(this.getPower(card.power));
+            message += "\n            <br>\n            <strong>".concat(_("Power:"), "</strong> ").concat(this.getPower(card.power));
         }
-        message += "\n        <br><br>\n        <strong>".concat(_("Resources to take:"), "</strong> ").concat(card.tokens);
+        message += "\n        <br>\n        <strong>".concat(_("Resources to take:"), "</strong> ").concat(card.tokens);
         return message;
     };
     return CardsManager;
@@ -1506,7 +1506,12 @@ var TableCenter = /** @class */ (function () {
         this.spots[pile].setNewCard(newCard, newCount);
     };
     TableCenter.prototype.setNewToken = function (pile, newToken, newCount) {
+        console.log(pile, newToken, newCount);
         if (pile == -1) {
+            this.hiddenToken.setCardNumber(newCount);
+            if (newToken) {
+                this.hiddenToken.addCard(newToken);
+            }
             this.fireCounter.toValue(newCount);
         }
         else {

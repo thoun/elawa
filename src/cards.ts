@@ -80,11 +80,11 @@ class CardsManager extends CardManager<Card> {
         }
 
         message += `
-        <br><br>
+        <br>
         <strong>${_("Type:")}</strong> ${this.getType(card.cardType)}
-        <br><br>
+        <br>
         <strong>${_("Color:")}</strong> ${this.getColor(card.color)}
-        <br><br>
+        <br>
         <strong>${_("Required resources:")}</strong> `;
         if (!card.discard && !card.resources.length) {
             message += _('None');
@@ -99,12 +99,12 @@ class CardsManager extends CardManager<Card> {
 
         if (card.power) {
             message += `
-            <br><br>
+            <br>
             <strong>${_("Power:")}</strong> ${this.getPower(card.power)}`;
         }
 
         message += `
-        <br><br>
+        <br>
         <strong>${_("Resources to take:")}</strong> ${card.tokens}`;
  
         return message;

@@ -93,12 +93,17 @@ class Elawa extends Table {
             $affectedChiefs[] = $chiefs[$index];
             array_splice($chiefs, $index, 1);
         }
+        $chiefsInPlay = $affectedChiefs;
 
+        $startingPlayerId = null;
         foreach( $players as $player_id => $player ) {
             $color = array_shift( $default_colors );
             $chief = array_shift( $affectedChiefs );
 
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $chief)";
+            if ($chief == min($chiefsInPlay)) {
+                $startingPlayerId = $player_id;
+            }
         }
         $sql .= implode(',', $values);
         self::DbQuery( $sql );
@@ -131,7 +136,7 @@ class Elawa extends Table {
        
 
         // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
+        $this->gamestate->changeActivePlayer($startingPlayerId);
 
         // TODO TEMP
         //$this->debugSetup();
