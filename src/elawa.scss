@@ -15,6 +15,15 @@
   }
 }
 
+@font-face {
+  font-family: 'komika parch';
+  src: url('img/komikap-webfont.woff2') format('woff2'),
+       url('img/komikap-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+
+}
+
 html, .mode_3d #game_play_area_background {
   background: url('img/background.jpg');
   background-size: 100% auto;

@@ -763,6 +763,7 @@ body > .card {
   justify-content: center;
   align-items: center;
   font-size: 20pt;
+  font-family: "komika parch";
 }
 .player-table .block-with-text {
   display: flex;
@@ -854,6 +855,12 @@ body > .card {
     margin-bottom: 8px;
     margin-top: 8px;
   }
+}
+@font-face {
+  font-family: "komika parch";
+  src: url("img/komikap-webfont.woff2") format("woff2"), url("img/komikap-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
 html, .mode_3d #game_play_area_background {
   background: url("img/background.jpg");
