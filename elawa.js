@@ -1223,10 +1223,12 @@ var CardsManager = /** @class */ (function (_super) {
             setupFrontDiv: function (card, div) {
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
-                if (card.cardType == STORAGE && card.storedResources) {
+                if (card.cardType == STORAGE) {
                     div.style.alignItems = 'center';
                     _this.storageStocks[card.id] = new LineStock(game.tokensManager, div);
-                    _this.storageStocks[card.id].addCards(card.storedResources);
+                    if (card.storedResources) {
+                        _this.storageStocks[card.id].addCards(card.storedResources);
+                    }
                 }
             },
         }) || this;
@@ -1235,6 +1237,7 @@ var CardsManager = /** @class */ (function (_super) {
         return _this;
     }
     CardsManager.prototype.addToken = function (cardId, tokenId) {
+        console.log(cardId, tokenId, this.storageStocks);
         this.storageStocks[cardId].addCard({ id: tokenId });
     };
     CardsManager.prototype.getType = function (type) {
@@ -1848,8 +1851,20 @@ var Elawa = /** @class */ (function () {
                         _loop_2(i);
                     }
                     break;
+                case 'chooseOneLess':
+                    var chooseOneLessArgs = args;
+                    if (chooseOneLessArgs.canSkipDiscard) {
+                        this.addActionButton("chooseOneLess0_button", _("Ignore sacrifice"), function () { return _this.chooseOneLess(0); });
+                    }
+                    chooseOneLessArgs.tokens.forEach(function (token) {
+                        if (!document.getElementById("chooseOneLess".concat(token.type, "_button"))) {
+                            _this.addActionButton("chooseOneLess".concat(token.type, "_button"), _("Ignore ${resource}").replace('${resource}', "<div class=\"token-icon\" data-type=\"".concat(token.type, "\"></div>")), function () { return _this.chooseOneLess(token.type); });
+                        }
+                    });
+                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
+                    break;
                 case 'discardCard':
-                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); });
+                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
                     break;
                 case 'storeTokens':
                     this.addActionButton("storeTokens_button", _("Confirm stored resources"), function () { return _this.storeTokens(); });
@@ -2017,6 +2032,14 @@ var Elawa = /** @class */ (function () {
         }
         this.takeAction('discardCard', {
             id: id
+        });
+    };
+    Elawa.prototype.chooseOneLess = function (type) {
+        if (!this.checkAction('chooseOneLess')) {
+            return;
+        }
+        this.takeAction('chooseOneLess', {
+            type: type
         });
     };
     Elawa.prototype.cancel = function () {

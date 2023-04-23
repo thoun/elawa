@@ -131,8 +131,27 @@ $playerActionsGameStates = [
             "stay" => ST_PLAYER_PLAY_CARD,
             "takeCardPower" => ST_PLAYER_TAKE_CARD_POWER,
             "discard" => ST_PLAYER_DISCARD_CARD,
+            "chooseOneLessResource" => ST_PLAYER_CHOOSE_ONE_LESS,
             "next" => ST_PLAYER_STORE_TOKENS,
         ],
+    ],
+
+    ST_PLAYER_CHOOSE_ONE_LESS => [
+        "name" => "chooseOneLess",
+        "description" => clienttranslate('${actplayer} must choose one resource or sacrifice to ignore'),
+        "descriptionmyturn" => clienttranslate('${you} must choose one resource or sacrifice to ignore'),
+        "type" => "activeplayer",
+        "args" => "argChooseOneLess",
+        "possibleactions" => [ 
+            "chooseOneLess",
+            "cancel",
+        ],
+        "transitions" => [
+            "stay" => ST_PLAYER_PLAY_CARD,
+            "takeCardPower" => ST_PLAYER_TAKE_CARD_POWER,
+            "discard" => ST_PLAYER_DISCARD_CARD,
+            "next" => ST_PLAYER_PLAY_CARD,
+        ]
     ],
 
     ST_PLAYER_DISCARD_CARD => [

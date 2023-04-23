@@ -18,16 +18,19 @@ class CardsManager extends CardManager<Card> {
                 div.dataset.color = ''+card.color;
                 div.dataset.number = ''+card.number;
 
-                if (card.cardType == STORAGE && card.storedResources) {
+                if (card.cardType == STORAGE) {
                     div.style.alignItems = 'center';
                     this.storageStocks[card.id] = new LineStock<Token>(game.tokensManager, div);
-                    this.storageStocks[card.id].addCards(card.storedResources);
+                    if (card.storedResources) {
+                        this.storageStocks[card.id].addCards(card.storedResources);
+                    }
                 }
             },
         });
     }
     
     public addToken(cardId: number, tokenId: number): void {
+        console.log(cardId, tokenId, this.storageStocks);
         this.storageStocks[cardId].addCard({id: tokenId} as Token);
     }
 

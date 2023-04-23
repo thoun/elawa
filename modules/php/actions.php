@@ -154,8 +154,19 @@ trait ActionTrait {
     function applyPlayCard(int $playerId, Card $card) {
         $this->cards->moveCard($card->id, 'played'.$playerId, intval($this->cards->countCardInLocation('played'.$playerId)) - 1);
 
+        $payOneLess = null;
+        if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
+            $payOneLess = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+        }
+
         $resources = $this->getPlayerResources($playerId);
         $tokens = $this->tokensToPayForCard($card, $resources);
+
+        if ($payOneLess !== null && $payOneLess[0] == 1 && $payOneLess[2] > 0) {
+            $indexOfIgnored = $this->array_findIndex($tokens, fn($token) => $token->id == $payOneLess[2]);
+            array_splice($tokens, $indexOfIgnored, 1);
+        }
+
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
         
         self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays a card from their hand'), [
@@ -172,6 +183,11 @@ trait ActionTrait {
             $this->takeRessourceFromPool($playerId);
         }
 
+        if ($payOneLess !== null) {
+            $payOneLess[0]++;
+            $this->setGlobalVariable('payOneLess', $payOneLess);
+        }
+
         $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'stay');
     }
 
@@ -180,13 +196,19 @@ trait ActionTrait {
 
         $playerId = intval($this->getActivePlayerId());
 
-        $card = $this->array_find($this->argPlayCard()['playableCards'], fn($c) => $c->id == $id);
+        $args = $this->argPlayCard();
+        $card = $this->array_find($args['playableCards'], fn($c) => $c->id == $id);
 
         if ($card == null || $card->location != 'hand' || $card->locationArg != $playerId) {
             throw new BgaUserException("You can't play this card");
         }
 
-        if ($card->discard) {
+        if ($args['payOneLess'] && ($card->discard || count($card->resources) > 0)) { // ignore a card you can't pay one less (no required resource at all)
+            $payOneLess = $this->getGlobalVariable('payOneLess', true);
+            $payOneLess[1] = $id;
+            $this->setGlobalVariable('payOneLess', $payOneLess);
+            $this->gamestate->nextState('chooseOneLessResource');
+        } else if ($card->discard) {
             $this->setGameStateValue(SELECTED_CARD, $id);
             $this->gamestate->nextState('discard');
             return;
@@ -197,6 +219,12 @@ trait ActionTrait {
 
     public function pass() {
         self::checkAction('pass');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
+            $this->deleteGlobalVariable('payOneLess');
+        }
 
         $this->gamestate->nextState('next');
     }
@@ -222,6 +250,23 @@ trait ActionTrait {
 
         $this->applyPlayCard($playerId, $args['selectedCard']);
         $this->setGameStateValue(SELECTED_CARD, -1);
+    }
+
+    public function chooseOneLess(int $type) {
+        self::checkAction('chooseOneLess');
+
+        $payOneLess = $this->getGlobalVariable('payOneLess', true); // played card, selected card id, chosen
+        $payOneLess[2] = $type;
+        $this->setGlobalVariable('payOneLess', $payOneLess);
+        $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
+
+        if ($card->discard && $type != 0) {
+            $this->setGameStateValue(SELECTED_CARD, $card->id);
+            $this->gamestate->nextState('discard');
+        } else {
+            $playerId = intval($this->getActivePlayerId());
+            $this->applyPlayCard($playerId, $card);
+        }
     }
 
     public function cancel() {

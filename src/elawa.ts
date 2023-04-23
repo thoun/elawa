@@ -208,8 +208,23 @@ class Elawa implements ElawaGame {
                         skipResourceButton.addEventListener('mouseleave', () => this.tableCenter.showLinkedTokens(skipResourceArgs.pile, 0));
                     }
                     break;
+
+                case 'chooseOneLess':
+                    const chooseOneLessArgs = args as EnteringChooseOneLessArgs;
+                    if (chooseOneLessArgs.canSkipDiscard) {
+                        (this as any).addActionButton(`chooseOneLess0_button`, _("Ignore sacrifice"), () => this.chooseOneLess(0));
+                    }
+                    chooseOneLessArgs.tokens.forEach(token => {
+                        if (!document.getElementById(`chooseOneLess${token.type}_button`)) {
+                            (this as any).addActionButton(`chooseOneLess${token.type}_button`, _("Ignore ${resource}").replace('${resource}', `<div class="token-icon" data-type="${token.type}"></div>`), () => this.chooseOneLess(token.type));
+                        }
+                    });
+
+                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
+                    break;
+
                 case 'discardCard':
-                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel());
+                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
                 case 'storeTokens':
                     (this as any).addActionButton(`storeTokens_button`, _("Confirm stored resources"), () => this.storeTokens());
@@ -424,6 +439,16 @@ class Elawa implements ElawaGame {
             id
         });
     }
+  	
+    public chooseOneLess(type: number) {
+        if(!(this as any).checkAction('chooseOneLess')) {
+            return;
+        }
+
+        this.takeAction('chooseOneLess', {
+            type
+        });
+    }    
   	
     public cancel() {
         if(!(this as any).checkAction('cancel')) {

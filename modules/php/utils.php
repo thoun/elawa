@@ -15,6 +15,17 @@ trait UtilTrait {
         return null;
     }
 
+    function array_findIndex(array $array, callable $fn) {
+        $index = 0;
+        foreach ($array as $value) {
+            if($fn($value)) {
+                return $index;
+            }
+            $index++;
+        }
+        return null;
+    }
+
     function array_find_key(array $array, callable $fn) {
         foreach ($array as $key => $value) {
             if($fn($value)) {
@@ -203,9 +214,13 @@ trait UtilTrait {
         return $resources;
     }
 
-    function tokensToPayForCard(Card $card, array $resources, /*array | null*/ $hand = null) {
+    function tokensToPayForCard(Card $card, array $resources, /*array | null*/ $hand = null, /*bool*/ $payOneLess = false) {
         if ($hand !== null && $card->discard && count($hand) <= 1) {
-            return null; // no card to discard
+            if ($payOneLess) {
+                $payOneLess = false;
+            } else {
+                return null; // no card to discard
+            }
         }
 
         $tokensToPayForCard = [];
@@ -217,6 +232,10 @@ trait UtilTrait {
             if ($requiredForCard > $available) {
                 $missingResources += ($requiredForCard - $available);
             }
+        }
+
+        if ($payOneLess) {
+            $missingResources--;
         }
 
         if (count($resources[BONE]) >= $missingResources) {

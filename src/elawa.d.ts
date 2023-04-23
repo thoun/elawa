@@ -87,6 +87,11 @@ interface EnteringPlayCardArgs {
     playableCards: Card[];
 }
 
+interface EnteringChooseOneLessArgs {
+    canSkipDiscard: boolean;
+    tokens: Token[];
+}
+
 interface EnteringDiscardCardArgs extends EnteringPlayCardArgs {
     selectedCard: Card;
 }

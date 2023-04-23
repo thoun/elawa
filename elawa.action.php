@@ -83,6 +83,15 @@
         self::ajaxResponse();
     }
 
+    public function chooseOneLess() {
+        self::setAjaxMode();     
+
+        $type = self::getArg("type", AT_posint, true);
+        $this->game->chooseOneLess($type);
+
+        self::ajaxResponse();
+    }
+
     public function cancel() {
         self::setAjaxMode();     
 

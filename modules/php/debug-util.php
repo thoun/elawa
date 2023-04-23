@@ -14,6 +14,10 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
+    function debugPickResources($playerId = 2343492) {
+		$this->tokens->pickCardsForLocation(20, 'deck', 'player', $playerId);
+    }
+
     function debugAlmostEmptyPile($pile) {
 		$tokenCount = intval($this->tokens->countCardInLocation('pile'.$pile));
         $this->tokens->pickCardsForLocation($tokenCount - 1, 'pile'.$pile, 'discard');

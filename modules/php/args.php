@@ -17,19 +17,7 @@ trait ArgsTrait {
 
         return [
             'playerId' => $playerId,
-            'available' => [1,2,3,4,5,6], // TODO
-        ];
-    }
-   
-    function argPlayCard() {
-        $playerId = intval($this->getActivePlayerId());
-
-        $hand = $this->getCardsByLocation('hand', $playerId);
-        $resources = $this->getPlayerResources($playerId);
-        $playableCards = array_values(array_filter($hand, fn($card) => $this->tokensToPayForCard($card, $resources, $hand) !== null));
-
-        return [
-            'playableCards' => $playableCards,
+            //'available' => [1,2,3,4,5,6],
         ];
     }
 
@@ -47,6 +35,41 @@ trait ArgsTrait {
         return [
             'pile' => $pile,
             'resources' => $resources,
+        ];
+    }
+   
+    function argPlayCard() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $hand = $this->getCardsByLocation('hand', $playerId);
+        $resources = $this->getPlayerResources($playerId);
+
+        $payOneLess = false;
+        if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
+            $payOneLessVar = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+            $payOneLess = $payOneLessVar[0] == 1;
+        }
+
+        $playableCards = array_values(array_filter($hand, fn($card) => $this->tokensToPayForCard($card, $resources, $hand, $payOneLess) !== null));
+
+        return [
+            'payOneLess' => $payOneLess,
+            'playableCards' => $playableCards,
+        ];
+    }
+
+    function argChooseOneLess() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $payOneLess = $this->getGlobalVariable('payOneLess', true); // played card, selected card id, chosen
+        $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
+
+        $resources = $this->getPlayerResources($playerId);
+        $tokens = $this->tokensToPayForCard($card, $resources);
+
+        return [
+            'canSkipDiscard' => $card->discard,
+            'tokens' => $tokens,
         ];
     }
 
