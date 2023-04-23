@@ -303,6 +303,11 @@ trait UtilTrait {
                 'pile' => -2,
                 'type' => $token->type,
             ]);
+
+            $this->incStat(1, 'collectedResources');
+            $this->incStat(1, 'collectedResources', $playerId);
+            $this->incStat(1, 'collectedResources'.$token->type);
+            $this->incStat(1, 'collectedResources'.$token->type, $playerId);
         }
     }
     

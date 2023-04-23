@@ -28,6 +28,14 @@ trait ActionTrait {
                 'type' => $token->type,
             ]);
 
+            $this->incStat(1, 'collectedResources');
+            $this->incStat(1, 'collectedResources', $playerId);
+            $this->incStat(1, 'collectedResourcesFromFire');
+            $this->incStat(1, 'collectedResourcesFromFire', $playerId);
+            $this->incStat(1, 'collectedResources'.$token->type);
+            $this->incStat(1, 'collectedResources'.$token->type, $playerId);
+
+
             if ($newCount == 0) {
                 $this->setGameStateValue(LAST_TURN, 1);
 
@@ -119,6 +127,11 @@ trait ActionTrait {
                 'type' => $token->type,
             ]);
 
+            $this->incStat(1, 'collectedResources');
+            $this->incStat(1, 'collectedResources', $playerId);
+            $this->incStat(1, 'collectedResources'.$token->type);
+            $this->incStat(1, 'collectedResources'.$token->type, $playerId);
+
             if (intval($this->tokens->countCardInLocation('pile'.$tokenPile)) == 0) {
                 $this->refillTokenPile($tokenPile, $playerId);
                 
@@ -188,6 +201,11 @@ trait ActionTrait {
             $this->setGlobalVariable('payOneLess', $payOneLess);
         }
 
+        $this->incStat(1, 'playedCards');
+        $this->incStat(1, 'playedCards', $playerId);
+        $this->incStat(1, 'playedCards'.$card->cardType);
+        $this->incStat(1, 'playedCards'.$card->cardType, $playerId);
+
         $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'stay');
     }
 
@@ -247,6 +265,9 @@ trait ActionTrait {
             'playerId' => $playerId,
             'card' => $card,
         ]);
+        
+        $this->incStat(1, 'sacrifices');
+        $this->incStat(1, 'sacrifices', $playerId);
 
         $this->applyPlayCard($playerId, $args['selectedCard']);
         $this->setGameStateValue(SELECTED_CARD, -1);
@@ -317,6 +338,9 @@ trait ActionTrait {
             'keptTokens' => $keptTokens,
             'discardedTokens' => $discardedTokens,
         ]);
+        
+        $this->incStat(count($discardedTokens), 'discardedResourcesEndOfTurn');
+        $this->incStat(count($discardedTokens), 'discardedResourcesEndOfTurn', $playerId);
 
         $this->gamestate->nextState('next');
     }

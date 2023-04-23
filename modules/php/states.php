@@ -50,17 +50,17 @@ trait StateTrait {
     function stNextPlayer() {     
         $playerId = $this->getActivePlayerId();
 
-        //$this->incStat(1, 'turnsNumber');
-        //$this->incStat(1, 'turnsNumber', $playerId);
-
         $this->activeNextPlayer();       
         $playerId = $this->getActivePlayerId();
 
         $this->giveExtraTime($playerId);
 
         $endGame = false;
-        if (boolval($this->getGameStateValue(LAST_TURN)) && $this->getPlayer($playerId)->chief == intval($this->getUniqueValueFromDB("SELECT min(player_chief) FROM player"))) {
-            $endGame = true;
+        if ($this->getPlayer($playerId)->chief == intval($this->getUniqueValueFromDB("SELECT min(player_chief) FROM player"))) {
+            $this->incStat(1, 'roundNumber');
+            if (boolval($this->getGameStateValue(LAST_TURN))) {
+                $endGame = true;
+            }
         }
 
         $this->gamestate->nextState($endGame ? 'endScore' : 'nextPlayer');
@@ -70,10 +70,11 @@ trait StateTrait {
         $playersIds = $this->getPlayersIds();
 
         foreach($playersIds as $playerId) {
-            $playedCards = $this->getCardsByLocation('played'.$playerId);
-            $score = 0;
+            $playedCards = $this->getPlayedCardWithStoredResources($playerId);
             foreach ($playedCards as $card) {
-                $score += $this->getCardScore($card, $playedCards);
+                $score = $this->getCardScore($card, $playedCards);
+                $this->incStat($score, 'pointCards'.$card->cardType);
+                $this->incStat($score, 'pointCards'.$card->cardType, $playerId);
             }
 
             $scoreAux = count($this->getTokensByLocation('player', $playerId));

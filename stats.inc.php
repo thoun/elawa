@@ -48,14 +48,94 @@
 */
 
 $commonStats = [
-    "cardPoints" => [
+    "playedCards" => [
         "id" => 20,
-        "name" => totranslate("Points from card bonus/malus"),
+        "name" => totranslate("Played cards"),
         "type" => "int"
     ],
-    "scoreCardPoints" => [
+    "playedCards1" => [
         "id" => 21,
-        "name" => totranslate("Points from scoring cards"),
+        "name" => totranslate("Played cards (house)"),
+        "type" => "int"
+    ],
+    "playedCards2" => [
+        "id" => 22,
+        "name" => totranslate("Played cards (storage)"),
+        "type" => "int"
+    ],
+    "playedCards3" => [
+        "id" => 23,
+        "name" => totranslate("Played cards (human)"),
+        "type" => "int"
+    ],
+    "playedCards4" => [
+        "id" => 24,
+        "name" => totranslate("Played cards (tool)"),
+        "type" => "int"
+    ],
+    "collectedResources" => [
+        "id" => 30,
+        "name" => totranslate("Collected resources"),
+        "type" => "int"
+    ],
+    "collectedResources1" => [
+        "id" => 31,
+        "name" => totranslate("Collected resources (berry)"),
+        "type" => "int"
+    ],
+    "collectedResources2" => [
+        "id" => 32,
+        "name" => totranslate("Collected resources (meat)"),
+        "type" => "int"
+    ],
+    "collectedResources3" => [
+        "id" => 33,
+        "name" => totranslate("Collected resources (flint)"),
+        "type" => "int"
+    ],
+    "collectedResources4" => [
+        "id" => 34,
+        "name" => totranslate("Collected resources (skin)"),
+        "type" => "int"
+    ],
+    "collectedResources5" => [
+        "id" => 35,
+        "name" => totranslate("Collected resources (bone)"),
+        "type" => "int"
+    ],
+    "pointCards1" => [
+        "id" => 41,
+        "name" => totranslate("Points with houses"),
+        "type" => "int"
+    ],
+    "pointCards2" => [
+        "id" => 42,
+        "name" => totranslate("Points with storages"),
+        "type" => "int"
+    ],
+    "pointCards3" => [
+        "id" => 43,
+        "name" => totranslate("Points with humans"),
+        "type" => "int"
+    ],
+    "pointCards4" => [
+        "id" => 44,
+        "name" => totranslate("Points with tools"),
+        "type" => "int"
+    ],
+    "sacrifices" => [
+        "id" => 50,
+        "name" => totranslate("Sacrifices"),
+        "type" => "int"
+    ],
+    "discardedResourcesEndOfTurn" => [
+        "id" => 51,
+        "name" => totranslate("Discarded resources at end of turn"),
+        "type" => "int"
+    ],
+    "collectedResourcesFromFire" => [
+        "id" => 52,
+        "name" => totranslate("Collected resources from fire"),
         "type" => "int"
     ],
 ];

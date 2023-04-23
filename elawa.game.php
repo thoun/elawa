@@ -116,7 +116,10 @@ class Elawa extends Table {
         $this->initStat('table', 'roundNumber', 0);
         foreach(['table', 'player'] as $type) {
             foreach([
-                "cardPoints", "scoreCardPoints",
+                "playedCards", "playedCards1", "playedCards2", "playedCards3", "playedCards4",
+                "collectedResources", "collectedResources1", "collectedResources2", "collectedResources3", "collectedResources4", "collectedResources5",
+                "pointCards1", "pointCards2", "pointCards3", "pointCards4",
+                "sacrifices", "discardedResourcesEndOfTurn", "collectedResourcesFromFire",
             ] as $name) {
                 $this->initStat($type, $name, 0);
             }
