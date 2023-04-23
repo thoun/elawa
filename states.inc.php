@@ -83,6 +83,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "skipResource" => ST_PLAYER_SKIP_RESOURCE,
+            "takeCard" => ST_PLAYER_TAKE_CARD_CHIEF_POWER,
             "next" => ST_PLAYER_PLAY_CARD,
         ]
     ],
@@ -95,6 +96,20 @@ $playerActionsGameStates = [
         "args" => "argSkipResource",
         "possibleactions" => [ 
             "skipResource",
+        ],
+        "transitions" => [
+            "next" => ST_PLAYER_PLAY_CARD,
+        ]
+    ],
+
+    ST_PLAYER_TAKE_CARD_CHIEF_POWER => [
+        "name" => "takeCardChiefPower",
+        "description" => clienttranslate('${actplayer} must take a tribe card on the table (chieftain power)'),
+        "descriptionmyturn" => clienttranslate('${you} must take a tribe card on the table (chieftain power)'),
+        "type" => "activeplayer",
+        "args" => "argTakeCard",
+        "possibleactions" => [ 
+            "takeCard",
         ],
         "transitions" => [
             "next" => ST_PLAYER_PLAY_CARD,

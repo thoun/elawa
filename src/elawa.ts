@@ -92,6 +92,7 @@ class Elawa implements ElawaGame {
         switch (stateName) {
             case 'takeCard':
             case 'takeCardPower':
+            case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
             case 'playCard':
@@ -144,6 +145,7 @@ class Elawa implements ElawaGame {
         switch (stateName) {
             case 'takeCard':
             case 'takeCardPower':
+            case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
             case 'playCard':

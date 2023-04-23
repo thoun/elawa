@@ -61,11 +61,12 @@ trait ActionTrait {
         }
 
         $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
-        $fromPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_POWER;
-        $canSkipResource = !$fromPower && $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
+        $fromCardPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_POWER;
+        $fromChieftainPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
+        $canSkipResource = !$fromCardPower && $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
 
-        $message = $fromPower ?
-            clienttranslate('${player_name} takes a card with played card power') :
+        $message = $fromCardPower || $fromChieftainPower ?
+            clienttranslate('${player_name} takes a card with special power') :
             clienttranslate('${player_name} takes a card associated with ${number} tokens');
 
         self::notifyAllPlayers('takeCard', $message, [
@@ -78,19 +79,28 @@ trait ActionTrait {
             'newCount' => intval($this->cards->countCardInLocation('pile'.$pile)),
         ]);
 
-        if (!$fromPower && !$canSkipResource) {
-            $this->applyTakeCardResources($playerId, $pile, $card->tokens);
+        $redirect = false;
+        if (!$fromCardPower && !$canSkipResource) {
+            if ($fromChieftainPower) {
+                $emptyPileTakeCard = $this->getGlobalVariable('emptyPileTakeCard');
+                $fromPile = $emptyPileTakeCard[0];
+                $tokens = $emptyPileTakeCard[1];
+                $this->applyTakeCardResources($playerId, $fromPile, $tokens);
+                $this->deleteGlobalVariable('emptyPileTakeCard');
+            } else {
+                $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens);
+            }
         }
 
         if ($canSkipResource) {
             $this->setGlobalVariable('skipResource', [$pile, $card->tokens]);
             $this->gamestate->nextState('skipResource');
         } else {
-            $this->gamestate->nextState('next');
+            $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
         }
     }
     
-    function applyTakeCardResources(int $playerId, int $pile, int $tokens, int $skip = 0) {
+    function applyTakeCardResources(int $playerId, int $pile, int $tokens, int $skip = 0) {  // return $redirect
         for ($i = 1; $i <= $tokens + ($skip == 0 ? 0 : 1); $i++) {
             if ($i == $skip) {
                 continue;
@@ -111,12 +121,19 @@ trait ActionTrait {
 
             if (intval($this->tokens->countCardInLocation('pile'.$tokenPile)) == 0) {
                 $this->refillTokenPile($tokenPile, $playerId);
+                
+                if ($this->getChiefPower($playerId) == CHIEF_POWER_TAKE_CARD) {
+                    $this->setGlobalVariable('emptyPileTakeCard', [$tokenPile, $tokens - $i]);
+                    return true;
+                }
             }
         }
 
         if ($tokens == 1 && $this->getChiefPower($playerId) == CHIEF_POWER_ADDITIONAL_RESOURCE) {
             $this->takeRessourceFromPool($playerId);
         }
+
+        return false;
     }
 
     function skipResource(int $number) {
@@ -128,7 +145,8 @@ trait ActionTrait {
         $pile = $skipResourceArray[0];
         $tokens = $skipResourceArray[1];
 
-        $this->applyTakeCardResources($playerId, $pile, $tokens, $number);
+        $this->applyTakeCardResources($playerId, $pile, $tokens, $number); // will always return false as player can't have both powers
+        $this->deleteGlobalVariable('skipResource');
 
         $this->gamestate->nextState('next');
     }

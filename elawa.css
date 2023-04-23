@@ -776,11 +776,9 @@ body > .card {
   padding: 5px;
   text-overflow: ellipsis;
 }
-.player-table .block-with-text .block-label.your-line {
-  margin-left: 5px;
-}
 .player-table .block-with-text > div:not(.block-label) {
   flex: 1;
+  min-height: 282px;
 }
 .player-table .hand-wrapper {
   margin: 5px;

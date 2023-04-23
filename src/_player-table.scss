@@ -32,14 +32,11 @@
       //color: white;
       padding: 5px;
       text-overflow: ellipsis;
-
-      &.your-line {
-        margin-left: 5px;
-      }
     }
 
     &>div:not(.block-label) {
       flex: 1;
+      min-height: 282px;
     }
   }
 

@@ -14,6 +14,11 @@ trait DebugUtilTrait {
         //$this->debugLastTurn();
     }
 
+    function debugAlmostEmptyPile($pile) {
+		$tokenCount = intval($this->tokens->countCardInLocation('pile'.$pile));
+        $this->tokens->pickCardsForLocation($tokenCount - 1, 'pile'.$pile, 'discard');
+    }
+
     function debugEmptyFire($remaining = 1) {
 		$fireTokenCount = intval($this->tokens->countCardInLocation('center'));
         $this->tokens->pickCardsForLocation($fireTokenCount - $remaining, 'center', 'discard');

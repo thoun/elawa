@@ -1732,6 +1732,7 @@ var Elawa = /** @class */ (function () {
         switch (stateName) {
             case 'takeCard':
             case 'takeCardPower':
+            case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
             case 'playCard':
@@ -1782,6 +1783,7 @@ var Elawa = /** @class */ (function () {
         switch (stateName) {
             case 'takeCard':
             case 'takeCardPower':
+            case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
             case 'playCard':
