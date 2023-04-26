@@ -35,4 +35,6 @@
   box-shadow: 0 0 3px 1px black;
   right: 0;
   top: -10px;
+  transform-origin: center center;
+  transform: rotate(calc(var(--angle) * -1));
 }
