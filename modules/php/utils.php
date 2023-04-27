@@ -214,7 +214,7 @@ trait UtilTrait {
         return $resources;
     }
 
-    function tokensToPayForCard(Card $card, array $resources, /*array | null*/ $hand = null, /*bool*/ $payOneLess = false) {
+    function tokensToPayForCard(Card $card, array $resources, /*array | null*/ $hand = null, /*bool*/ $payOneLess = false, /*int|null*/$ignoreType = null) {
         if ($hand !== null && $card->discard && count($hand) <= 1) {
             if ($payOneLess) {
                 $payOneLess = false;
@@ -227,6 +227,10 @@ trait UtilTrait {
         $missingResources = 0;
         for ($i = 1; $i <= 4; $i++) {
             $requiredForCard = count(array_filter($card->resources, fn($resource) => $resource == $i));
+            if ($i == $ignoreType) {
+                $requiredForCard--;
+                $ignoreType = null;
+            }
             $available = count($resources[$i]);
             $tokensToPayForCard = array_merge($tokensToPayForCard, array_slice($resources[$i], 0, min($requiredForCard, $available)));
             if ($requiredForCard > $available) {

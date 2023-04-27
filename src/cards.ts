@@ -19,7 +19,7 @@ class CardsManager extends CardManager<Card> {
                 div.dataset.number = ''+card.number;
 
                 if (card.cardType == STORAGE) {
-                    div.style.alignItems = 'center';
+                    div.classList.add('storage-stock');
                     this.storageStocks[card.id] = new LineStock<Token>(game.tokensManager, div);
                     if (card.storedResources) {
                         this.storageStocks[card.id].addCards(card.storedResources);
@@ -29,9 +29,8 @@ class CardsManager extends CardManager<Card> {
         });
     }
     
-    public addToken(cardId: number, tokenId: number): void {
-        console.log(cardId, tokenId, this.storageStocks);
-        this.storageStocks[cardId].addCard({id: tokenId} as Token);
+    public addToken(cardId: number, token: Token): void {
+        this.storageStocks[cardId].addCard(token);
     }
 
     private getType(type: number): string {
@@ -108,5 +107,9 @@ class CardsManager extends CardManager<Card> {
         <strong>${_("Resources to take:")}</strong> ${card.tokens}`;
  
         return message;
+    }
+
+    public storageCardHasTokenOfType(cardId: number, type: number): boolean {
+        return this.storageStocks[cardId].getCards().some(card => card.type == type);
     }
 }

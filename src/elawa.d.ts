@@ -89,7 +89,7 @@ interface EnteringPlayCardArgs {
 
 interface EnteringChooseOneLessArgs {
     canSkipDiscard: boolean;
-    tokens: Token[];
+    tokens: number[];
 }
 
 interface EnteringDiscardCardArgs extends EnteringPlayCardArgs {
@@ -136,7 +136,7 @@ interface NotifDiscardCardArgs {
 // storedTokens
 interface NotifStoredTokensArgs {
     playerId: number;
-    tokens: { [cardId: number]: number };
+    tokens: { [cardId: number]: Token };
 }
 
 // discardTokens

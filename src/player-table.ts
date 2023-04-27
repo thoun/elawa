@@ -164,7 +164,13 @@ class PlayerTable {
             this.game.cardsManager.getCardElement(card).appendChild(storageActions);
 
             if (card.canStoreResourceType) {
-                this.createStorageAction(storageActions, card.storageType);
+                if (!card.storageType) {
+                    [1, 2, 3, 4].filter(type => this.getTokenOfType(type) && !this.game.cardsManager.storageCardHasTokenOfType(card.id, type)).forEach(type => {
+                        this.createStorageAction(storageActions, type);
+                    });
+                } else {
+                    this.createStorageAction(storageActions, card.storageType);
+                }
             }
             if (canPlaceBone) {
                 this.createStorageAction(storageActions, BONE);
@@ -176,7 +182,9 @@ class PlayerTable {
         document.getElementById(`player-table-${this.playerId}-played`).querySelectorAll('.storage-actions').forEach(elem => elem.remove());
     }
     
-    public storeTokens(tokens: { [cardId: number]: number; }) {
-        Object.entries(tokens).forEach(entry => this.game.cardsManager.addToken(Number(entry[0]), Number(entry[1])));
+    public storeTokens(tokens: { [cardId: number]: Token; }) {
+        Object.entries(tokens).forEach(entry => 
+            this.game.cardsManager.addToken(Number(entry[0]), entry[1])
+        );
     }
 }

@@ -167,18 +167,15 @@ trait ActionTrait {
     function applyPlayCard(int $playerId, Card $card) {
         $this->cards->moveCard($card->id, 'played'.$playerId, intval($this->cards->countCardInLocation('played'.$playerId)) - 1);
 
-        $payOneLess = null;
+        $payOneLessData = null;
+        $payOneLess = false;
         if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
-            $payOneLess = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+            $payOneLessData = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+            $payOneLess = $payOneLessData !== null && $payOneLessData[0] == 1 && $payOneLessData[2] > 0;
         }
 
         $resources = $this->getPlayerResources($playerId);
-        $tokens = $this->tokensToPayForCard($card, $resources);
-
-        if ($payOneLess !== null && $payOneLess[0] == 1 && $payOneLess[2] > 0) {
-            $indexOfIgnored = $this->array_findIndex($tokens, fn($token) => $token->id == $payOneLess[2]);
-            array_splice($tokens, $indexOfIgnored, 1);
-        }
+        $tokens = $this->tokensToPayForCard($card, $resources, null, false, $payOneLess ? $payOneLessData[2] : null);
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
         
@@ -196,9 +193,9 @@ trait ActionTrait {
             $this->takeRessourceFromPool($playerId);
         }
 
-        if ($payOneLess !== null) {
-            $payOneLess[0]++;
-            $this->setGlobalVariable('payOneLess', $payOneLess);
+        if ($payOneLessData !== null) {
+            $payOneLessData[0]++;
+            $this->setGlobalVariable('payOneLess', $payOneLessData);
         }
 
         $this->incStat(1, 'playedCards');
@@ -309,8 +306,10 @@ trait ActionTrait {
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => count($tokens), // for logs
-            'tokens' => $tokens,
+            'tokens' => array_map(fn($tokenId) => $this->getTokenFromDb($this->tokens->getCard($tokenId)), $tokens),
         ]);
+
+        $this->updateScore($playerId);
 
         $this->gamestate->nextState('next');
     }

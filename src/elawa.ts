@@ -215,8 +215,8 @@ class Elawa implements ElawaGame {
                         (this as any).addActionButton(`chooseOneLess0_button`, _("Ignore sacrifice"), () => this.chooseOneLess(0));
                     }
                     chooseOneLessArgs.tokens.forEach(token => {
-                        if (!document.getElementById(`chooseOneLess${token.type}_button`)) {
-                            (this as any).addActionButton(`chooseOneLess${token.type}_button`, _("Ignore ${resource}").replace('${resource}', `<div class="token-icon" data-type="${token.type}"></div>`), () => this.chooseOneLess(token.type));
+                        if (!document.getElementById(`chooseOneLess${token}_button`)) {
+                            (this as any).addActionButton(`chooseOneLess${token}_button`, _("Ignore ${resource}").replace('${resource}', `<div class="token-icon" data-type="${token}"></div>`), () => this.chooseOneLess(token));
                         }
                     });
 
@@ -574,7 +574,11 @@ class Elawa implements ElawaGame {
     }
 
     notif_storedTokens(notif: Notif<NotifStoredTokensArgs>) {
-        this.getPlayerTable(notif.args.playerId).storeTokens(notif.args.tokens);
+        const playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).storeTokens(notif.args.tokens);
+        Object.values(notif.args.tokens).forEach(token => {
+            this.resourcesCounters[playerId][token.type].incValue(-1);
+        });
     }
 
     notif_discardTokens(notif: Notif<NotifDiscardTokensArgs>) {

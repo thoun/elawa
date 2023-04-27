@@ -59,13 +59,13 @@ trait ArgsTrait {
     }
 
     function argChooseOneLess() {
-        $playerId = intval($this->getActivePlayerId());
+        //$playerId = intval($this->getActivePlayerId());
 
         $payOneLess = $this->getGlobalVariable('payOneLess', true); // played card, selected card id, chosen
         $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
 
-        $resources = $this->getPlayerResources($playerId);
-        $tokens = $this->tokensToPayForCard($card, $resources);
+        //$resources = $this->getPlayerResources($playerId);
+        $tokens = array_unique($card->resources);
 
         return [
             'canSkipDiscard' => $card->discard,
@@ -89,11 +89,33 @@ trait ArgsTrait {
     function argStoreTokens() {
         $playerId = intval($this->getActivePlayerId());
 
-        $played = $this->getCardsByLocation('played'.$playerId);
+        $played = $this->getPlayedCardWithStoredResources($playerId);
         $storageCards = array_values(array_filter($played, fn($card) => $card->cardType == STORAGE));
         $resources = $this->getPlayerResources($playerId);
         foreach ($storageCards as &$card) {
-            $card->canStoreResourceType = count($resources[$card->storageType]) > 0;
+            if ($card->storageType == DIFFERENT) {
+                $groupedStoredResource = [                    
+                    BERRY => [],
+                    MEAT => [],
+                    FLINT => [],
+                    SKIN => [],
+                    BONE => [],
+                ];
+                foreach ($card->storedResources as $storedResource) {
+                    $groupedStoredResource[$storedResource->type][] = $storedResource;
+                }
+                $availableResources = [];
+                foreach ($resources as $type => $resourceArray) {
+                    if (count($resourceArray) > 0) {
+                        $availableResources[] = $type;
+                    }
+                }
+                $card->canStoreResourceType = $this->array_some($availableResources, fn($availableResource) =>
+                    count($groupedStoredResource[$availableResource]) == 0
+                );
+            } else {
+                $card->canStoreResourceType = count($resources[$card->storageType]) > 0;
+            }
         }
 
         return [

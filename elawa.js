@@ -1224,7 +1224,7 @@ var CardsManager = /** @class */ (function (_super) {
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
                 if (card.cardType == STORAGE) {
-                    div.style.alignItems = 'center';
+                    div.classList.add('storage-stock');
                     _this.storageStocks[card.id] = new LineStock(game.tokensManager, div);
                     if (card.storedResources) {
                         _this.storageStocks[card.id].addCards(card.storedResources);
@@ -1236,9 +1236,8 @@ var CardsManager = /** @class */ (function (_super) {
         _this.storageStocks = [];
         return _this;
     }
-    CardsManager.prototype.addToken = function (cardId, tokenId) {
-        console.log(cardId, tokenId, this.storageStocks);
-        this.storageStocks[cardId].addCard({ id: tokenId });
+    CardsManager.prototype.addToken = function (cardId, token) {
+        this.storageStocks[cardId].addCard(token);
     };
     CardsManager.prototype.getType = function (type) {
         var message = '';
@@ -1320,6 +1319,9 @@ var CardsManager = /** @class */ (function (_super) {
         }
         message += "\n        <br>\n        <strong>".concat(_("Resources to take:"), "</strong> ").concat(card.tokens);
         return message;
+    };
+    CardsManager.prototype.storageCardHasTokenOfType = function (cardId, type) {
+        return this.storageStocks[cardId].getCards().some(function (card) { return card.type == type; });
     };
     return CardsManager;
 }(CardManager));
@@ -1661,7 +1663,14 @@ var PlayerTable = /** @class */ (function () {
             storageActions.dataset.tokenId = '';
             _this.game.cardsManager.getCardElement(card).appendChild(storageActions);
             if (card.canStoreResourceType) {
-                _this.createStorageAction(storageActions, card.storageType);
+                if (!card.storageType) {
+                    [1, 2, 3, 4].filter(function (type) { return _this.getTokenOfType(type) && !_this.game.cardsManager.storageCardHasTokenOfType(card.id, type); }).forEach(function (type) {
+                        _this.createStorageAction(storageActions, type);
+                    });
+                }
+                else {
+                    _this.createStorageAction(storageActions, card.storageType);
+                }
             }
             if (canPlaceBone) {
                 _this.createStorageAction(storageActions, BONE);
@@ -1673,7 +1682,9 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.storeTokens = function (tokens) {
         var _this = this;
-        Object.entries(tokens).forEach(function (entry) { return _this.game.cardsManager.addToken(Number(entry[0]), Number(entry[1])); });
+        Object.entries(tokens).forEach(function (entry) {
+            return _this.game.cardsManager.addToken(Number(entry[0]), entry[1]);
+        });
     };
     return PlayerTable;
 }());
@@ -1862,8 +1873,8 @@ var Elawa = /** @class */ (function () {
                         this.addActionButton("chooseOneLess0_button", _("Ignore sacrifice"), function () { return _this.chooseOneLess(0); });
                     }
                     chooseOneLessArgs.tokens.forEach(function (token) {
-                        if (!document.getElementById("chooseOneLess".concat(token.type, "_button"))) {
-                            _this.addActionButton("chooseOneLess".concat(token.type, "_button"), _("Ignore ${resource}").replace('${resource}', "<div class=\"token-icon\" data-type=\"".concat(token.type, "\"></div>")), function () { return _this.chooseOneLess(token.type); });
+                        if (!document.getElementById("chooseOneLess".concat(token, "_button"))) {
+                            _this.addActionButton("chooseOneLess".concat(token, "_button"), _("Ignore ${resource}").replace('${resource}', "<div class=\"token-icon\" data-type=\"".concat(token, "\"></div>")), function () { return _this.chooseOneLess(token); });
                         }
                     });
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
@@ -2156,7 +2167,12 @@ var Elawa = /** @class */ (function () {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
     };
     Elawa.prototype.notif_storedTokens = function (notif) {
-        this.getPlayerTable(notif.args.playerId).storeTokens(notif.args.tokens);
+        var _this = this;
+        var playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).storeTokens(notif.args.tokens);
+        Object.values(notif.args.tokens).forEach(function (token) {
+            _this.resourcesCounters[playerId][token.type].incValue(-1);
+        });
     };
     Elawa.prototype.notif_discardTokens = function (notif) {
         var _this = this;
