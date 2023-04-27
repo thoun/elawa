@@ -697,6 +697,20 @@ body > .card {
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
 }
+#table-center .center-spot-token {
+  --shadow-color: black;
+}
+#table-center .center-spot-token::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 50%;
+  background: var(--shadow-color);
+  box-shadow: 0 0 2px 2px var(--shadow-color);
+}
 #table-center .center-spot-counter {
   position: absolute;
   width: 24px;

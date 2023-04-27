@@ -11,7 +11,7 @@ class CenterSpot {
 
     constructor(
         private game: ElawaGame,
-        tableCenter: TableCenter,
+        private tableCenter: TableCenter,
         public pile: number,
         card: Card,
         cardCount: number,
@@ -65,6 +65,7 @@ class CenterSpot {
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create(`center-spot-${pile}-token-counter`);
         this.tokenCounter.setValue(tokenCount);
+        this.tableCenter.setShadow(`center-spot-${pile}-token`, tokenCount);
     }
 
     private getSpotAngle() {
@@ -86,6 +87,7 @@ class CenterSpot {
         }
         this.visibleToken.setCardNumber(newCount);
         this.tokenCounter.toValue(newCount);
+        this.tableCenter.setShadow(`center-spot-${this.pile}-token`, newCount);
     }
     
     public setCardSelectable(selectable: boolean): void {

@@ -1,3 +1,10 @@
+const SHADOW_COLORS = [
+    'transparent',
+    'orangered',
+    'darkred',
+    'black',
+];
+
 class TableCenter {
     private spots: CenterSpot[] = [];
     public hiddenToken: HiddenDeck<Token>;
@@ -21,6 +28,7 @@ class TableCenter {
         this.fireCounter = new ebg.counter();
         this.fireCounter.create(`center-token-counter`);
         this.fireCounter.setValue(gamedatas.fireTokenCount);
+        this.setShadow(`center-token-counter`, gamedatas.fireTokenCount);
     }
 
     public setNewCard(pile: number, newCard: Card, newCount: number) {
@@ -28,9 +36,9 @@ class TableCenter {
     }
 
     public setNewToken(pile: number, newToken: Token, newCount: number) {
-        console.log(pile, newToken, newCount);
         if (pile == -1) {
             this.hiddenToken.setCardNumber(newCount);
+            this.setShadow(`center-token-counter`, newCount);
             if (newToken) {
                 this.hiddenToken.addCard(newToken);
             }
@@ -38,6 +46,11 @@ class TableCenter {
         } else {
             this.spots[pile].setNewToken(newToken, newCount);
         }
+    }
+
+    public setShadow(stockId: string, count: number) {
+
+        document.getElementById(stockId).style.setProperty('--shadow-color', SHADOW_COLORS[Math.min(3, count)]);
     }
     
     public setCardsSelectable(selectable: boolean) {

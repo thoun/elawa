@@ -1417,6 +1417,7 @@ var CenterSpot = /** @class */ (function () {
     function CenterSpot(game, tableCenter, pile, card, cardCount, token, tokenCount) {
         var _this = this;
         this.game = game;
+        this.tableCenter = tableCenter;
         this.pile = pile;
         var html = "\n        <div id=\"center-spot-".concat(pile, "\" class=\"center-spot\" style=\"--angle: ").concat(this.getSpotAngle(), "\">\n            <div id=\"center-spot-").concat(pile, "-token\" class=\"center-spot-token\">\n                <div id=\"center-spot-").concat(pile, "-token-counter\" class=\"center-spot-counter token-counter\"></div>\n            </div>\n            <div id=\"center-spot-").concat(pile, "-card\" class=\"center-spot-card\">\n            <div id=\"center-spot-").concat(pile, "-card-counter\" class=\"center-spot-counter card-counter\"></div>\n            </div>\n        ");
         html += "</div>";
@@ -1453,6 +1454,7 @@ var CenterSpot = /** @class */ (function () {
         this.tokenCounter = new ebg.counter();
         this.tokenCounter.create("center-spot-".concat(pile, "-token-counter"));
         this.tokenCounter.setValue(tokenCount);
+        this.tableCenter.setShadow("center-spot-".concat(pile, "-token"), tokenCount);
     }
     CenterSpot.prototype.getSpotAngle = function () {
         var angle = 60 * this.pile + 90;
@@ -1471,6 +1473,7 @@ var CenterSpot = /** @class */ (function () {
         }
         this.visibleToken.setCardNumber(newCount);
         this.tokenCounter.toValue(newCount);
+        this.tableCenter.setShadow("center-spot-".concat(this.pile, "-token"), newCount);
     };
     CenterSpot.prototype.setCardSelectable = function (selectable) {
         this.visibleCard.setSelectionMode(selectable && this.cardCounter.getValue() > 0 ? 'single' : 'none');
@@ -1484,6 +1487,12 @@ var CenterSpot = /** @class */ (function () {
     };
     return CenterSpot;
 }());
+var SHADOW_COLORS = [
+    'transparent',
+    'orangered',
+    'darkred',
+    'black',
+];
 var TableCenter = /** @class */ (function () {
     function TableCenter(game, gamedatas) {
         this.game = game;
@@ -1503,14 +1512,15 @@ var TableCenter = /** @class */ (function () {
         this.fireCounter = new ebg.counter();
         this.fireCounter.create("center-token-counter");
         this.fireCounter.setValue(gamedatas.fireTokenCount);
+        this.setShadow("center-token-counter", gamedatas.fireTokenCount);
     }
     TableCenter.prototype.setNewCard = function (pile, newCard, newCount) {
         this.spots[pile].setNewCard(newCard, newCount);
     };
     TableCenter.prototype.setNewToken = function (pile, newToken, newCount) {
-        console.log(pile, newToken, newCount);
         if (pile == -1) {
             this.hiddenToken.setCardNumber(newCount);
+            this.setShadow("center-token-counter", newCount);
             if (newToken) {
                 this.hiddenToken.addCard(newToken);
             }
@@ -1519,6 +1529,9 @@ var TableCenter = /** @class */ (function () {
         else {
             this.spots[pile].setNewToken(newToken, newCount);
         }
+    };
+    TableCenter.prototype.setShadow = function (stockId, count) {
+        document.getElementById(stockId).style.setProperty('--shadow-color', SHADOW_COLORS[Math.min(3, count)]);
     };
     TableCenter.prototype.setCardsSelectable = function (selectable) {
         this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
