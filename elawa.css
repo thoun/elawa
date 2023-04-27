@@ -697,6 +697,10 @@ body > .card {
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
 }
+#table-center .center-spot[id=center-spot-0] .card, #table-center .center-spot[id=center-spot-1] .card, #table-center .center-spot[id=center-spot-2] .card, #table-center .center-spot[id=center-spot-3] .card {
+  transform-origin: center center;
+  transform: rotate(180deg);
+}
 #table-center .center-spot-token {
   --shadow-color: black;
 }

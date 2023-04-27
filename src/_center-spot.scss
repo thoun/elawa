@@ -22,6 +22,13 @@
     from { box-shadow: 0 0 10px 10px #FFFFFFBB; }
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
+
+  &[id="center-spot-0"], &[id="center-spot-1"], &[id="center-spot-2"], &[id="center-spot-3"] {
+    .card {
+      transform-origin: center center;
+      transform: rotate(180deg);
+    }
+  }
 }
 
 .center-spot-token {
