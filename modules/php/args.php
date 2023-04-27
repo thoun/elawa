@@ -22,7 +22,7 @@ trait ArgsTrait {
     }
 
     function argSkipResource() {
-        $skipResourceArray = $this->getGlobalVariable('skipResource', true);
+        $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);
         $pile = $skipResourceArray[0];
         $tokens = $skipResourceArray[1];
 
@@ -46,7 +46,7 @@ trait ArgsTrait {
 
         $payOneLess = false;
         if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
-            $payOneLessVar = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+            $payOneLessVar = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true) ?? [0, 0, 0]; // played card, selected card id, chosen
             $payOneLess = $payOneLessVar[0] == 1;
         }
 
@@ -61,7 +61,7 @@ trait ArgsTrait {
     function argChooseOneLess() {
         //$playerId = intval($this->getActivePlayerId());
 
-        $payOneLess = $this->getGlobalVariable('payOneLess', true); // played card, selected card id, chosen
+        $payOneLess = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true); // played card, selected card id, chosen
         $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
 
         //$resources = $this->getPlayerResources($playerId);

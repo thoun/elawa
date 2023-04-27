@@ -90,18 +90,18 @@ trait ActionTrait {
         $redirect = false;
         if (!$fromCardPower && !$canSkipResource) {
             if ($fromChieftainPower) {
-                $emptyPileTakeCard = $this->getGlobalVariable('emptyPileTakeCard');
+                $emptyPileTakeCard = $this->getGlobalVariable(POWER_EMPTY_PILE);
                 $fromPile = $emptyPileTakeCard[0];
                 $tokens = $emptyPileTakeCard[1];
                 $this->applyTakeCardResources($playerId, $fromPile, $tokens);
-                $this->deleteGlobalVariable('emptyPileTakeCard');
+                $this->deleteGlobalVariable(POWER_EMPTY_PILE);
             } else {
                 $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens);
             }
         }
 
         if ($canSkipResource) {
-            $this->setGlobalVariable('skipResource', [$pile, $card->tokens]);
+            $this->setGlobalVariable(POWER_SKIP_RESSOURCE, [$pile, $card->tokens]);
             $this->gamestate->nextState('skipResource');
         } else {
             $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
@@ -136,7 +136,7 @@ trait ActionTrait {
                 $this->refillTokenPile($tokenPile, $playerId);
                 
                 if ($this->getChiefPower($playerId) == CHIEF_POWER_TAKE_CARD) {
-                    $this->setGlobalVariable('emptyPileTakeCard', [$tokenPile, $tokens - $i]);
+                    $this->setGlobalVariable(POWER_EMPTY_PILE, [$tokenPile, $tokens - $i]);
                     return true;
                 }
             }
@@ -154,12 +154,12 @@ trait ActionTrait {
 
         $playerId = intval($this->getActivePlayerId());
         
-        $skipResourceArray = $this->getGlobalVariable('skipResource', true);
+        $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);
         $pile = $skipResourceArray[0];
         $tokens = $skipResourceArray[1];
 
         $this->applyTakeCardResources($playerId, $pile, $tokens, $number); // will always return false as player can't have both powers
-        $this->deleteGlobalVariable('skipResource');
+        $this->deleteGlobalVariable(POWER_SKIP_RESSOURCE);
 
         $this->gamestate->nextState('next');
     }
@@ -170,7 +170,7 @@ trait ActionTrait {
         $payOneLessData = null;
         $payOneLess = false;
         if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
-            $payOneLessData = $this->getGlobalVariable('payOneLess', true) ?? [0, 0, 0]; // played card, selected card id, chosen
+            $payOneLessData = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true) ?? [0, 0, 0]; // played card, selected card id, chosen
             $payOneLess = $payOneLessData !== null && $payOneLessData[0] == 1 && $payOneLessData[2] > 0;
         }
 
@@ -195,7 +195,7 @@ trait ActionTrait {
 
         if ($payOneLessData !== null) {
             $payOneLessData[0]++;
-            $this->setGlobalVariable('payOneLess', $payOneLessData);
+            $this->setGlobalVariable(POWER_PAY_ONE_LESS, $payOneLessData);
         }
 
         $this->incStat(1, 'playedCards');
@@ -219,9 +219,9 @@ trait ActionTrait {
         }
 
         if ($args['payOneLess'] && ($card->discard || count($card->resources) > 0)) { // ignore a card you can't pay one less (no required resource at all)
-            $payOneLess = $this->getGlobalVariable('payOneLess', true);
+            $payOneLess = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true);
             $payOneLess[1] = $id;
-            $this->setGlobalVariable('payOneLess', $payOneLess);
+            $this->setGlobalVariable(POWER_PAY_ONE_LESS, $payOneLess);
             $this->gamestate->nextState('chooseOneLessResource');
         } else if ($card->discard) {
             $this->setGameStateValue(SELECTED_CARD, $id);
@@ -236,10 +236,6 @@ trait ActionTrait {
         self::checkAction('pass');
 
         $playerId = intval($this->getActivePlayerId());
-
-        if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
-            $this->deleteGlobalVariable('payOneLess');
-        }
 
         $this->gamestate->nextState('next');
     }
@@ -273,9 +269,9 @@ trait ActionTrait {
     public function chooseOneLess(int $type) {
         self::checkAction('chooseOneLess');
 
-        $payOneLess = $this->getGlobalVariable('payOneLess', true); // played card, selected card id, chosen
+        $payOneLess = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true); // played card, selected card id, chosen
         $payOneLess[2] = $type;
-        $this->setGlobalVariable('payOneLess', $payOneLess);
+        $this->setGlobalVariable(POWER_PAY_ONE_LESS, $payOneLess);
         $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
 
         if ($card->discard && $type != 0) {

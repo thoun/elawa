@@ -47,7 +47,9 @@ trait StateTrait {
         }
     }
 
-    function stNextPlayer() {     
+    function stNextPlayer() {
+        $this->deleteGlobalVariable(POWER_PAY_ONE_LESS);
+
         $playerId = $this->getActivePlayerId();
 
         $this->activeNextPlayer();       
