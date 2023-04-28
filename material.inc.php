@@ -86,7 +86,7 @@ $this->CARDS = [
         9 => new CardType(3, 11, HUMAN, [DISCARD, BERRY, BERRY, FLINT]),
         10 => new CardType(1, 18, HUMAN, [DISCARD, BERRY, BERRY, FLINT, SKIN]),
         11 => new CardType(2, 16, HUMAN, [DISCARD, FLINT, SKIN, SKIN]),
-        12 => new CardType(3, 2, TOOL, [BERRY, MEAT], HUMAN),
+        12 => new CardType(3, 2, TOOL, [BERRY, BERRY, SKIN], HUMAN),
 
     ],
 
