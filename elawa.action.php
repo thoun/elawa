@@ -118,6 +118,14 @@
 
         self::ajaxResponse();
     }
+
+    public function cancelLastMoves() {
+        self::setAjaxMode();     
+
+        $this->game->cancelLastMoves();
+
+        self::ajaxResponse();
+    }
   }
   
 

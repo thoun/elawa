@@ -104,6 +104,10 @@ trait ActionTrait {
             $this->setGlobalVariable(POWER_SKIP_RESSOURCE, [$pile, $card->tokens]);
             $this->gamestate->nextState('skipResource');
         } else {
+            if ($fromCardPower || $fromChieftainPower) {
+                $this->saveForUndo($playerId, true);
+            }
+
             $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
         }
     }
@@ -181,8 +185,11 @@ trait ActionTrait {
         }
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
+        $message = count($tokens) > 0 ?
+            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types})') :
+            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand');
         
-        self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types})'), [
+        self::notifyAllPlayers('playCard', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'card' => $card,
@@ -197,6 +204,7 @@ trait ActionTrait {
 
         if ($card->power == POWER_RESSOURCE) {
             $this->takeRessourceFromPool($playerId);
+            $this->saveForUndo($playerId, true);
         }
 
         if ($payOneLessData !== null) {
@@ -344,5 +352,28 @@ trait ActionTrait {
         $this->incStat(count($discardedTokens), 'discardedResourcesEndOfTurn', $playerId);
 
         $this->gamestate->nextState('next');
+    }
+
+    public function cancelLastMoves() {
+        //self::checkAction('cancelLastMoves');
+
+        $playerId = intval($this->getActivePlayerId());
+        $undo = $this->getGlobalVariable(UNDO);
+
+        $this->cards->moveCards($undo->cardsIds, 'hand', $playerId);
+        $this->tokens->moveCards($undo->tokensIds, 'player', $playerId);
+
+        $this->setGlobalVariable(POWER_PAY_ONE_LESS, $undo->payOneLess);
+
+        self::notifyAllPlayers('cancelLastMoves', clienttranslate('${player_name} cancels their last moves'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'cards' => $this->getCardsFromDb($this->cards->getCards($undo->cardsIds)),
+            'tokens' => $this->getTokensFromDb($this->tokens->getCards($undo->tokensIds)),
+        ]);
+
+        $this->updateScore($playerId);
+
+        $this->gamestate->jumpToState(ST_PLAYER_PLAY_CARD);
     }
 }

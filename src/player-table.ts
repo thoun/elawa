@@ -187,4 +187,9 @@ class PlayerTable {
             this.game.cardsManager.addToken(Number(entry[0]), entry[1])
         );
     }
+    
+    public cancelLastMoves(cards: Card[], tokens: Token[]) {
+        this.hand?.addCards(cards);
+        this.tokensFree.addCards(tokens);
+    }
 }

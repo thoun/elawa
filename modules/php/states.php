@@ -14,9 +14,13 @@ trait StateTrait {
     function stPlayCard() {
         $playerId = intval($this->getActivePlayerId());
 
-        if (count($this->getCardsByLocation('hand', $playerId)) == 0) {
+        /*if (count($this->getCardsByLocation('hand', $playerId)) == 0) {
             $this->gamestate->nextState('next');
-        }
+        } else {*/
+            if ($this->getGlobalVariable(UNDO) == null) {
+                $this->saveForUndo($playerId, false);
+            }
+        /*}*/
     }
 
     function stStoreTokens() {
@@ -48,7 +52,7 @@ trait StateTrait {
     }
 
     function stNextPlayer() {
-        $this->deleteGlobalVariable(POWER_PAY_ONE_LESS);
+        $this->deleteGlobalVariables([UNDO, POWER_PAY_ONE_LESS]);
 
         $playerId = $this->getActivePlayerId();
 

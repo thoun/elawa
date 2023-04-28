@@ -80,6 +80,7 @@ define('CHIEFTAIN_OPTION', 100);
 /*
  * Global variables
  */
+define('UNDO', 'undo');
 define('POWER_SKIP_RESSOURCE', 'skipResource');
 define('POWER_EMPTY_PILE', 'emptyPileTakeCard');
 define('POWER_PAY_ONE_LESS', 'payOneLess');

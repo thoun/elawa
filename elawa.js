@@ -1671,6 +1671,11 @@ var PlayerTable = /** @class */ (function () {
             return _this.game.cardsManager.addToken(Number(entry[0]), entry[1]);
         });
     };
+    PlayerTable.prototype.cancelLastMoves = function (cards, tokens) {
+        var _a;
+        (_a = this.hand) === null || _a === void 0 ? void 0 : _a.addCards(cards);
+        this.tokensFree.addCards(tokens);
+    };
     return PlayerTable;
 }());
 var ANIMATION_MS = 500;
@@ -1827,9 +1832,6 @@ var Elawa = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'playCard':
-                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
-                    break;
                 case 'skipResource':
                     var skipResourceArgs_1 = args;
                     var _loop_2 = function (i) {
@@ -1851,6 +1853,9 @@ var Elawa = /** @class */ (function () {
                     for (var i = 0; i < skipResourceArgs_1.resources.length; i++) {
                         _loop_2(i);
                     }
+                    break;
+                case 'playCard':
+                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
                     break;
                 case 'chooseOneLess':
                     var chooseOneLessArgs = args;
@@ -1879,6 +1884,9 @@ var Elawa = /** @class */ (function () {
                     button.dataset.max = args.number;
                     break;
             }
+        }
+        if (['playCard', 'chooseOneLess', 'discardCard', 'storeTokens', 'discardTokens'].includes(stateName)) {
+            this.addActionButton("cancelLastMoves_button", _("Cancel last moves"), function () { return _this.cancelLastMoves(); }, null, null, 'gray');
         }
     };
     ///////////////////////////////////////////////////
@@ -2071,6 +2079,12 @@ var Elawa = /** @class */ (function () {
             ids: this.getCurrentPlayerTable().tokensFree.getSelection().map(function (token) { return token.id; }).join(','),
         });
     };
+    Elawa.prototype.cancelLastMoves = function () {
+        /*if(!(this as any).checkAction('cancelLastMoves')) {
+            return;
+        }*/
+        this.takeAction('cancelLastMoves');
+    };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -2099,6 +2113,7 @@ var Elawa = /** @class */ (function () {
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
+            ['cancelLastMoves', ANIMATION_MS],
             ['lastTurn', 1],
         ];
         notifs.forEach(function (notif) {
@@ -2171,6 +2186,14 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.notif_updateScore = function (notif) {
         this.setScore(notif.args.playerId, notif.args.playerScore);
+    };
+    Elawa.prototype.notif_cancelLastMoves = function (notif) {
+        var _this = this;
+        var playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).cancelLastMoves(notif.args.cards, notif.args.tokens);
+        [1, 2, 3, 4, 5].forEach(function (type) {
+            return _this.resourcesCounters[playerId][type].toValue(notif.args.tokens.filter(function (token) { return token.type == type; }).length);
+        });
     };
     /**
      * Show last turn banner.

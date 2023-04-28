@@ -22,6 +22,7 @@ require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
 require_once('modules/php/objects/card.php');
 require_once('modules/php/objects/token.php');
 require_once('modules/php/objects/player.php');
+require_once('modules/php/objects/undo.php');
 require_once('modules/php/constants.inc.php');
 require_once('modules/php/utils.php');
 require_once('modules/php/actions.php');

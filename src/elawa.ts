@@ -188,9 +188,6 @@ class Elawa implements ElawaGame {
         
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
-                case 'playCard':
-                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
-                    break;
                 case 'skipResource':
                     const skipResourceArgs = args as EnteringSkipResourceArgs;
                     for (let i=0; i < skipResourceArgs.resources.length; i++) {
@@ -209,6 +206,9 @@ class Elawa implements ElawaGame {
                     }
                     break;
 
+                case 'playCard':
+                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
+                    break;
                 case 'chooseOneLess':
                     const chooseOneLessArgs = args as EnteringChooseOneLessArgs;
                     if (chooseOneLessArgs.canSkipDiscard) {
@@ -239,6 +239,10 @@ class Elawa implements ElawaGame {
                     break;
                     
             }
+        }
+
+        if (['playCard', 'chooseOneLess', 'discardCard', 'storeTokens', 'discardTokens'].includes(stateName)) {
+            (this as any).addActionButton(`cancelLastMoves_button`, _("Cancel last moves"), () => this.cancelLastMoves(), null, null, 'gray');
         }
     }
 
@@ -484,6 +488,14 @@ class Elawa implements ElawaGame {
             ids: this.getCurrentPlayerTable().tokensFree.getSelection().map(token => token.id).join(','),
         });
     }
+  	
+    public cancelLastMoves() {
+        /*if(!(this as any).checkAction('cancelLastMoves')) {
+            return;
+        }*/
+
+        this.takeAction('cancelLastMoves');
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -515,6 +527,7 @@ class Elawa implements ElawaGame {
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
+            ['cancelLastMoves', ANIMATION_MS],
             ['lastTurn', 1],
         ];
     
@@ -593,6 +606,14 @@ class Elawa implements ElawaGame {
 
     notif_updateScore(notif: Notif<NotifUpdateScoreArgs>) {
         this.setScore(notif.args.playerId, notif.args.playerScore);
+    }
+
+    notif_cancelLastMoves(notif: Notif<NotifCancelLastMovesArgs>) {
+        const playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).cancelLastMoves(notif.args.cards, notif.args.tokens);
+        [1,2,3,4,5].forEach(type => 
+            this.resourcesCounters[playerId][type].toValue(notif.args.tokens.filter(token => token.type == type).length)
+        );
     }
     
     /** 

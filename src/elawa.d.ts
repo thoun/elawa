@@ -151,3 +151,10 @@ interface NotifUpdateScoreArgs {
     playerId: number;
     playerScore: number;
 } 
+
+// cancelLastMoves
+interface NotifCancelLastMovesArgs {
+    playerId: number;
+    cards: Card[];
+    tokens: Token[];
+} 

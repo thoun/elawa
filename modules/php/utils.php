@@ -104,6 +104,10 @@ trait UtilTrait {
         return new Card($dbCard, $this->CARDS);
     }
 
+    function getCardsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
+    }
+
     function getCardById(int $id) {
         $sql = "SELECT * FROM `card` WHERE `card_id` = $id";
         $dbResults = $this->getCollectionFromDb($sql);
@@ -149,6 +153,10 @@ trait UtilTrait {
             return null;
         }
         return new Token($dbCard);
+    }
+
+    function getTokensFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getTokenFromDb($dbCard), array_values($dbCards));
     }
 
     function getTokensByLocation(string $location, /*int|null*/ $location_arg = null, /*int|null*/ $type = null, /*int|null*/ $number = null) {
@@ -336,6 +344,21 @@ trait UtilTrait {
             case 4: return clienttranslate("Red");
             case 5: return clienttranslate("Purple");
         }
+    }
+
+    function saveForUndo(int $playerId, bool $logUndoPoint) {
+        $cards = $this->getCardsByLocation('hand', $playerId);        
+        $tokens = $this->getTokensByLocation('player', $playerId);
+
+        if ($logUndoPoint) {
+            self::notifyPlayer($playerId, 'log', clienttranslate('As you revealed a hidden element, Cancel last moves will only allow to come back to this point'), []);
+        }
+
+        $this->setGlobalVariable(UNDO, new Undo(
+            array_map(fn($card) => $card->id, $cards),
+            array_map(fn($token) => $token->id, $tokens),
+            $this->getGlobalVariable(POWER_PAY_ONE_LESS, true)
+        ));
     }
     
 }
