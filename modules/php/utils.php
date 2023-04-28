@@ -318,5 +318,24 @@ trait UtilTrait {
             $this->incStat(1, 'collectedResources'.$token->type, $playerId);
         }
     }
+
+    function getCardType(int $type) {
+        switch ($type) {
+            case 1: return clienttranslate("House");
+            case 2: return clienttranslate("Storage");
+            case 3: return clienttranslate("Human");
+            case 4: return clienttranslate("Tool");
+        }
+    }
+
+    function getCardColor(int $color) {
+        switch ($color) {
+            case 1: return clienttranslate("Blue");
+            case 2: return clienttranslate("Yellow");
+            case 3: return clienttranslate("Green");
+            case 4: return clienttranslate("Red");
+            case 5: return clienttranslate("Purple");
+        }
+    }
     
 }

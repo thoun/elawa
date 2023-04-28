@@ -1240,55 +1240,27 @@ var CardsManager = /** @class */ (function (_super) {
         this.storageStocks[cardId].addCard(token);
     };
     CardsManager.prototype.getType = function (type) {
-        var message = '';
         switch (type) {
-            case 1:
-                message = _("House");
-                break;
-            case 2:
-                message = _("Storage");
-                break;
-            case 3:
-                message = _("Human");
-                break;
-            case 4:
-                message = _("Tool");
-                break;
+            case 1: return _("House");
+            case 2: return _("Storage");
+            case 3: return _("Human");
+            case 4: return _("Tool");
         }
-        return message;
     };
     CardsManager.prototype.getColor = function (color) {
-        var message = '';
         switch (color) {
-            case 1:
-                message = _("Blue");
-                break;
-            case 2:
-                message = _("Yellow");
-                break;
-            case 3:
-                message = _("Green");
-                break;
-            case 4:
-                message = _("Red");
-                break;
-            case 5:
-                message = _("Purple");
-                break;
+            case 1: return _("Blue");
+            case 2: return _("Yellow");
+            case 3: return _("Green");
+            case 4: return _("Red");
+            case 5: return _("Purple");
         }
-        return message;
     };
     CardsManager.prototype.getPower = function (power) {
-        var message = '';
         switch (power) {
-            case 10:
-                message = _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources.");
-                break;
-            case 11:
-                message = _("When a player places this card in front of them, they take 1 resource at random from the resource pool.");
-                break;
+            case 10: return _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources.");
+            case 11: return _("When a player places this card in front of them, they take 1 resource at random from the resource pool.");
         }
-        return message;
     };
     CardsManager.prototype.getTooltip = function (card) {
         var _this = this;
@@ -2207,15 +2179,6 @@ var Elawa = /** @class */ (function () {
         if (animate === void 0) { animate = true; }
         dojo.place("<div id=\"last-round\">\n            <span class=\"last-round-text ".concat(animate ? 'animate' : '', "\">").concat(_("This is the final round!"), "</span>\n        </div>"), 'page-title');
     };
-    /*private getColorName(color: number) {
-        switch (color) {
-            case 1: return _('Orange');
-            case 2: return _('Pink');
-            case 3: return _('Blue');
-            case 4: return _('Green');
-            case 5: return _('Purple');
-        }
-    }*/
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     Elawa.prototype.format_string_recursive = function (log, args) {
@@ -2224,8 +2187,11 @@ var Elawa = /** @class */ (function () {
                 if (typeof args.type !== 'string' || args.type[0] !== '<') {
                     args.type = "<div class=\"token-icon\" data-type=\"".concat(args.type, "\"></div>");
                 }
+                if (typeof args.types !== 'string' || args.types[0] !== '<') {
+                    args.types = args.types.map(function (type) { return "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"); }).join('');
+                }
                 for (var property in args) {
-                    if (['left'].includes(property) && args[property][0] != '<') {
+                    if (['left', 'card_color', 'card_type'].includes(property) && args[property][0] != '<') {
                         args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
                 }

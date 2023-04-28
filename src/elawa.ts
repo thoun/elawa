@@ -604,16 +604,6 @@ class Elawa implements ElawaGame {
         </div>`, 'page-title');
     }
 
-    /*private getColorName(color: number) {
-        switch (color) {
-            case 1: return _('Orange');
-            case 2: return _('Pink');
-            case 3: return _('Blue');
-            case 4: return _('Green');
-            case 5: return _('Purple');
-        }
-    }*/
-
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
@@ -624,8 +614,12 @@ class Elawa implements ElawaGame {
                     args.type = `<div class="token-icon" data-type="${args.type}"></div>`;
                 }
 
+                if (typeof args.types !== 'string' || args.types[0] !== '<') {
+                    args.types = args.types.map(type => `<div class="token-icon" data-type="${type}"></div>`).join('');
+                }
+
                 for (const property in args) {
-                    if (['left'].includes(property) && args[property][0] != '<') {
+                    if (['left', 'card_color', 'card_type'].includes(property) && args[property][0] != '<') {
                         args[property] = `<strong>${_(args[property])}</strong>`;
                     }
                 }

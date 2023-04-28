@@ -34,38 +34,29 @@ class CardsManager extends CardManager<Card> {
     }
 
     private getType(type: number): string {
-        let message = '';
         switch (type) {
-            case 1: message = _("House"); break;
-            case 2: message = _("Storage"); break;
-            case 3: message = _("Human"); break;
-            case 4: message = _("Tool"); break;
+            case 1: return _("House");
+            case 2: return _("Storage");
+            case 3: return _("Human");
+            case 4: return _("Tool");
         }
-
-        return message;
     }
 
     private getColor(color: number): string {
-        let message = '';
         switch (color) {
-            case 1: message = _("Blue"); break;
-            case 2: message = _("Yellow"); break;
-            case 3: message = _("Green"); break;
-            case 4: message = _("Red"); break;
-            case 5: message = _("Purple"); break;
+            case 1: return _("Blue");
+            case 2: return _("Yellow");
+            case 3: return _("Green");
+            case 4: return _("Red");
+            case 5: return _("Purple");
         }
-
-        return message;
     }
 
     private getPower(power: number): string {
-        let message = '';
         switch (power) {
-            case 10: message = _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources."); break;
-            case 11: message = _("When a player places this card in front of them, they take 1 resource at random from the resource pool."); break;
+            case 10: return _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources.");
+            case 11: return _("When a player places this card in front of them, they take 1 resource at random from the resource pool.");
         }
-
-        return message;
     }
 
     private getTooltip(card: Card): string {

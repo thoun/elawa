@@ -182,12 +182,15 @@ trait ActionTrait {
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
         
-        self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays a card from their hand'), [
+        self::notifyAllPlayers('playCard', clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types})'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'card' => $card,
             'newCount' => intval($this->cards->countCardInLocation('hand', $playerId)),
             'discardedTokens' => $tokens,
+            'types' => array_map(fn($token) => $token->type, $tokens), // for logs
+            'card_type' => $this->getCardType($card->cardType), // for logs
+            'card_color' => $this->getCardColor($card->color), // for logs
         ]);
 
         $this->updateScore($playerId);
