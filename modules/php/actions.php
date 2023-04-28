@@ -176,6 +176,9 @@ trait ActionTrait {
 
         $resources = $this->getPlayerResources($playerId);
         $tokens = $this->tokensToPayForCard($card, $resources, null, false, $payOneLess ? $payOneLessData[2] : null);
+        if ($tokens === null) {
+            throw new BgaUserException("You can't play this card");
+        }
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
         

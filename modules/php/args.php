@@ -59,13 +59,15 @@ trait ArgsTrait {
     }
 
     function argChooseOneLess() {
-        //$playerId = intval($this->getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
 
         $payOneLess = $this->getGlobalVariable(POWER_PAY_ONE_LESS, true); // played card, selected card id, chosen
         $card = $this->getCardFromDb($this->cards->getCard($payOneLess[1]));
 
-        //$resources = $this->getPlayerResources($playerId);
-        $tokens = array_unique($card->resources);
+        $resources = $this->getPlayerResources($playerId);
+        $tokens = array_values(array_unique($card->resources));
+
+        $tokens = array_values(array_filter($tokens, fn($token) => $this->tokensToPayForCard($card, $resources, null, false, $token) !== null));
 
         return [
             'canSkipDiscard' => $card->discard,
