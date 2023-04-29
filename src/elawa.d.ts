@@ -15,6 +15,7 @@ interface Card {
     tokens: number;
     power?: number;
     storageType?: number;
+    prestoredResource?: Token;
     storedResources?: Token[];
     canStoreResourceType?: boolean;
 }
@@ -67,11 +68,14 @@ interface ElawaGame extends Game {
     getPlayer(playerId: number): ElawaPlayer;
     getChieftainOption(): number;
     getGameStateName(): string;
+    getCurrentPlayerTable(): PlayerTable | null;
 
     setTooltip(id: string, html: string): void;
     onCenterCardClick(pile: number): void;
     onHandCardClick(card: Card): void;
     onTokenSelectionChange(selection: Token[]): void;
+    storeToken(cardId: number, tokenType: number): void;
+    unstoreToken(tokenId: number): void;
 }
 
 interface EnteringTakeCardArgs {
@@ -133,8 +137,18 @@ interface NotifDiscardCardArgs {
     card: Card;
 } 
 
-// storedTokens
-interface NotifStoredTokensArgs {
+// unstoredToken
+interface NotifUnstoredTokenArgs {
+    playerId: number;
+    token: Token;
+}
+
+// storedToken
+interface NotifStoredTokenArgs extends NotifUnstoredTokenArgs {
+    cardId: number;
+}
+// confirmStoredTokens
+interface NotifConfirmStoredTokensArgs {
     playerId: number;
     tokens: { [cardId: number]: Token };
 }

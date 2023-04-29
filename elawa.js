@@ -1218,14 +1218,16 @@ var CardsManager = /** @class */ (function (_super) {
             setupDiv: function (card, div) {
                 div.classList.add('elawa-card');
                 div.dataset.cardId = '' + card.id;
-                game.setTooltip(div.id, _this.getTooltip(card));
             },
             setupFrontDiv: function (card, div) {
+                div.dataset.cardId = "".concat(_this.getId(card), "-front");
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
+                game.setTooltip(div.id, _this.getTooltip(card));
                 if (card.cardType == STORAGE) {
                     div.classList.add('storage-stock');
                     _this.storageStocks[card.id] = new LineStock(game.tokensManager, div);
+                    _this.setStoreButtons(card);
                     if (card.storedResources) {
                         _this.storageStocks[card.id].addCards(card.storedResources);
                     }
@@ -1233,10 +1235,14 @@ var CardsManager = /** @class */ (function (_super) {
             },
         }) || this;
         _this.game = game;
+        _this.prestorageStocks = [];
         _this.storageStocks = [];
         return _this;
     }
-    CardsManager.prototype.addToken = function (cardId, token) {
+    CardsManager.prototype.prestoreToken = function (cardId, token) {
+        this.prestorageStocks[cardId].addCard(token);
+    };
+    CardsManager.prototype.confirmStoreToken = function (cardId, token) {
         this.storageStocks[cardId].addCard(token);
     };
     CardsManager.prototype.getType = function (type) {
@@ -1294,6 +1300,76 @@ var CardsManager = /** @class */ (function (_super) {
     };
     CardsManager.prototype.storageCardHasTokenOfType = function (cardId, type) {
         return this.storageStocks[cardId].getCards().some(function (card) { return card.type == type; });
+    };
+    CardsManager.prototype.createStorageStock = function (card, storageActions) {
+        var storageStock = document.createElement('div');
+        storageStock.dataset.used = 'false';
+        storageStock.classList.add('storage-stock');
+        storageActions.appendChild(storageStock);
+        this.prestorageStocks[card.id] = new LineStock(this.game.tokensManager, storageStock);
+        if (card.prestoredResource) {
+            this.prestorageStocks[card.id].addCard(card.prestoredResource);
+        }
+        storageActions.dataset.used = Boolean(card.prestoredResource).toString();
+        this.createCancelButton(storageStock, storageActions, this.prestorageStocks[card.id]);
+    };
+    CardsManager.prototype.createStorageAction = function (cardId, storageActions, type) {
+        var _this = this;
+        var storageAction = document.createElement('div');
+        storageAction.classList.add('storage-action');
+        storageActions.appendChild(storageAction);
+        var button = document.createElement('button');
+        button.classList.add('bgabutton', 'bgabutton_blue');
+        button.dataset.type = '' + type;
+        storageAction.appendChild(button);
+        button.innerHTML = _("Store ${type}").replace('${type}', "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"));
+        button.addEventListener('click', function () {
+            //const token = this.game.getCurrentPlayerTable()?.getTokenOfType(type);
+            _this.game.storeToken(cardId, type);
+            /*stock.addCard(token);
+            storageActions.dataset.used = 'true';
+            storageActions.dataset.tokenId = ''+token.id;
+
+
+            setTimeout(() => {
+                button.classList.add('hidden');
+                this.updateStorageButtons();
+            });*/
+        });
+    };
+    CardsManager.prototype.createCancelButton = function (storageAction, storageActions, stock) {
+        var _this = this;
+        var cancelButton = document.createElement('button');
+        cancelButton.classList.add('cancel');
+        cancelButton.innerText = '✖';
+        storageAction.appendChild(cancelButton);
+        cancelButton.addEventListener('click', function () {
+            _this.game.unstoreToken(stock.getCards()[0].id);
+            /*storageActions.dataset.used = 'false';
+            this.tokensFree.addCard(stock.getCards()[0]);
+            button.classList.remove('hidden');
+            cancelButton.remove();
+            storageActions.dataset.tokenId = '';
+            this.updateStorageButtons();*/
+        });
+    };
+    CardsManager.prototype.setStoreButtons = function (card) {
+        var _this = this;
+        var storageActions = document.createElement('div');
+        storageActions.dataset.cardId = '' + card.id;
+        storageActions.classList.add('storage-actions');
+        storageActions.dataset.tokenId = '';
+        this.game.cardsManager.getCardElement(card).appendChild(storageActions);
+        this.createStorageStock(card, storageActions);
+        var possibleTypes = card.storageType ? [card.storageType, BONE] : [1, 2, 3, 4, BONE];
+        possibleTypes.forEach(function (type) { return _this.createStorageAction(card.id, storageActions, type); });
+    };
+    CardsManager.prototype.updateStorageButtons = function () {
+        var _this = this;
+        document.querySelectorAll('.storage-actions').forEach(function (storageActions) {
+            return storageActions.dataset.used = (!_this.prestorageStocks[Number(storageActions.dataset.cardId)].isEmpty()).toString();
+        });
+        document.querySelectorAll('.storage-action button').forEach(function (button) { var _a; return button.classList.toggle('disabled', ((_a = _this.game.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.getTokenOfType(Number(button.dataset.type))) == null); });
     };
     return CardsManager;
 }(CardManager));
@@ -1596,79 +1672,25 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.getTokenOfType = function (type) {
         return this.tokensFree.getCards().find(function (card) { return card.type == type; });
     };
-    PlayerTable.prototype.updateStorageButtons = function () {
-        var _this = this;
-        var someUsed = document.querySelectorAll('.storage-actions[data-used="true"]').length > 0;
-        document.getElementById("storeTokens_button").classList.toggle('disabled', !someUsed);
-        document.getElementById("pass_button").classList.toggle('disabled', someUsed);
-        document.querySelectorAll('.storage-action button').forEach(function (button) {
-            return button.classList.toggle('disabled', button.closest('.storage-actions').dataset.used == 'true' || _this.getTokenOfType(Number(button.dataset.type)) == null);
-        });
-    };
-    PlayerTable.prototype.createStorageAction = function (storageActions, type) {
-        var _this = this;
-        var storageAction = document.createElement('div');
-        storageAction.classList.add('storage-action');
-        storageActions.appendChild(storageAction);
-        var button = document.createElement('button');
-        button.classList.add('bgabutton', 'bgabutton_blue');
-        button.dataset.type = '' + type;
-        storageAction.appendChild(button);
-        button.innerHTML = _("Store ${type}").replace('${type}', "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"));
-        var stock = new LineStock(this.game.tokensManager, storageAction);
-        button.addEventListener('click', function () {
-            var token = _this.getTokenOfType(type);
-            stock.addCard(token);
-            storageActions.dataset.used = 'true';
-            storageActions.dataset.tokenId = '' + token.id;
-            var cancelButton = document.createElement('button');
-            cancelButton.classList.add('cancel');
-            cancelButton.innerText = '✖';
-            storageAction.appendChild(cancelButton);
-            cancelButton.addEventListener('click', function () {
-                storageActions.dataset.used = 'false';
-                _this.tokensFree.addCard(stock.getCards()[0]);
-                button.classList.remove('hidden');
-                cancelButton.remove();
-                storageActions.dataset.tokenId = '';
-                _this.updateStorageButtons();
-            });
-            setTimeout(function () {
-                button.classList.add('hidden');
-                _this.updateStorageButtons();
-            });
-        });
-    };
     PlayerTable.prototype.setStoreButtons = function (storageCards, canPlaceBone) {
-        var _this = this;
-        storageCards.filter(function (card) { return canPlaceBone || card.canStoreResourceType; }).forEach(function (card) {
-            var storageActions = document.createElement('div');
-            storageActions.dataset.cardId = '' + card.id;
-            storageActions.classList.add('storage-actions');
-            storageActions.dataset.tokenId = '';
-            _this.game.cardsManager.getCardElement(card).appendChild(storageActions);
-            if (card.canStoreResourceType) {
-                if (!card.storageType) {
-                    [1, 2, 3, 4].filter(function (type) { return _this.getTokenOfType(type) && !_this.game.cardsManager.storageCardHasTokenOfType(card.id, type); }).forEach(function (type) {
-                        _this.createStorageAction(storageActions, type);
-                    });
-                }
-                else {
-                    _this.createStorageAction(storageActions, card.storageType);
-                }
-            }
-            if (canPlaceBone) {
-                _this.createStorageAction(storageActions, BONE);
-            }
-        });
+        document.getElementById("player-table-".concat(this.playerId)).classList.add('can-store');
+        this.game.cardsManager.updateStorageButtons();
     };
     PlayerTable.prototype.removeStoreButtons = function () {
-        document.getElementById("player-table-".concat(this.playerId, "-played")).querySelectorAll('.storage-actions').forEach(function (elem) { return elem.remove(); });
+        document.getElementById("player-table-".concat(this.playerId)).classList.remove('can-store');
     };
-    PlayerTable.prototype.storeTokens = function (tokens) {
+    PlayerTable.prototype.storeToken = function (cardId, token) {
+        this.game.cardsManager.prestoreToken(cardId, token);
+        this.game.cardsManager.updateStorageButtons();
+    };
+    PlayerTable.prototype.unstoreToken = function (token) {
+        this.tokensFree.addCard(token);
+        this.game.cardsManager.updateStorageButtons();
+    };
+    PlayerTable.prototype.confirmStoreTokens = function (tokens) {
         var _this = this;
         Object.entries(tokens).forEach(function (entry) {
-            return _this.game.cardsManager.addToken(Number(entry[0]), entry[1]);
+            return _this.game.cardsManager.confirmStoreToken(Number(entry[0]), entry[1]);
         });
     };
     PlayerTable.prototype.cancelLastMoves = function (cards, tokens) {
@@ -1873,9 +1895,7 @@ var Elawa = /** @class */ (function () {
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
                     break;
                 case 'storeTokens':
-                    this.addActionButton("storeTokens_button", _("Confirm stored resources"), function () { return _this.storeTokens(); });
-                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
-                    document.getElementById("storeTokens_button").classList.add('disabled');
+                    this.addActionButton("pass_button", _("End"), function () { return _this.pass(); });
                     break;
                 case 'discardTokens':
                     this.addActionButton("keepSelectedTokens_button", _("Keep selected resources"), function () { return _this.keepSelectedTokens(); });
@@ -2057,18 +2077,21 @@ var Elawa = /** @class */ (function () {
         }
         this.takeAction('cancel');
     };
-    Elawa.prototype.storeTokens = function () {
-        if (!this.checkAction('storeTokens')) {
+    Elawa.prototype.storeToken = function (cardId, tokenType) {
+        if (!this.checkAction('storeToken')) {
             return;
         }
-        var object = {};
-        document.querySelectorAll('.storage-actions').forEach(function (storageActions) {
-            if (storageActions.dataset.tokenId != '') {
-                object[Number(storageActions.dataset.cardId)] = Number(storageActions.dataset.tokenId);
-            }
+        this.takeAction('storeToken', {
+            cardId: cardId,
+            tokenType: tokenType,
         });
-        this.takeAction('storeTokens', {
-            tokens: JSON.stringify(object),
+    };
+    Elawa.prototype.unstoreToken = function (tokenId) {
+        if (!this.checkAction('unstoreToken')) {
+            return;
+        }
+        this.takeAction('unstoreToken', {
+            tokenId: tokenId,
         });
     };
     Elawa.prototype.keepSelectedTokens = function () {
@@ -2109,7 +2132,9 @@ var Elawa = /** @class */ (function () {
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
-            ['storedTokens', ANIMATION_MS],
+            ['storedToken', ANIMATION_MS],
+            ['unstoredToken', ANIMATION_MS],
+            ['confirmStoredTokens', ANIMATION_MS],
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
@@ -2166,13 +2191,21 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.notif_discardCard = function (notif) {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
     };
-    Elawa.prototype.notif_storedTokens = function (notif) {
-        var _this = this;
+    Elawa.prototype.notif_storedToken = function (notif) {
         var playerId = notif.args.playerId;
-        this.getPlayerTable(playerId).storeTokens(notif.args.tokens);
-        Object.values(notif.args.tokens).forEach(function (token) {
-            _this.resourcesCounters[playerId][token.type].incValue(-1);
-        });
+        var token = notif.args.token;
+        this.getPlayerTable(playerId).storeToken(notif.args.cardId, token);
+        this.resourcesCounters[playerId][token.type].incValue(-1);
+    };
+    Elawa.prototype.notif_unstoredToken = function (notif) {
+        var playerId = notif.args.playerId;
+        var token = notif.args.token;
+        this.getPlayerTable(playerId).unstoreToken(token);
+        this.resourcesCounters[playerId][token.type].incValue(+1);
+    };
+    Elawa.prototype.notif_confirmStoredTokens = function (notif) {
+        var playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).confirmStoreTokens(notif.args.tokens);
     };
     Elawa.prototype.notif_discardTokens = function (notif) {
         var _this = this;
@@ -2207,10 +2240,10 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
-                if (typeof args.type !== 'string' || args.type[0] !== '<') {
+                if (args.type && (typeof args.type !== 'string' || args.type[0] !== '<')) {
                     args.type = "<div class=\"token-icon\" data-type=\"".concat(args.type, "\"></div>");
                 }
-                if (typeof args.types !== 'string' || args.types[0] !== '<') {
+                if (args.types && (typeof args.types !== 'string' || args.types[0] !== '<')) {
                     args.types = args.types.map(function (type) { return "<div class=\"token-icon\" data-type=\"".concat(type, "\"></div>"); }).join('');
                 }
                 for (var property in args) {

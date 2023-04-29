@@ -227,9 +227,7 @@ class Elawa implements ElawaGame {
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
                 case 'storeTokens':
-                    (this as any).addActionButton(`storeTokens_button`, _("Confirm stored resources"), () => this.storeTokens());
-                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
-                    document.getElementById(`storeTokens_button`).classList.add('disabled');
+                    (this as any).addActionButton(`pass_button`, _("End"), () => this.pass());
                     break;
                 case 'discardTokens':
                     (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
@@ -271,7 +269,7 @@ class Elawa implements ElawaGame {
         return this.playersTables.find(playerTable => playerTable.playerId === playerId);
     }
 
-    private getCurrentPlayerTable(): PlayerTable | null {
+    public getCurrentPlayerTable(): PlayerTable | null {
         return this.playersTables.find(playerTable => playerTable.playerId === this.getPlayerId());
     }
 
@@ -462,20 +460,24 @@ class Elawa implements ElawaGame {
         this.takeAction('cancel');
     }
   	
-    public storeTokens() {
-        if(!(this as any).checkAction('storeTokens')) {
+    public storeToken(cardId: number, tokenType: number) {
+        if(!(this as any).checkAction('storeToken')) {
             return;
         }
 
-        const object = {};
-        document.querySelectorAll('.storage-actions').forEach((storageActions: HTMLElement) => {
-            if (storageActions.dataset.tokenId != '') {
-                object[Number(storageActions.dataset.cardId)] = Number(storageActions.dataset.tokenId);
-            }
+        this.takeAction('storeToken', {
+            cardId, 
+            tokenType,
         });
+    }
+  	
+    public unstoreToken(tokenId: number) {
+        if(!(this as any).checkAction('unstoreToken')) {
+            return;
+        }
 
-        this.takeAction('storeTokens', {
-            tokens: JSON.stringify(object),
+        this.takeAction('unstoreToken', {
+            tokenId,
         });
     }
   	
@@ -523,7 +525,9 @@ class Elawa implements ElawaGame {
             ['takeToken', ANIMATION_MS],
             ['playCard', ANIMATION_MS],
             ['discardCard', 1],
-            ['storedTokens', ANIMATION_MS],
+            ['storedToken', ANIMATION_MS],
+            ['unstoredToken', ANIMATION_MS],
+            ['confirmStoredTokens', ANIMATION_MS],
             ['discardTokens', 1],
             ['refillTokens', 1],
             ['updateScore', 1],
@@ -586,12 +590,23 @@ class Elawa implements ElawaGame {
         this.getPlayerTable(notif.args.playerId).hand.removeCard(notif.args.card);
     }
 
-    notif_storedTokens(notif: Notif<NotifStoredTokensArgs>) {
+    notif_storedToken(notif: Notif<NotifStoredTokenArgs>) {
         const playerId = notif.args.playerId;
-        this.getPlayerTable(playerId).storeTokens(notif.args.tokens);
-        Object.values(notif.args.tokens).forEach(token => {
-            this.resourcesCounters[playerId][token.type].incValue(-1);
-        });
+        const token = notif.args.token;
+        this.getPlayerTable(playerId).storeToken(notif.args.cardId, token);
+        this.resourcesCounters[playerId][token.type].incValue(-1);
+    }
+
+    notif_unstoredToken(notif: Notif<NotifUnstoredTokenArgs>) {
+        const playerId = notif.args.playerId;
+        const token = notif.args.token;
+        this.getPlayerTable(playerId).unstoreToken(token);
+        this.resourcesCounters[playerId][token.type].incValue(+1);
+    }
+
+    notif_confirmStoredTokens(notif: Notif<NotifConfirmStoredTokensArgs>) {
+        const playerId = notif.args.playerId;
+        this.getPlayerTable(playerId).confirmStoreTokens(notif.args.tokens);
     }
 
     notif_discardTokens(notif: Notif<NotifDiscardTokensArgs>) {
@@ -631,11 +646,11 @@ class Elawa implements ElawaGame {
         try {
             if (log && args && !args.processed) {
 
-                if (typeof args.type !== 'string' || args.type[0] !== '<') {
+                if (args.type && (typeof args.type !== 'string' || args.type[0] !== '<')) {
                     args.type = `<div class="token-icon" data-type="${args.type}"></div>`;
                 }
 
-                if (typeof args.types !== 'string' || args.types[0] !== '<') {
+                if (args.types && (typeof args.types !== 'string' || args.types[0] !== '<')) {
                     args.types = args.types.map(type => `<div class="token-icon" data-type="${type}"></div>`).join('');
                 }
 

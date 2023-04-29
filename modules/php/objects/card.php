@@ -35,6 +35,7 @@ class Card extends CardType {
     public int $locationArg;
     public /*int|null*/ $color;
     public /*int|null*/ $number;
+    public /*Token|null*/ $prestoredResource;
     public /*array|null*/ $storedResources;
 
     public /*bool|null*/ $canStoreResourceType; // only for front

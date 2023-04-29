@@ -100,11 +100,21 @@
         self::ajaxResponse();
     }
 
-    public function storeTokens() {
+    public function storeToken() {
         self::setAjaxMode();     
 
-        $tokens = self::getArg( "tokens", AT_json, true );
-        $this->game->storeTokens($tokens);
+        $cardId = self::getArg( "cardId", AT_posint, true );
+        $tokenType = self::getArg( "tokenType", AT_posint, true );
+        $this->game->storeToken($cardId, $tokenType);
+
+        self::ajaxResponse();
+    }
+
+    public function unstoreToken() {
+        self::setAjaxMode();     
+
+        $tokenId = self::getArg( "tokenId", AT_posint, true );
+        $this->game->unstoreToken($tokenId);
 
         self::ajaxResponse();
     }

@@ -268,7 +268,7 @@ trait UtilTrait {
             case HOUSE:
                 return $card->points * count(array_filter($cards, fn($c) => $c->color == $card->storageType));
             case STORAGE:
-                return $card->points * count($card->storedResources);
+                return $card->points * (($card->prestoredResource != null ? 1 : 0) + count($card->storedResources));
             case HUMAN:
                 return $card->points;
             case TOOL:
@@ -301,6 +301,8 @@ trait UtilTrait {
 
         foreach($played as $card) {
             if ($card->cardType == STORAGE) {
+                $prestored = $this->getTokensByLocation('prestore', $card->id);
+                $card->prestoredResource = count($prestored) > 0 ? $prestored[0] : null;
                 $card->storedResources = $this->getTokensByLocation('card', $card->id);
             }
         }
@@ -359,6 +361,26 @@ trait UtilTrait {
             array_map(fn($token) => $token->id, $tokens),
             $this->getGlobalVariable(POWER_PAY_ONE_LESS, true)
         ));
+    }
+
+    function confirmStoreTokens(int $playerId) {
+        $cards = $this->getPlayedCardWithStoredResources($playerId);
+        $tokens = [];
+        foreach ($cards as $card) {
+            if ($card->prestoredResource) {
+                $tokens[$card->id] = $card->prestoredResource;
+                $this->tokens->moveCard($card->prestoredResource->id, 'card', $card->id);
+            }
+        }
+
+        if (count($tokens) > 0) {
+            self::notifyAllPlayers('confirmStoredTokens', ''/*client translate('${player_name} stores ${number} resource(s)')*/, [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+                //'number' => count($tokens), // for logs
+                'tokens' => $tokens,
+            ]);
+        }
     }
     
 }

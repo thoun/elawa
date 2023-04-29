@@ -36,6 +36,8 @@ trait StateTrait {
     function stDiscardTokens() {
         $playerId = intval($this->getActivePlayerId());
 
+        $this->confirmStoreTokens($playerId);
+
         $args = $this->argDiscardTokens();
         $max = $args['number'];
         $tokens = $this->getTokensByLocation('player', $playerId);
@@ -52,9 +54,9 @@ trait StateTrait {
     }
 
     function stNextPlayer() {
-        $this->deleteGlobalVariables([UNDO, POWER_PAY_ONE_LESS]);
+        //$playerId = intval($this->getActivePlayerId());
 
-        $playerId = $this->getActivePlayerId();
+        $this->deleteGlobalVariables([UNDO, POWER_PAY_ONE_LESS]);
 
         $this->activeNextPlayer();       
         $playerId = $this->getActivePlayerId();

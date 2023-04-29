@@ -193,10 +193,12 @@ $playerActionsGameStates = [
         "args" => "argStoreTokens",
         "action" => "stStoreTokens",
         "possibleactions" => [ 
-            "storeTokens",
+            "storeToken",
+            "unstoreToken",
             "pass",
         ],
         "transitions" => [
+            "stay" => ST_PLAYER_STORE_TOKENS,
             "next" => ST_PLAYER_DISCARD_TOKENS,
         ],
     ],

@@ -303,25 +303,55 @@ trait ActionTrait {
         $this->gamestate->nextState('next');
     }
 
-    public function storeTokens(array $tokens) {
-        self::checkAction('storeTokens');
+    public function storeToken(int $cardId, int $tokenType) {
+        self::checkAction('storeToken');
 
         $playerId = intval($this->getActivePlayerId());
+        $playerTokens = $this->getTokensByLocation('player', $playerId);
+        $token = $this->array_find($playerTokens, fn($playerToken) => $playerToken->type == $tokenType);
+        $card = $this->getCardFromDb($this->cards->getCard($cardId));        
 
-        foreach ($tokens as $cardId => $tokenId) {
-            $this->tokens->moveCard($tokenId, 'card', $cardId);
+        if ($token == null || $card == null || $card->location != 'played'.$playerId) {
+            throw new BgaUserException("Invalid action");
         }
 
-        self::notifyAllPlayers('storedTokens', clienttranslate('${player_name} stores ${number} resource(s)'), [
+        $this->tokens->moveCard($token->id, 'prestore', $cardId);
+
+        self::notifyAllPlayers('storedToken', clienttranslate('${player_name} stores ${type} on a storage card'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
-            'number' => count($tokens), // for logs
-            'tokens' => array_map(fn($tokenId) => $this->getTokenFromDb($this->tokens->getCard($tokenId)), $tokens),
+            'type' => $token->type, // for logs
+            'token' => $token,
+            'cardId' => $cardId,
         ]);
 
         $this->updateScore($playerId);
 
-        $this->gamestate->nextState('next');
+        $this->gamestate->nextState('stay');
+    }
+
+    public function unstoreToken(int $tokenId) {
+        self::checkAction('unstoreToken');
+
+        $playerId = intval($this->getActivePlayerId());
+        $token = $this->getTokenFromDb($this->tokens->getCard($tokenId));
+
+        if ($token->location != 'prestore') {
+            throw new BgaUserException("Invalid action");
+        }
+
+        $this->tokens->moveCard($tokenId, 'player', $playerId);
+
+        self::notifyAllPlayers('unstoredToken', clienttranslate('${player_name} removes ${type} from a storage card'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'type' => $token->type, // for logs
+            'token' => $token,
+        ]);
+
+        $this->updateScore($playerId);
+
+        $this->gamestate->nextState('stay');
     }
 
     public function keepSelectedTokens(array $ids) {
