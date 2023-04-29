@@ -76,10 +76,8 @@
     align-content: center;
   }
 
-  &.can-store {
-    .storage-actions {
-      display: flex;
-    }
+  &.can-store .visible-cards .storage-actions {
+    display: flex;
   }
 
   .storage-actions {

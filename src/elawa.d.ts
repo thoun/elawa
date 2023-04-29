@@ -89,6 +89,7 @@ interface EnteringSkipResourceArgs {
 
 interface EnteringPlayCardArgs {
     playableCards: Card[];
+    canStore: boolean;
 }
 
 interface EnteringChooseOneLessArgs {
@@ -98,11 +99,6 @@ interface EnteringChooseOneLessArgs {
 
 interface EnteringDiscardCardArgs extends EnteringPlayCardArgs {
     selectedCard: Card;
-}
-
-interface EnteringStoreTokensArgs {
-    storageCards: Card[];
-    canPlaceBone: boolean;
 }
 
 interface NotifTakeElementArgs {

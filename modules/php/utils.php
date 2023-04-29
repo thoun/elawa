@@ -373,14 +373,14 @@ trait UtilTrait {
             }
         }
 
-        if (count($tokens) > 0) {
+        //if (count($tokens) > 0) {
             self::notifyAllPlayers('confirmStoredTokens', ''/*client translate('${player_name} stores ${number} resource(s)')*/, [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 //'number' => count($tokens), // for logs
                 'tokens' => $tokens,
             ]);
-        }
+        //}
     }
     
 }

@@ -1672,12 +1672,14 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.getTokenOfType = function (type) {
         return this.tokensFree.getCards().find(function (card) { return card.type == type; });
     };
-    PlayerTable.prototype.setStoreButtons = function (storageCards, canPlaceBone) {
-        document.getElementById("player-table-".concat(this.playerId)).classList.add('can-store');
-        this.game.cardsManager.updateStorageButtons();
-    };
-    PlayerTable.prototype.removeStoreButtons = function () {
-        document.getElementById("player-table-".concat(this.playerId)).classList.remove('can-store');
+    PlayerTable.prototype.setStoreButtons = function (activated) {
+        if (activated) {
+            document.getElementById("player-table-".concat(this.playerId)).classList.add('can-store');
+            this.game.cardsManager.updateStorageButtons();
+        }
+        else {
+            document.getElementById("player-table-".concat(this.playerId)).classList.remove('can-store');
+        }
     };
     PlayerTable.prototype.storeToken = function (cardId, token) {
         this.game.cardsManager.prestoreToken(cardId, token);
@@ -1692,6 +1694,7 @@ var PlayerTable = /** @class */ (function () {
         Object.entries(tokens).forEach(function (entry) {
             return _this.game.cardsManager.confirmStoreToken(Number(entry[0]), entry[1]);
         });
+        this.setStoreButtons(false);
     };
     PlayerTable.prototype.cancelLastMoves = function (cards, tokens) {
         var _a;
@@ -1758,7 +1761,7 @@ var Elawa = /** @class */ (function () {
     //                  You can use this method to perform some user interface changes at this moment.
     //
     Elawa.prototype.onEnteringState = function (stateName, args) {
-        var _a;
+        var _a, _b;
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'takeCard':
@@ -1772,14 +1775,17 @@ var Elawa = /** @class */ (function () {
             case 'discardCard':
                 this.onEnteringDiscardCard(args.args);
                 break;
-            case 'storeTokens':
-                this.onEnteringStoreTokens(args.args);
-                break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
+                    //this.getCurrentPlayerTable()?.setStoreButtons(false);
                     (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setFreeTokensSelectable(true);
                 }
                 break;
+        }
+        if (['playCard', 'chooseOneLess', 'discardCard'].includes(stateName)) {
+            if (this.isCurrentPlayerActive()) {
+                (_b = this.getCurrentPlayerTable()) === null || _b === void 0 ? void 0 : _b.setStoreButtons(true);
+            }
         }
     };
     Elawa.prototype.onEnteringTakeCard = function (args) {
@@ -1788,8 +1794,18 @@ var Elawa = /** @class */ (function () {
             this.tableCenter.setCardsSelectable(true);
         }
     };
+    Elawa.prototype.setGamestateDescription = function (property) {
+        if (property === void 0) { property = ''; }
+        var originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = "".concat(originalState['description' + property]);
+        this.gamedatas.gamestate.descriptionmyturn = "".concat(originalState['descriptionmyturn' + property]);
+        this.updatePageTitle();
+    };
     Elawa.prototype.onEnteringPlayCard = function (args) {
         var _a;
+        if (args.canStore) {
+            this.setGamestateDescription('Storage');
+        }
         if (this.isCurrentPlayerActive()) {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(true, args.playableCards);
         }
@@ -1800,12 +1816,6 @@ var Elawa = /** @class */ (function () {
             (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setCardsSelectable(true, args.playableCards);
             var selectedCardDiv = this.getCurrentPlayerTable().hand.getCardElement(args.selectedCard);
             selectedCardDiv.classList.add('selected-discard');
-        }
-    };
-    Elawa.prototype.onEnteringStoreTokens = function (args) {
-        var _a;
-        if (this.isCurrentPlayerActive()) {
-            (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.setStoreButtons(args.storageCards, args.canPlaceBone);
         }
     };
     Elawa.prototype.onLeavingState = function (stateName) {
@@ -1822,9 +1832,6 @@ var Elawa = /** @class */ (function () {
                 break;
             case 'discardCard':
                 this.onLeavingDiscardCard();
-                break;
-            case 'storeTokens':
-                this.onLeavingStoreTokens();
                 break;
             case 'discardTokens':
                 if (this.isCurrentPlayerActive()) {
@@ -1844,8 +1851,6 @@ var Elawa = /** @class */ (function () {
         document.querySelectorAll('.selected-discard').forEach(function (elem) { return elem.classList.remove('selected-discard'); });
     };
     Elawa.prototype.onLeavingStoreTokens = function () {
-        var _a;
-        (_a = this.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.removeStoreButtons();
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -1877,7 +1882,7 @@ var Elawa = /** @class */ (function () {
                     }
                     break;
                 case 'playCard':
-                    this.addActionButton("pass_button", _("Pass"), function () { return _this.pass(); });
+                    this.addActionButton("endTurn_button", _("End turn"), function () { return _this.endTurn(); });
                     break;
                 case 'chooseOneLess':
                     var chooseOneLessArgs = args;
@@ -1894,9 +1899,6 @@ var Elawa = /** @class */ (function () {
                 case 'discardCard':
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
                     break;
-                case 'storeTokens':
-                    this.addActionButton("pass_button", _("End"), function () { return _this.pass(); });
-                    break;
                 case 'discardTokens':
                     this.addActionButton("keepSelectedTokens_button", _("Keep selected resources"), function () { return _this.keepSelectedTokens(); });
                     var button = document.getElementById("keepSelectedTokens_button");
@@ -1905,7 +1907,7 @@ var Elawa = /** @class */ (function () {
                     break;
             }
         }
-        if (['playCard', 'chooseOneLess', 'discardCard', 'storeTokens', 'discardTokens'].includes(stateName)) {
+        if (['playCard', 'chooseOneLess', 'discardCard', 'discardTokens'].includes(stateName)) {
             this.addActionButton("cancelLastMoves_button", _("Cancel last moves"), function () { return _this.cancelLastMoves(); }, null, null, 'gray');
         }
     };
@@ -2054,6 +2056,12 @@ var Elawa = /** @class */ (function () {
             return;
         }
         this.takeAction('pass');
+    };
+    Elawa.prototype.endTurn = function () {
+        if (!this.checkAction('endTurn')) {
+            return;
+        }
+        this.takeAction('endTurn');
     };
     Elawa.prototype.discardCard = function (id) {
         if (!this.checkAction('discardCard')) {

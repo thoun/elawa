@@ -108,13 +108,13 @@ class PlayerTable {
         return this.tokensFree.getCards().find(card => card.type == type);
     }
     
-    public setStoreButtons(storageCards: Card[], canPlaceBone: boolean) {
-        document.getElementById(`player-table-${this.playerId}`).classList.add('can-store');
-        this.game.cardsManager.updateStorageButtons();
-    }
-
-    public removeStoreButtons() {
-        document.getElementById(`player-table-${this.playerId}`).classList.remove('can-store');
+    public setStoreButtons(activated: boolean) {
+        if (activated) {
+            document.getElementById(`player-table-${this.playerId}`).classList.add('can-store');
+            this.game.cardsManager.updateStorageButtons();
+        } else {
+            document.getElementById(`player-table-${this.playerId}`).classList.remove('can-store');
+        }
     }
     
     public storeToken(cardId: number, token: Token) {
@@ -131,6 +131,7 @@ class PlayerTable {
         Object.entries(tokens).forEach(entry => 
             this.game.cardsManager.confirmStoreToken(Number(entry[0]), entry[1])
         );
+        this.setStoreButtons(false);
     }
     
     public cancelLastMoves(cards: Card[], tokens: Token[]) {

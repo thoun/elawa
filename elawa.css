@@ -830,7 +830,7 @@ body > .card {
   align-items: center;
   align-content: center;
 }
-.player-table.can-store .storage-actions {
+.player-table.can-store .visible-cards .storage-actions {
   display: flex;
 }
 .player-table .storage-actions {

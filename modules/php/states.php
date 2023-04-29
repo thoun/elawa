@@ -22,37 +22,6 @@ trait StateTrait {
             }
         /*}*/
     }
-
-    function stStoreTokens() {
-        $args = $this->argStoreTokens();
-
-        $canPlay = $args['canPlaceBone'] || $this->array_some($args['storageCards'], fn($card) => $card->canStoreResourceType);
-
-        if (count($args['storageCards']) == 0 || !$canPlay) {
-            $this->gamestate->nextState('next');
-        }
-    }
-
-    function stDiscardTokens() {
-        $playerId = intval($this->getActivePlayerId());
-
-        $this->confirmStoreTokens($playerId);
-
-        $args = $this->argDiscardTokens();
-        $max = $args['number'];
-        $tokens = $this->getTokensByLocation('player', $playerId);
-
-        if (count($tokens) <= $max) {
-            self::notifyAllPlayers('discardTokens', '', [
-                'playerId' => $playerId,
-                'keptTokens' => $tokens,
-                'discardedTokens' => [],
-            ]);
-
-            $this->gamestate->nextState('next');
-        }
-    }
-
     function stNextPlayer() {
         //$playerId = intval($this->getActivePlayerId());
 

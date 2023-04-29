@@ -101,14 +101,18 @@ class Elawa implements ElawaGame {
             case 'discardCard':
                 this.onEnteringDiscardCard(args.args);
                 break;
-            case 'storeTokens':
-                this.onEnteringStoreTokens(args.args);
-                break;
             case 'discardTokens':
                     if ((this as any).isCurrentPlayerActive()) {
+                        //this.getCurrentPlayerTable()?.setStoreButtons(false);
                         this.getCurrentPlayerTable()?.setFreeTokensSelectable(true);
                     }
                     break;
+        }
+
+        if (['playCard', 'chooseOneLess', 'discardCard'].includes(stateName)) {
+            if ((this as any).isCurrentPlayerActive()) {
+                this.getCurrentPlayerTable()?.setStoreButtons(true);
+            }
         }
     }
 
@@ -118,8 +122,19 @@ class Elawa implements ElawaGame {
             this.tableCenter.setCardsSelectable(true);
         }
     }
+    
+    private setGamestateDescription(property: string = '') {
+        const originalState = this.gamedatas.gamestates[this.gamedatas.gamestate.id];
+        this.gamedatas.gamestate.description = `${originalState['description' + property]}`; 
+        this.gamedatas.gamestate.descriptionmyturn = `${originalState['descriptionmyturn' + property]}`;
+        (this as any).updatePageTitle();
+    }
 
     private onEnteringPlayCard(args: EnteringPlayCardArgs) {
+        if (args.canStore) {
+            this.setGamestateDescription('Storage');
+        }
+
         if ((this as any).isCurrentPlayerActive()) {
             this.getCurrentPlayerTable()?.setCardsSelectable(true, args.playableCards);
         }
@@ -130,12 +145,6 @@ class Elawa implements ElawaGame {
             this.getCurrentPlayerTable()?.setCardsSelectable(true, args.playableCards);
             const selectedCardDiv = this.getCurrentPlayerTable().hand.getCardElement(args.selectedCard);
             selectedCardDiv.classList.add('selected-discard');
-        }
-    }
-
-    private onEnteringStoreTokens(args: EnteringStoreTokensArgs) {
-        if ((this as any).isCurrentPlayerActive()) {
-            this.getCurrentPlayerTable()?.setStoreButtons(args.storageCards, args.canPlaceBone);
         }
     }
 
@@ -153,9 +162,6 @@ class Elawa implements ElawaGame {
                 break;
             case 'discardCard':
                 this.onLeavingDiscardCard();
-                break;
-            case 'storeTokens':
-                this.onLeavingStoreTokens();
                 break;
            case 'discardTokens':
                 if ((this as any).isCurrentPlayerActive()) {
@@ -178,7 +184,6 @@ class Elawa implements ElawaGame {
     }
 
     private onLeavingStoreTokens() {
-        this.getCurrentPlayerTable()?.removeStoreButtons();
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -207,7 +212,7 @@ class Elawa implements ElawaGame {
                     break;
 
                 case 'playCard':
-                    (this as any).addActionButton(`pass_button`, _("Pass"), () => this.pass());
+                    (this as any).addActionButton(`endTurn_button`, _("End turn"), () => this.endTurn());
                     break;
                 case 'chooseOneLess':
                     const chooseOneLessArgs = args as EnteringChooseOneLessArgs;
@@ -226,9 +231,6 @@ class Elawa implements ElawaGame {
                 case 'discardCard':
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
-                case 'storeTokens':
-                    (this as any).addActionButton(`pass_button`, _("End"), () => this.pass());
-                    break;
                 case 'discardTokens':
                     (this as any).addActionButton(`keepSelectedTokens_button`, _("Keep selected resources"), () => this.keepSelectedTokens());
                     const button = document.getElementById(`keepSelectedTokens_button`);
@@ -239,7 +241,7 @@ class Elawa implements ElawaGame {
             }
         }
 
-        if (['playCard', 'chooseOneLess', 'discardCard', 'storeTokens', 'discardTokens'].includes(stateName)) {
+        if (['playCard', 'chooseOneLess', 'discardCard', 'discardTokens'].includes(stateName)) {
             (this as any).addActionButton(`cancelLastMoves_button`, _("Cancel last moves"), () => this.cancelLastMoves(), null, null, 'gray');
         }
     }
@@ -430,6 +432,14 @@ class Elawa implements ElawaGame {
         }
 
         this.takeAction('pass');
+    }
+  	
+    public endTurn() {
+        if(!(this as any).checkAction('endTurn')) {
+            return;
+        }
+
+        this.takeAction('endTurn');
     }
   	
     public discardCard(id: number) {

@@ -181,7 +181,7 @@ trait ActionTrait {
         $resources = $this->getPlayerResources($playerId);
         $tokens = $this->tokensToPayForCard($card, $resources, null, false, $payOneLess ? $payOneLessData[2] : null);
         if ($tokens === null) {
-            throw new BgaUserException("You can't play this card");
+            throw new BgaUserException("You can't play this card (not enough tokens)");
         }
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
@@ -217,7 +217,7 @@ trait ActionTrait {
         $this->incStat(1, 'playedCards'.$card->cardType);
         $this->incStat(1, 'playedCards'.$card->cardType, $playerId);
 
-        $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'stay');
+        $this->gamestate->nextState($card->power == POWER_CARD ? 'takeCardPower' : 'next');
     }
 
     public function playCard(int $id) {
@@ -249,9 +249,33 @@ trait ActionTrait {
     public function pass() {
         self::checkAction('pass');
 
-        $playerId = intval($this->getActivePlayerId());
+        //$playerId = intval($this->getActivePlayerId());
 
         $this->gamestate->nextState('next');
+    }
+
+    public function endTurn() {
+        self::checkAction('endTurn');
+        $playerId = intval($this->getActivePlayerId());
+
+        $this->confirmStoreTokens($playerId);
+
+        $args = $this->argDiscardTokens();
+        $max = $args['number'];
+        $tokens = $this->getTokensByLocation('player', $playerId);
+
+        $discard = true;
+        if (count($tokens) <= $max) {
+            self::notifyAllPlayers('discardTokens', '', [
+                'playerId' => $playerId,
+                'keptTokens' => $tokens,
+                'discardedTokens' => [],
+            ]);
+
+            $discard = false;
+        }
+
+        $this->gamestate->nextState($discard ? 'endTurnDiscard' : 'endTurn');
     }
 
     public function discardCard(int $id) {
@@ -263,7 +287,7 @@ trait ActionTrait {
         $card = $this->array_find($args['playableCards'], fn($c) => $c->id == $id);
 
         if ($card == null || $card->location != 'hand' || $card->locationArg != $playerId) {
-            throw new BgaUserException("You can't play this card");
+            throw new BgaUserException("You can't discard this card");
         }
 
         $this->cards->moveCard($card->id, 'discard', $playerId);
@@ -370,12 +394,13 @@ trait ActionTrait {
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $discardedTokens), 'discard');
 
-        self::notifyAllPlayers('discardTokens', clienttranslate('${player_name} discards ${number} resource(s)'), [
+        self::notifyAllPlayers('discardTokens', clienttranslate('${player_name} discards ${types}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => count($discardedTokens), // for logs
             'keptTokens' => $keptTokens,
             'discardedTokens' => $discardedTokens,
+            'types' => array_map(fn($token) => $token->type, $discardedTokens), // for logs
         ]);
         
         $this->incStat(count($discardedTokens), 'discardedResourcesEndOfTurn');
