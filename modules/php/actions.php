@@ -78,8 +78,8 @@ trait ActionTrait {
         $canSkipResource = !$fromCardPower && $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
 
         $message = $fromCardPower || $fromChieftainPower ?
-            clienttranslate('${player_name} takes a card with special power') :
-            clienttranslate('${player_name} takes a card associated with ${number} tokens');
+            clienttranslate('${player_name} takes a ${card_color} ${card_type} card with special power ${card_display}') :
+            clienttranslate('${player_name} takes a ${card_color} ${card_type} card associated with ${number} tokens ${card_display}');
 
         self::notifyAllPlayers('takeCard', $message, [
             'playerId' => $playerId,
@@ -87,8 +87,11 @@ trait ActionTrait {
             'number' => $card->tokens, // for logs
             'card' => $card,
             'pile' => $pile,
+            'card_type' => $this->getCardType($card->cardType), // for logs
+            'card_color' => $this->getCardColor($card->color), // for logs
             'newCard' => $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile)),
             'newCount' => intval($this->cards->countCardInLocation('pile'.$pile)),
+            'card_display' => 100 * $card->color + $card->number, // for logs
         ]);
 
         $redirect = false;
@@ -190,8 +193,8 @@ trait ActionTrait {
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $tokens), 'discard');
         $message = count($tokens) > 0 ?
-            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types})') :
-            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand');
+            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types}) ${card_display}') :
+            clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand ${card_display}');
         
         self::notifyAllPlayers('playCard', $message, [
             'playerId' => $playerId,
@@ -202,6 +205,7 @@ trait ActionTrait {
             'types' => array_map(fn($token) => $token->type, $tokens), // for logs
             'card_type' => $this->getCardType($card->cardType), // for logs
             'card_color' => $this->getCardColor($card->color), // for logs
+            'card_display' => 100 * $card->color + $card->number, // for logs
         ]);
 
         $this->updateScore($playerId);

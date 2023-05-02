@@ -665,6 +665,19 @@ class Elawa implements ElawaGame {
         try {
             if (log && args && !args.processed) {
 
+                if (args.card_display && (typeof args.card_display !== 'string' || args.card_display[0] !== '<')) {
+                    const cardIndex = Number(args.card_display);
+                    const color = Math.floor(cardIndex / 100);
+                    const number = cardIndex % 100;
+                    args.card_display = `
+                    <div class="card elawa-card">
+                        <div class="card-sides">
+                            <div class="card-side front" data-color="${color}" data-number="${number}"></div>
+                        </div>
+                    </div>
+                    `;
+                }
+
                 if (args.type && (typeof args.type !== 'string' || args.type[0] !== '<')) {
                     args.type = `<div class="token-icon" data-type="${args.type}"></div>`;
                 }

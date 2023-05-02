@@ -2266,6 +2266,12 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.format_string_recursive = function (log, args) {
         try {
             if (log && args && !args.processed) {
+                if (args.card_display && (typeof args.card_display !== 'string' || args.card_display[0] !== '<')) {
+                    var cardIndex = Number(args.card_display);
+                    var color = Math.floor(cardIndex / 100);
+                    var number = cardIndex % 100;
+                    args.card_display = "\n                    <div class=\"card elawa-card\">\n                        <div class=\"card-sides\">\n                            <div class=\"card-side front\" data-color=\"".concat(color, "\" data-number=\"").concat(number, "\"></div>\n                        </div>\n                    </div>\n                    ");
+                }
                 if (args.type && (typeof args.type !== 'string' || args.type[0] !== '<')) {
                     args.type = "<div class=\"token-icon\" data-type=\"".concat(args.type, "\"></div>");
                 }
