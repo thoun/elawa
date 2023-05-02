@@ -661,19 +661,7 @@ body > .card {
       box-shadow: 0 0 5px 3px #FFFFFF;
     }
 }*/
-#table-center-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#table-center {
-  position: relative;
-  width: 930px;
-  min-width: 930px;
-  height: 904px;
-}
-#table-center .center-spot {
+.center-spot {
   top: 450px;
   left: 364px;
   position: absolute;
@@ -697,14 +685,11 @@ body > .card {
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
 }
-#table-center .center-spot[id=center-spot-0] .card, #table-center .center-spot[id=center-spot-1] .card, #table-center .center-spot[id=center-spot-2] .card, #table-center .center-spot[id=center-spot-3] .card {
-  transform-origin: center center;
-  transform: rotate(180deg);
-}
-#table-center .center-spot-token {
+
+.center-spot-token {
   --shadow-color: black;
 }
-#table-center .center-spot-token::before {
+.center-spot-token::before {
   content: "";
   position: absolute;
   top: 0;
@@ -715,7 +700,8 @@ body > .card {
   background: var(--shadow-color);
   box-shadow: 0 0 2px 2px var(--shadow-color);
 }
-#table-center .center-spot-counter {
+
+.center-spot-counter {
   position: absolute;
   width: 24px;
   height: 24px;
@@ -729,6 +715,41 @@ body > .card {
   top: -10px;
   transform-origin: center center;
   transform: rotate(calc(var(--angle) * -1));
+}
+
+html[data-easyread=true] #table-center {
+  margin-top: 10px;
+}
+html[data-easyread=true] .center-spot-card, html[data-easyread=true] .center-spot-token {
+  transform: rotate(calc(var(--angle) * -1));
+}
+html[data-easyread=true] .center-spot-card .center-spot-counter, html[data-easyread=true] .center-spot-token .center-spot-counter {
+  transform: unset;
+}
+html[data-easyread=true] .center-spot[id=center-spot-1] .center-spot-card {
+  transform: rotate(calc(var(--angle) * -1)) translate(22px, -35px);
+}
+html[data-easyread=true] .center-spot[id=center-spot-2] .center-spot-card {
+  transform: rotate(calc(var(--angle) * -1)) translate(-22px, -35px);
+}
+html[data-easyread=true] .center-spot[id=center-spot-4] .center-spot-card {
+  transform: rotate(calc(var(--angle) * -1)) translate(-22px, 35px);
+}
+html[data-easyread=true] .center-spot[id=center-spot-5] .center-spot-card {
+  transform: rotate(calc(var(--angle) * -1)) translate(22px, 35px);
+}
+
+#table-center-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#table-center {
+  position: relative;
+  width: 930px;
+  min-width: 930px;
+  height: 904px;
 }
 #table-center #fire {
   width: 128px;

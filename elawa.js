@@ -1950,11 +1950,19 @@ var Elawa = /** @class */ (function () {
             var prefId = +match[1];
             var prefValue = +e.target.value;
             _this.prefs[prefId].value = prefValue;
+            _this.onPreferenceChange(prefId, prefValue);
         };
         // Call onPreferenceChange() when any value changes
         dojo.query(".preference_control").connect("onchange", onchange);
         // Call onPreferenceChange() now
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
+    };
+    Elawa.prototype.onPreferenceChange = function (prefId, prefValue) {
+        switch (prefId) {
+            case 201:
+                document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
+                break;
+        }
     };
     Elawa.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;

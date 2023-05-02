@@ -22,13 +22,6 @@
     from { box-shadow: 0 0 10px 10px #FFFFFFBB; }
     to   { box-shadow: 0 0 20px 20px #FFFFFFBB; }
   }*/
-
-  &[id="center-spot-0"], &[id="center-spot-1"], &[id="center-spot-2"], &[id="center-spot-3"] {
-    .card {
-      transform-origin: center center;
-      transform: rotate(180deg);
-    }
-  }
 }
 
 .center-spot-token {
@@ -61,4 +54,30 @@
   top: -10px;
   transform-origin: center center;
   transform: rotate(calc(var(--angle) * -1));
+}
+
+html[data-easyread="true"] {
+  #table-center {
+    margin-top: 10px;
+  }
+
+  .center-spot-card, .center-spot-token {
+    transform: rotate(calc(var(--angle) * -1));
+    .center-spot-counter {
+      transform: unset;
+    }
+  }
+
+  .center-spot[id="center-spot-1"] .center-spot-card {
+    transform: rotate(calc(var(--angle) * -1)) translate(22px, -35px);
+  }
+  .center-spot[id="center-spot-2"] .center-spot-card {
+    transform: rotate(calc(var(--angle) * -1)) translate(-22px, -35px);
+  }
+  .center-spot[id="center-spot-4"] .center-spot-card {
+    transform: rotate(calc(var(--angle) * -1)) translate(-22px, 35px);
+  }
+  .center-spot[id="center-spot-5"] .center-spot-card {
+    transform: rotate(calc(var(--angle) * -1)) translate(22px, 35px);
+  }
 }

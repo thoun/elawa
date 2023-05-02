@@ -1,3 +1,5 @@
+@import 'center-spot';
+
 #table-center-wrapper {
   display: flex;
   justify-content: center;
@@ -5,7 +7,6 @@
 }
 
 #table-center {
-    @import 'center-spot';
 
     position: relative;
     width: 930px;

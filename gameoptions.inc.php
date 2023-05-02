@@ -42,3 +42,17 @@ require_once("modules/php/constants.inc.php");
         'default' => 1,
     ],
 ];
+
+
+
+$game_preferences = [
+    201 => [
+        'name' => totranslate('Center cards placement'),
+        'needReload' => false,
+        'values' => [
+            1 => ['name' => totranslate('Easy to read')],
+            2 => ['name' => totranslate('Follow fire circle')],
+        ],
+        'default' => 1,
+    ],
+];

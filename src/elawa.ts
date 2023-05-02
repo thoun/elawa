@@ -293,6 +293,7 @@ class Elawa implements ElawaGame {
           var prefId = +match[1];
           var prefValue = +e.target.value;
           (this as any).prefs[prefId].value = prefValue;
+          this.onPreferenceChange(prefId, prefValue);
         }
         
         // Call onPreferenceChange() when any value changes
@@ -303,6 +304,14 @@ class Elawa implements ElawaGame {
           dojo.query("#ingame_menu_content .preference_control"),
           el => onchange({ target: el })
         );
+    }
+      
+    private onPreferenceChange(prefId: number, prefValue: number) {
+        switch (prefId) {
+            case 201:
+                document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
+                break;
+        }
     }
 
     private getOrderedPlayers(gamedatas: ElawaGamedatas) {
