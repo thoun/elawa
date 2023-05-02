@@ -847,14 +847,11 @@ html[data-easyread=true] .center-spot[id=center-spot-5] .center-spot-card {
   width: 68px;
   height: 68px;
 }
-.player-table .storage-stock {
-  align-items: center;
-  align-content: center;
-}
 .player-table.can-store .visible-cards .storage-actions {
   display: flex;
 }
-.player-table .storage-actions {
+
+.storage-actions {
   position: absolute;
   top: -60px;
   height: 68px;
@@ -865,20 +862,24 @@ html[data-easyread=true] .center-spot[id=center-spot-5] .center-spot-card {
   left: 0;
   right: 0;
 }
-.player-table .storage-actions[data-used=true] .storage-action {
+.storage-actions .storage-stock {
+  align-items: center;
+  align-content: center;
+}
+.storage-actions[data-used=true] .storage-action {
   display: none;
 }
-.player-table .storage-actions[data-used=false] .storage-stock {
+.storage-actions[data-used=false] .storage-stock {
   display: none;
 }
-.player-table .storage-actions .storage-action, .player-table .storage-actions .storage-stock {
+.storage-actions .storage-action, .storage-actions .storage-stock {
   position: relative;
   width: 68px;
   display: flex;
   justify-content: center;
   align-content: center;
 }
-.player-table .storage-actions .storage-action button, .player-table .storage-actions .storage-stock button {
+.storage-actions .storage-action button, .storage-actions .storage-stock button {
   white-space: break-spaces;
   width: 100%;
   height: 100%;
@@ -886,7 +887,7 @@ html[data-easyread=true] .center-spot[id=center-spot-5] .center-spot-card {
     display: none;
   }*/
 }
-.player-table .storage-actions .storage-action button.cancel, .player-table .storage-actions .storage-stock button.cancel {
+.storage-actions .storage-action button.cancel, .storage-actions .storage-stock button.cancel {
   position: absolute;
   width: 24px;
   height: 24px;
@@ -900,7 +901,7 @@ html[data-easyread=true] .center-spot[id=center-spot-5] .center-spot-card {
   top: -10px;
   cursor: pointer;
 }
-.player-table .storage-actions .storage-action .token, .player-table .storage-actions .storage-stock .token {
+.storage-actions .storage-action .token, .storage-actions .storage-stock .token {
   opacity: 0.7;
 }
 
