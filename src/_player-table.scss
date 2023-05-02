@@ -71,6 +71,11 @@
     }
   }
 
+  .storage-stock {
+    align-items: center;
+    align-content: center;
+  }
+
   &.can-store .visible-cards .storage-actions {
     display: flex;
   }
@@ -88,23 +93,18 @@
   left: 0;
   right: 0;
 
-  .storage-stock {
-    align-items: center;
-    align-content: center;
-  }
-
   &[data-used="true"] {
     .storage-action {
       display: none;
     }
   }
   &[data-used="false"] {
-    .storage-stock {
+    .prestorage-stock {
       display: none;
     }
   }
 
-  .storage-action, .storage-stock {
+  .storage-action, .prestorage-stock {
     position: relative;
     width: 68px;
     display: flex;

@@ -1243,7 +1243,11 @@ var CardsManager = /** @class */ (function (_super) {
         this.prestorageStocks[cardId].addCard(token);
     };
     CardsManager.prototype.confirmStoreToken = function (cardId, token) {
+        var _a;
         this.storageStocks[cardId].addCard(token);
+        // remove button for that type if storage different
+        var elem = this.getCardElement({ id: cardId });
+        (_a = this.getCardElement({ id: cardId }).querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]"))) === null || _a === void 0 ? void 0 : _a.remove();
     };
     CardsManager.prototype.getType = function (type) {
         switch (type) {
@@ -1304,7 +1308,7 @@ var CardsManager = /** @class */ (function (_super) {
     CardsManager.prototype.createStorageStock = function (card, storageActions) {
         var storageStock = document.createElement('div');
         storageStock.dataset.used = 'false';
-        storageStock.classList.add('storage-stock');
+        storageStock.classList.add('prestorage-stock');
         storageActions.appendChild(storageStock);
         this.prestorageStocks[card.id] = new LineStock(this.game.tokensManager, storageStock);
         if (card.prestoredResource) {
@@ -1313,10 +1317,13 @@ var CardsManager = /** @class */ (function (_super) {
         storageActions.dataset.used = Boolean(card.prestoredResource).toString();
         this.createCancelButton(storageStock, storageActions, this.prestorageStocks[card.id]);
     };
-    CardsManager.prototype.createStorageAction = function (cardId, storageActions, type) {
+    CardsManager.prototype.createStorageAction = function (cardId, storageActions, type, removeButtonOnUse) {
         var _this = this;
         var storageAction = document.createElement('div');
         storageAction.classList.add('storage-action');
+        if (removeButtonOnUse) {
+            storageAction.dataset.typeRemoveOnUse = '' + type;
+        }
         storageActions.appendChild(storageAction);
         var button = document.createElement('button');
         button.classList.add('bgabutton', 'bgabutton_blue');
@@ -1361,8 +1368,11 @@ var CardsManager = /** @class */ (function (_super) {
         storageActions.dataset.tokenId = '';
         this.game.cardsManager.getCardElement(card).appendChild(storageActions);
         this.createStorageStock(card, storageActions);
-        var possibleTypes = card.storageType ? [card.storageType, BONE] : [1, 2, 3, 4, BONE];
-        possibleTypes.forEach(function (type) { return _this.createStorageAction(card.id, storageActions, type); });
+        var possibleTypes = [card.storageType, BONE];
+        if (!card.storageType) {
+            possibleTypes = [1, 2, 3, 4, BONE].filter(function (type) { return !card.storedResources.some(function (token) { return token.type == type; }); });
+        }
+        possibleTypes.forEach(function (type) { return _this.createStorageAction(card.id, storageActions, type, !card.storageType); });
     };
     CardsManager.prototype.updateStorageButtons = function () {
         var _this = this;

@@ -40,6 +40,10 @@ class CardsManager extends CardManager<Card> {
     
     public confirmStoreToken(cardId: number, token: Token): void {
         this.storageStocks[cardId].addCard(token);
+
+        // remove button for that type if storage different
+        const elem = this.getCardElement({id: cardId} as Card);
+        this.getCardElement({id: cardId} as Card).querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`)?.remove();
     }
 
     private getType(type: number): string {
@@ -116,7 +120,7 @@ class CardsManager extends CardManager<Card> {
     private createStorageStock(card: Card, storageActions: HTMLElement) {
         const storageStock = document.createElement('div');
         storageStock.dataset.used = 'false';
-        storageStock.classList.add('storage-stock');
+        storageStock.classList.add('prestorage-stock');
         storageActions.appendChild(storageStock);    
         this.prestorageStocks[card.id] = new LineStock<Token>(this.game.tokensManager, storageStock);
         if (card.prestoredResource) {
@@ -126,9 +130,12 @@ class CardsManager extends CardManager<Card> {
         this.createCancelButton(storageStock, storageActions, this.prestorageStocks[card.id]);
     } 
 
-    private createStorageAction(cardId: number, storageActions: HTMLElement, type: number) {
+    private createStorageAction(cardId: number, storageActions: HTMLElement, type: number, removeButtonOnUse: boolean) {
         const storageAction = document.createElement('div');
         storageAction.classList.add('storage-action');
+        if (removeButtonOnUse) {
+            storageAction.dataset.typeRemoveOnUse = ''+type;
+        }
         storageActions.appendChild(storageAction);
         const button = document.createElement('button');
         button.classList.add('bgabutton', 'bgabutton_blue');
@@ -177,8 +184,11 @@ class CardsManager extends CardManager<Card> {
         this.game.cardsManager.getCardElement(card).appendChild(storageActions);
 
         this.createStorageStock(card, storageActions);
-        const possibleTypes = card.storageType ? [card.storageType, BONE] : [1, 2, 3, 4, BONE];
-        possibleTypes.forEach(type => this.createStorageAction(card.id, storageActions, type))
+        let possibleTypes = [card.storageType, BONE];
+        if (!card.storageType) {
+            possibleTypes = [1, 2, 3, 4, BONE].filter(type => !card.storedResources.some(token => token.type == type));
+        }
+        possibleTypes.forEach(type => this.createStorageAction(card.id, storageActions, type, !card.storageType));
     }    
 
     public updateStorageButtons() {

@@ -68,6 +68,10 @@ trait ActionTrait {
             throw new BgaUserException("Invalid pile");
         }
 
+        if (intval($this->cards->countCardInLocation('pile'.$pile)) == 0) {
+            throw new BgaUserException("The pile is empty");
+        }
+
         $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
         $fromCardPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_POWER;
         $fromChieftainPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
@@ -337,6 +341,13 @@ trait ActionTrait {
 
         if ($token == null || $card == null || $card->location != 'played'.$playerId) {
             throw new BgaUserException("Invalid action");
+        }
+
+        if ($card->storageType == DIFFERENT) {
+            $storedResources = $this->getTokensByLocation('card', $card->id);
+            if ($this->array_some($storedResources, fn($resource) => $resource->type == $tokenType)) {
+                throw new BgaUserException("You cannot store twice the same resource");
+            }
         }
 
         $this->tokens->moveCard($token->id, 'prestore', $cardId);

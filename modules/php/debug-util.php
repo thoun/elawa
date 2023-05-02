@@ -55,17 +55,8 @@ trait DebugUtilTrait {
 
 			// 'other' game specific tables. example:
 			// tables specific to your schema that use player_ids
-			$this->DbQuery("UPDATE card SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE card SET card_location='bag$sid' WHERE card_location='bag$id'" );
-			$this->DbQuery("UPDATE card SET card_location='reserve$sid' WHERE card_location='reserve$id'" );
-			$this->DbQuery("UPDATE card SET card_location='highCommand$sid' WHERE card_location='highCommand$id'" );
-			$this->DbQuery("UPDATE discover_tile SET card_location_arg=$sid WHERE card_location_arg = $id" );
-			$this->DbQuery("UPDATE objective_token SET card_location_arg=$sid WHERE card_location_arg = $id" );
-			$this->DbQuery("UPDATE link SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE circle SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE operation SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE realized_objective SET player_id=$sid WHERE player_id = $id" );
-			$this->DbQuery("UPDATE realized_objective SET realized_by=$sid WHERE realized_by = $id" );
+			$this->DbQuery("UPDATE card SET card_location='played$sid' WHERE card_location='played$id'" );
+			$this->DbQuery("UPDATE token SET card_location_arg=$sid WHERE card_location_arg = $id" );
             
 			++$sid;
 		}
