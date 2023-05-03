@@ -140,7 +140,7 @@ class Elawa extends Table {
         $this->gamestate->changeActivePlayer($startingPlayerId);
 
         // TODO TEMP
-        //$this->debugSetup();
+        $this->debugSetup();
 
         /************ End of the game initialization *****/
     }

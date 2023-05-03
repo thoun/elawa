@@ -276,12 +276,20 @@ trait UtilTrait {
         }
     }
 
+    // getPlayerScore(2343492)
     function getPlayerScore(int $playerId) {
         $playedCards = $this->getPlayedCardWithStoredResources($playerId);
         $score = 0;
+        //$cardsScores = [];
+
         foreach ($playedCards as $card) {
-            $score += $this->getCardScore($card, $playedCards);
+            $cardScore = $this->getCardScore($card, $playedCards);
+            //$cardsScores[$card->id] = $cardScore;
+            $score += $cardScore;
         }
+
+        //$this->debug($cardsScores);
+
         return $score;
     }
 

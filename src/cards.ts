@@ -15,7 +15,7 @@ class CardsManager extends CardManager<Card> {
                 div.dataset.cardId = ''+card.id;
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => { 
-                div.dataset.cardId = `${this.getId(card)}-front`;
+                div.id = `${this.getId(card)}-front`;
                 div.dataset.color = ''+card.color;
                 div.dataset.number = ''+card.number;
                 game.setTooltip(div.id, this.getTooltip(card));

@@ -1220,7 +1220,7 @@ var CardsManager = /** @class */ (function (_super) {
                 div.dataset.cardId = '' + card.id;
             },
             setupFrontDiv: function (card, div) {
-                div.dataset.cardId = "".concat(_this.getId(card), "-front");
+                div.id = "".concat(_this.getId(card), "-front");
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
                 game.setTooltip(div.id, _this.getTooltip(card));
