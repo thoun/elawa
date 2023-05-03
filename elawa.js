@@ -1247,7 +1247,7 @@ var CardsManager = /** @class */ (function (_super) {
         this.storageStocks[cardId].addCard(token);
         // remove button for that type if storage different
         var elem = this.getCardElement({ id: cardId });
-        (_a = this.getCardElement({ id: cardId }).querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]"))) === null || _a === void 0 ? void 0 : _a.remove();
+        (_a = elem.querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]"))) === null || _a === void 0 ? void 0 : _a.remove();
     };
     CardsManager.prototype.getType = function (type) {
         switch (type) {
@@ -1370,7 +1370,7 @@ var CardsManager = /** @class */ (function (_super) {
         this.createStorageStock(card, storageActions);
         var possibleTypes = [card.storageType, BONE];
         if (!card.storageType) {
-            possibleTypes = [1, 2, 3, 4, BONE].filter(function (type) { return !card.storedResources.some(function (token) { return token.type == type; }); });
+            possibleTypes = [1, 2, 3, 4, BONE].filter(function (type) { var _a; return !((_a = card.storedResources) !== null && _a !== void 0 ? _a : []).some(function (token) { return token.type == type; }); });
         }
         possibleTypes.forEach(function (type) { return _this.createStorageAction(card.id, storageActions, type, !card.storageType); });
     };

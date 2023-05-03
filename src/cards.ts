@@ -43,7 +43,7 @@ class CardsManager extends CardManager<Card> {
 
         // remove button for that type if storage different
         const elem = this.getCardElement({id: cardId} as Card);
-        this.getCardElement({id: cardId} as Card).querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`)?.remove();
+        elem.querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`)?.remove();
     }
 
     private getType(type: number): string {
@@ -186,7 +186,7 @@ class CardsManager extends CardManager<Card> {
         this.createStorageStock(card, storageActions);
         let possibleTypes = [card.storageType, BONE];
         if (!card.storageType) {
-            possibleTypes = [1, 2, 3, 4, BONE].filter(type => !card.storedResources.some(token => token.type == type));
+            possibleTypes = [1, 2, 3, 4, BONE].filter(type => !(card.storedResources ?? []).some(token => token.type == type));
         }
         possibleTypes.forEach(type => this.createStorageAction(card.id, storageActions, type, !card.storageType));
     }    
