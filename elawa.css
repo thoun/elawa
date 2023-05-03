@@ -513,6 +513,17 @@ body > .card {
   height: 68px;
   box-shadow: none;
 }
+.card.token::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.7);
+}
 .card.token.disabled {
   cursor: not-allowed;
   filter: contrast(0.6);
