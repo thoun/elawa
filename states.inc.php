@@ -112,6 +112,7 @@ $playerActionsGameStates = [
             "takeCard",
         ],
         "transitions" => [
+            "takeCard" => ST_PLAYER_TAKE_CARD_CHIEF_POWER,
             "next" => ST_PLAYER_PLAY_CARD,
         ]
     ],

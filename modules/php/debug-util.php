@@ -11,7 +11,7 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->addTokensToCard($this->debugSetCard(2343492, 4, 3), 6);
+        /*$this->addTokensToCard($this->debugSetCard(2343492, 4, 3), 6);
         $this->debugSetCard(2343492, 2, 10);
         $this->debugSetCard(2343492, 5, 7);
         $this->debugSetCard(2343492, 3, 6);
@@ -19,7 +19,10 @@ trait DebugUtilTrait {
         $this->addTokensToCard($this->debugSetCard(2343492, 1, 3), 1);
         $this->debugSetCard(2343492, 3, 10);
 
-        $this->updateScore(2343492);
+        $this->updateScore(2343492);*/
+        for ($i=0; $i<6; $i++) {
+            $this->debugAlmostEmptyPile($i);
+        }
         
         //$this->debugLastTurn();
     }

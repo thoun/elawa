@@ -100,8 +100,8 @@ trait ActionTrait {
                 $emptyPileTakeCard = $this->getGlobalVariable(POWER_EMPTY_PILE);
                 $fromPile = $emptyPileTakeCard[0];
                 $tokens = $emptyPileTakeCard[1];
-                $this->applyTakeCardResources($playerId, $fromPile, $tokens);
                 $this->deleteGlobalVariable(POWER_EMPTY_PILE);
+                $redirect = $this->applyTakeCardResources($playerId, $fromPile, $tokens);
             } else {
                 $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens);
             }
