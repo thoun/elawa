@@ -52,6 +52,7 @@
   top: calc(50% - 12px);
   transform-origin: center center;
   transform: rotate(calc(var(--angle) * -1));
+  color: var(--shadow-color);
 }
 
 html[data-easyread="true"] {
