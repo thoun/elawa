@@ -749,17 +749,16 @@ html .center-spot[id=center-spot-5] .center-spot-card {
 #first-player {
   background: #571f13;
   color: white;
-  width: 20px;
   height: 20px;
   font-size: 14px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  border-radius: 50%;
+  border-radius: 10px;
   top: -2px;
   position: relative;
-  cursor: help;
   user-select: none;
+  padding: 0 10px;
 }
 
 .player-table {

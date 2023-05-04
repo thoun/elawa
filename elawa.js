@@ -2016,10 +2016,9 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
-        var _a;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
-            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div><div class=\"counters\">");
+            var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n                <div>").concat(playerId == gamedatas.firstPlayerId ? "<div id=\"first-player\">".concat(_('First player'), "</div>") : '', "</div>\n            </div><div class=\"counters\">");
             for (var i = 1; i <= 5; i++) {
                 html += "\n                <div id=\"resource".concat(i, "-counter-wrapper-").concat(player.id, "\" class=\"resource-counter\">\n                    <div class=\"token-icon\" data-type=\"").concat(i, "\"></div>\n                    <span id=\"resource").concat(i, "-counter-").concat(player.id, "\"></span>\n                </div>");
                 if (i == 4) {
@@ -2043,8 +2042,6 @@ var Elawa = /** @class */ (function () {
                 _loop_3(i);
             }
         });
-        (_a = document.getElementById("player_name_".concat(gamedatas.firstPlayerId))) === null || _a === void 0 ? void 0 : _a.insertAdjacentHTML('beforeend', "\n            <div id=\"first-player\">1</div>\n        ");
-        this.setTooltip('first-player', _('First player'));
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         this.setTooltipToClass('resource-counter', _('Number of resources by type'));
     };

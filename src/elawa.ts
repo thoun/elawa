@@ -351,6 +351,7 @@ class Elawa implements ElawaGame {
                     <div class="player-hand-card"></div> 
                     <span id="playerhand-counter-${player.id}"></span>
                 </div>
+                <div>${playerId == gamedatas.firstPlayerId ? `<div id="first-player">${_('First player')}</div>` : ''}</div>
             </div><div class="counters">`;
 
             for (let i = 1; i <= 5; i++) {
@@ -382,11 +383,6 @@ class Elawa implements ElawaGame {
                 this.resourcesCounters[playerId][i] = resourceCounter;
             }
         });
-
-        document.getElementById(`player_name_${gamedatas.firstPlayerId}`)?.insertAdjacentHTML('beforeend', `
-            <div id="first-player">1</div>
-        `);
-        this.setTooltip('first-player', _('First player'));
 
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         this.setTooltipToClass('resource-counter', _('Number of resources by type'));
