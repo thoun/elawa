@@ -32,10 +32,10 @@
         }
     }    
 
-    &.selectable:not(.disabled) {
+    &.selectable:not(.disabled):hover {
         cursor: pointer;
         &:not(.selected) {
-            animation: selectable-card-animation 1s alternate infinite ease-in-out;
+            box-shadow: 0 0 5px 3px orange;
         }
 
         .card-side {
@@ -79,14 +79,5 @@
                 background-position-x: #{($number + 3) * 100% / 7};
             }
         }
-    }
-}
-
-@keyframes selectable-card-animation {
-    0% {
-      box-shadow: 0 0 3px 2px orange;
-    }
-    100% { 
-      box-shadow: 0 0 5px 3px orange;
     }
 }

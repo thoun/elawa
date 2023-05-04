@@ -46,7 +46,7 @@ require_once("modules/php/constants.inc.php");
 
 
 $game_preferences = [
-    201 => [
+    /*201 => [ // if we reactivate this option, we need to reset commit "new design for counters" for the case 2 (only)
         'name' => totranslate('Center cards placement'),
         'needReload' => false,
         'values' => [
@@ -54,5 +54,5 @@ $game_preferences = [
             2 => ['name' => totranslate('Follow fire circle')],
         ],
         'default' => 1,
-    ],
+    ],*/
 ];

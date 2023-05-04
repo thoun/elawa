@@ -20,11 +20,6 @@
                 user-select: none;
             }
 
-            /*&.back {  
-                background-size: auto 100%;
-                background-image: url('img/card-back.jpg');
-            }*/
-
             &.front {
                 background-size: auto 100%;              
                 background-image: url('img/chiefs.jpg');
@@ -39,35 +34,5 @@
                 }
             }
         }
-    }    
-
-    /*&.selectable:not(.disabled) {
-        cursor: pointer;
-        &:not(.selected) {
-            animation: selectable-card-animation 1s alternate infinite ease-in-out;
-        }
-
-        .card-side {
-            box-shadow: unset;
-        }
-    }    
-
-    &.selected:not(.disabled) {
-        box-shadow: 0 0 5px 8px #e273f5;
-
-        .card-side {
-            box-shadow: unset;
-        }
-    } */
+    }  
 }
-
-/*@keyframes selectable-card-animation {
-    0% { 
-      //background: var(--background-lighter);
-      box-shadow: 0 0 3px 2px #FFFFFF;
-    }
-    100% { 
-      //background: var(--background-darker);
-      box-shadow: 0 0 5px 3px #FFFFFF;
-    }
-}*/
