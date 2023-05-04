@@ -50,6 +50,7 @@ class Elawa extends Table {
             LAST_TURN => LAST_TURN,
             SELECTED_CARD => SELECTED_CARD,
             CANCELLABLE_MOVES => CANCELLABLE_MOVES,
+            SELECTED_PILE => SELECTED_PILE,
 
             CHIEFTAIN_OPTION => CHIEFTAIN_OPTION,
         ]);   
@@ -118,6 +119,7 @@ class Elawa extends Table {
         $this->setGameStateInitialValue(LAST_TURN, 0);
         $this->setGameStateInitialValue(SELECTED_CARD, -1);
         $this->setGameStateInitialValue(CANCELLABLE_MOVES, 0);
+        $this->setGameStateInitialValue(SELECTED_PILE, -1);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)

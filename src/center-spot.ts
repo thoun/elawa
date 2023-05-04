@@ -43,10 +43,16 @@ class CenterSpot {
         }
         cardDeck.addEventListener('click', () => this.game.onCenterCardClick(pile));
         cardDeck.addEventListener('mouseenter', () => {
-            const card = this.visibleCard.getCards()[0];
-            tableCenter.showLinkedTokens(pile, card?.tokens ?? 0)
+            if (this.game.getGameStateName() == 'takeCard') {
+                const card = this.visibleCard.getCards()[0];
+                tableCenter.showLinkedTokens(pile, card?.tokens ?? 0);
+            }
         });
-        cardDeck.addEventListener('mouseleave', () => tableCenter.showLinkedTokens(pile, 0));
+        cardDeck.addEventListener('mouseleave', () => {
+            if (this.game.getGameStateName() == 'takeCard') {
+                tableCenter.showLinkedTokens(pile, 0);
+            }
+        });
         
         this.cardCounter = new ebg.counter();
         this.cardCounter.create(`center-spot-${pile}-card-counter`);

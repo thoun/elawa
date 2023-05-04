@@ -95,6 +95,9 @@ class Elawa implements ElawaGame {
             case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
+            case 'confirmTakeCard':
+                this.onEnteringConfirmTakeCard(args.args);
+                break;
             case 'playCard':
                 this.onEnteringPlayCard(args.args);
                 break;
@@ -120,6 +123,12 @@ class Elawa implements ElawaGame {
         this.getPlayerTable(args.playerId).freeResources();
         if ((this as any).isCurrentPlayerActive()) {
             this.tableCenter.setCardsSelectable(true);
+        }
+    }
+
+    private onEnteringConfirmTakeCard(args: EnteringConfirmTakeCardArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.tableCenter.setCardSelected(args.pile, args.card);
         }
     }
     
@@ -157,6 +166,9 @@ class Elawa implements ElawaGame {
             case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
+            case 'confirmTakeCard':
+                this.onLeavingConfirmTakeCard();
+                break;
             case 'playCard':
                 this.onLeavingPlayCard();
                 break;
@@ -173,6 +185,10 @@ class Elawa implements ElawaGame {
 
     private onLeavingTakeCard() {
         this.tableCenter.setCardsSelectable(false);
+    }
+
+    private onLeavingConfirmTakeCard() {
+        this.tableCenter.unselectCard();
     }
 
     private onLeavingPlayCard() {
@@ -193,6 +209,10 @@ class Elawa implements ElawaGame {
         
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'confirmTakeCard':
+                    (this as any).addActionButton(`confirmTakeCard_button`, _("Confirm selected card"), () => this.takeCard(args.pile));
+                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
+                    break;
                 case 'skipResource':
                     const skipResourceArgs = args as EnteringSkipResourceArgs;
                     for (let i=0; i < skipResourceArgs.resources.length; i++) {

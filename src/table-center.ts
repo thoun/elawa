@@ -57,6 +57,16 @@ class TableCenter {
         this.spots.forEach(spot => spot.setCardSelectable(selectable));
     }
     
+    public setCardSelected(pile: number, card: Card) {
+        this.game.cardsManager.getCardElement(card).classList.add('selected');
+        this.showLinkedTokens(pile, card.tokens, 0);
+    }
+    
+    public unselectCard() {
+        document.querySelector('#table-center .elawa-card.selected')?.classList.remove('selected');
+        this.showLinkedTokens(0, 0);
+    }
+    
     public showLinkedTokens(pile: number, count: number, skip: number | null = null) {
         const linked = [];
         if (this.game.getGameStateName() == 'takeCard' || skip !== null) {

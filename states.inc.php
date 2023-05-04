@@ -82,10 +82,29 @@ $playerActionsGameStates = [
             "takeCard",
         ],
         "transitions" => [
+            "confirm" => ST_PLAYER_CONFIRM_TAKE_CARD,
             "skipResource" => ST_PLAYER_SKIP_RESOURCE,
             "takeCard" => ST_PLAYER_TAKE_CARD_CHIEF_POWER,
             "next" => ST_PLAYER_PLAY_CARD,
         ]
+    ],
+
+    ST_PLAYER_CONFIRM_TAKE_CARD => [
+        "name" => "confirmTakeCard",
+        "description" => clienttranslate('${actplayer} must confirm the choosen card and the ${number} associated resources'),
+        "descriptionmyturn" => clienttranslate('${you} must confirm the choosen card and the ${number} associated resources'),
+        "type" => "activeplayer",
+        "args" => "argConfirmTakeCard",
+        "possibleactions" => [ 
+            "takeCard",
+            "cancel",
+        ],
+        "transitions" => [
+            "skipResource" => ST_PLAYER_SKIP_RESOURCE,
+            "takeCard" => ST_PLAYER_TAKE_CARD_CHIEF_POWER,
+            "next" => ST_PLAYER_PLAY_CARD,
+            "cancel" => ST_PLAYER_TAKE_CARD,
+        ],
     ],
 
     ST_PLAYER_SKIP_RESOURCE => [

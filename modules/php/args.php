@@ -21,6 +21,17 @@ trait ArgsTrait {
             //'available' => [1,2,3,4,5,6],
         ];
     }
+   
+    function argConfirmTakeCard() {
+        $pile = intval($this->getGameStateValue(SELECTED_PILE));
+        $card = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
+
+        return [
+            'pile' => $pile,
+            'number' => $card->tokens, // for title bar
+            'card' => $card,
+        ];
+    }
 
     function argSkipResource() {
         $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);

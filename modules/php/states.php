@@ -22,6 +22,7 @@ trait StateTrait {
     function stNextPlayer() {
         $this->deleteGlobalVariables([UNDO, POWER_PAY_ONE_LESS]);
         $this->setGameStateValue(CANCELLABLE_MOVES, 0);
+        $this->setGameStateValue(SELECTED_PILE, -1);
 
         $this->activeNextPlayer();       
         $playerId = $this->getActivePlayerId();

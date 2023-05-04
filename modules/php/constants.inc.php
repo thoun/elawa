@@ -1,5 +1,7 @@
 <?php
 
+define('CONFIRM_ACTIVATED', true);
+
 /*
  * Color
  */
@@ -47,6 +49,7 @@ define('CHIEF_POWER_ADDITIONAL_RESOURCE', 4);
 define('ST_BGA_GAME_SETUP', 1);
 
 define('ST_PLAYER_TAKE_CARD', 10);
+define('ST_PLAYER_CONFIRM_TAKE_CARD', 11);
 define('ST_PLAYER_SKIP_RESOURCE', 15);
 define('ST_PLAYER_TAKE_CARD_CHIEF_POWER', 16);
 
@@ -70,6 +73,7 @@ define('END_SCORE', 100);
 define('LAST_TURN', 10);
 define('SELECTED_CARD', 11);
 define('CANCELLABLE_MOVES', 12);
+define('SELECTED_PILE', 13);
 
 /*
  * Options

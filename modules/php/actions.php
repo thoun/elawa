@@ -72,9 +72,17 @@ trait ActionTrait {
             throw new BgaUserException("The pile is empty");
         }
 
+        $stateId = intval($this->gamestate->state_id());
+
+        if (CONFIRM_ACTIVATED && $stateId == ST_PLAYER_TAKE_CARD) {
+            $this->setGameStateValue(SELECTED_PILE, $pile);
+            $this->gamestate->nextState('confirm');
+            return;
+        }
+
         $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
-        $fromCardPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_POWER;
-        $fromChieftainPower = intval($this->gamestate->state_id()) == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
+        $fromCardPower = $stateId == ST_PLAYER_TAKE_CARD_POWER;
+        $fromChieftainPower = $stateId == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
         $canSkipResource = !$fromCardPower && $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
 
         $message = $fromCardPower || $fromChieftainPower ?
@@ -336,9 +344,11 @@ trait ActionTrait {
     }
 
     public function cancel() {
-        self::checkAction('cancel');
+        self::checkAction('cancel');        
 
-        $this->gamestate->nextState('next');
+        $stateId = intval($this->gamestate->state_id());
+
+        $this->gamestate->nextState($stateId == ST_PLAYER_CONFIRM_TAKE_CARD ? 'cancel' : 'next');
     }
 
     public function storeToken(int $cardId, int $tokenType) {

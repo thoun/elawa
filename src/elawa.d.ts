@@ -83,6 +83,11 @@ interface EnteringTakeCardArgs {
     playerId: number;
 }
 
+interface EnteringConfirmTakeCardArgs {
+    pile: number;
+    card: Card;
+}
+
 interface EnteringSkipResourceArgs {
     pile: number;
     resources: number[];

@@ -1493,10 +1493,16 @@ var CenterSpot = /** @class */ (function () {
         cardDeck.addEventListener('click', function () { return _this.game.onCenterCardClick(pile); });
         cardDeck.addEventListener('mouseenter', function () {
             var _a;
-            var card = _this.visibleCard.getCards()[0];
-            tableCenter.showLinkedTokens(pile, (_a = card === null || card === void 0 ? void 0 : card.tokens) !== null && _a !== void 0 ? _a : 0);
+            if (_this.game.getGameStateName() == 'takeCard') {
+                var card_1 = _this.visibleCard.getCards()[0];
+                tableCenter.showLinkedTokens(pile, (_a = card_1 === null || card_1 === void 0 ? void 0 : card_1.tokens) !== null && _a !== void 0 ? _a : 0);
+            }
         });
-        cardDeck.addEventListener('mouseleave', function () { return tableCenter.showLinkedTokens(pile, 0); });
+        cardDeck.addEventListener('mouseleave', function () {
+            if (_this.game.getGameStateName() == 'takeCard') {
+                tableCenter.showLinkedTokens(pile, 0);
+            }
+        });
         this.cardCounter = new ebg.counter();
         this.cardCounter.create("center-spot-".concat(pile, "-card-counter"));
         this.cardCounter.setValue(cardCount);
@@ -1593,6 +1599,15 @@ var TableCenter = /** @class */ (function () {
     };
     TableCenter.prototype.setCardsSelectable = function (selectable) {
         this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
+    };
+    TableCenter.prototype.setCardSelected = function (pile, card) {
+        this.game.cardsManager.getCardElement(card).classList.add('selected');
+        this.showLinkedTokens(pile, card.tokens, 0);
+    };
+    TableCenter.prototype.unselectCard = function () {
+        var _a;
+        (_a = document.querySelector('#table-center .elawa-card.selected')) === null || _a === void 0 ? void 0 : _a.classList.remove('selected');
+        this.showLinkedTokens(0, 0);
     };
     TableCenter.prototype.showLinkedTokens = function (pile, count, skip) {
         if (skip === void 0) { skip = null; }
@@ -1779,6 +1794,9 @@ var Elawa = /** @class */ (function () {
             case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
+            case 'confirmTakeCard':
+                this.onEnteringConfirmTakeCard(args.args);
+                break;
             case 'playCard':
                 this.onEnteringPlayCard(args.args);
                 break;
@@ -1802,6 +1820,11 @@ var Elawa = /** @class */ (function () {
         this.getPlayerTable(args.playerId).freeResources();
         if (this.isCurrentPlayerActive()) {
             this.tableCenter.setCardsSelectable(true);
+        }
+    };
+    Elawa.prototype.onEnteringConfirmTakeCard = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            this.tableCenter.setCardSelected(args.pile, args.card);
         }
     };
     Elawa.prototype.setGamestateDescription = function (property) {
@@ -1837,6 +1860,9 @@ var Elawa = /** @class */ (function () {
             case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
+            case 'confirmTakeCard':
+                this.onLeavingConfirmTakeCard();
+                break;
             case 'playCard':
                 this.onLeavingPlayCard();
                 break;
@@ -1852,6 +1878,9 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.onLeavingTakeCard = function () {
         this.tableCenter.setCardsSelectable(false);
+    };
+    Elawa.prototype.onLeavingConfirmTakeCard = function () {
+        this.tableCenter.unselectCard();
     };
     Elawa.prototype.onLeavingPlayCard = function () {
         var _a;
@@ -1869,6 +1898,10 @@ var Elawa = /** @class */ (function () {
         var _this = this;
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
+                case 'confirmTakeCard':
+                    this.addActionButton("confirmTakeCard_button", _("Confirm selected card"), function () { return _this.takeCard(args.pile); });
+                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
+                    break;
                 case 'skipResource':
                     var skipResourceArgs_1 = args;
                     var _loop_2 = function (i) {
