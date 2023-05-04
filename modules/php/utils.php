@@ -356,6 +356,10 @@ trait UtilTrait {
         }
     }
 
+    function canCancelMoves() {
+        return intval($this->getGameStateValue(CANCELLABLE_MOVES)) > 0;
+    }
+
     function saveForUndo(int $playerId, bool $logUndoPoint) {
         $cards = $this->getCardsByLocation('hand', $playerId);        
         $tokens = $this->getTokensByLocation('player', $playerId);
@@ -369,6 +373,7 @@ trait UtilTrait {
             array_map(fn($token) => $token->id, $tokens),
             $this->getGlobalVariable(POWER_PAY_ONE_LESS, true)
         ));
+        $this->setGameStateValue(CANCELLABLE_MOVES, 0);
     }
 
     function confirmStoreTokens(int $playerId) {

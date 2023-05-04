@@ -1917,7 +1917,7 @@ var Elawa = /** @class */ (function () {
                     break;
             }
         }
-        if (['playCard', 'chooseOneLess', 'discardCard', 'discardTokens'].includes(stateName)) {
+        if (['playCard', 'chooseOneLess', 'discardCard', 'takeCardChiefPower', 'takeCardChiefPower', 'discardTokens'].includes(stateName) && args.canCancelMoves) {
             this.addActionButton("cancelLastMoves_button", _("Cancel last moves"), function () { return _this.cancelLastMoves(); }, null, null, 'gray');
         }
     };

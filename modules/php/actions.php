@@ -178,6 +178,8 @@ trait ActionTrait {
     function applyPlayCard(int $playerId, Card $card) {
         $this->cards->moveCard($card->id, 'played'.$playerId, intval($this->cards->countCardInLocation('played'.$playerId)) - 1);
 
+        $this->incGameStateValue(CANCELLABLE_MOVES, 1);
+
         $payOneLessData = null;
         $payOneLess = false;
         if ($this->getChiefPower($playerId) == CHIEF_POWER_PAY_ONE_LESS_RESOURCE) {
@@ -268,6 +270,8 @@ trait ActionTrait {
 
         $this->confirmStoreTokens($playerId);
 
+        $this->incGameStateValue(CANCELLABLE_MOVES, 1);
+
         $args = $this->argDiscardTokens();
         $max = $args['number'];
         $tokens = $this->getTokensByLocation('player', $playerId);
@@ -299,6 +303,8 @@ trait ActionTrait {
         }
 
         $this->cards->moveCard($card->id, 'discard', $playerId);
+
+        $this->incGameStateValue(CANCELLABLE_MOVES, 1);
 
         self::notifyPlayer($playerId, 'discardCard', '', [
             'playerId' => $playerId,
@@ -356,6 +362,8 @@ trait ActionTrait {
 
         $this->tokens->moveCard($token->id, 'prestore', $cardId);
 
+        $this->incGameStateValue(CANCELLABLE_MOVES, 1);
+
         self::notifyAllPlayers('storedToken', clienttranslate('${player_name} stores ${type} on a storage card'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
@@ -380,6 +388,8 @@ trait ActionTrait {
         }
 
         $this->tokens->moveCard($tokenId, 'player', $playerId);
+
+        $this->incGameStateValue(CANCELLABLE_MOVES, 1);
 
         self::notifyAllPlayers('unstoredToken', clienttranslate('${player_name} removes ${type} from a storage card'), [
             'playerId' => $playerId,
@@ -432,6 +442,8 @@ trait ActionTrait {
 
         $this->cards->moveCards($undo->cardsIds, 'hand', $playerId);
         $this->tokens->moveCards($undo->tokensIds, 'player', $playerId);
+
+        $this->setGameStateValue(CANCELLABLE_MOVES, 0);
 
         $this->setGlobalVariable(POWER_PAY_ONE_LESS, $undo->payOneLess);
 

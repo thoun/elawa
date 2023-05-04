@@ -69,6 +69,7 @@ define('END_SCORE', 100);
  */
 define('LAST_TURN', 10);
 define('SELECTED_CARD', 11);
+define('CANCELLABLE_MOVES', 12);
 
 /*
  * Options

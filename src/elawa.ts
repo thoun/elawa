@@ -241,7 +241,7 @@ class Elawa implements ElawaGame {
             }
         }
 
-        if (['playCard', 'chooseOneLess', 'discardCard', 'discardTokens'].includes(stateName)) {
+        if (['playCard', 'chooseOneLess', 'discardCard', 'takeCardChiefPower', 'takeCardChiefPower', 'discardTokens'].includes(stateName) && args.canCancelMoves) {
             (this as any).addActionButton(`cancelLastMoves_button`, _("Cancel last moves"), () => this.cancelLastMoves(), null, null, 'gray');
         }
     }

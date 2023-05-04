@@ -16,6 +16,7 @@ trait ArgsTrait {
         $playerId = intval($this->getActivePlayerId());
 
         return [
+            'canCancelMoves' => $this->canCancelMoves(),
             'playerId' => $playerId,
             //'available' => [1,2,3,4,5,6],
         ];
@@ -56,6 +57,7 @@ trait ArgsTrait {
         $canStore = $this->array_some($played, fn($card) => $card->cardType == STORAGE);
 
         return [
+            'canCancelMoves' => $this->canCancelMoves(),
             'canStore' => $canStore,
             'payOneLess' => $payOneLess,
             'playableCards' => $playableCards,
@@ -74,6 +76,7 @@ trait ArgsTrait {
         $tokens = array_values(array_filter($tokens, fn($token) => $this->tokensToPayForCard($card, $resources, null, false, $token) !== null));
 
         return [
+            'canCancelMoves' => $this->canCancelMoves(),
             'canSkipDiscard' => $card->discard,
             'tokens' => $tokens,
         ];
@@ -87,6 +90,7 @@ trait ArgsTrait {
         $playableCards = array_values(array_filter($hand, fn($card) => $card->id != $selectedCard->id));
 
         return [
+            'canCancelMoves' => $this->canCancelMoves(),
             'selectedCard' => $selectedCard,
             'playableCards' => $playableCards,
         ];
@@ -96,6 +100,7 @@ trait ArgsTrait {
         $number = $this->getMaxKeepResources();
 
         return [
+            'canCancelMoves' => $this->canCancelMoves(),
             'number' => $number,
         ];
     }
