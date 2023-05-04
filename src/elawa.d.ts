@@ -56,6 +56,7 @@ interface ElawaGamedatas {
     fireToken: Token;
     fireTokenCount: number;
     chieftainOption: number;
+    firstPlayerId: number;
     lastTurn: boolean;
 }
 

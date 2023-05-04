@@ -363,6 +363,11 @@ class Elawa implements ElawaGame {
             }
         });
 
+        document.getElementById(`player_name_${gamedatas.firstPlayerId}`)?.insertAdjacentHTML('beforeend', `
+            <div id="first-player">1</div>
+        `);
+        this.setTooltip('first-player', _('First player'));
+
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         this.setTooltipToClass('resource-counter', _('Number of resources by type'));
     }

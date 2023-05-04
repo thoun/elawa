@@ -1983,6 +1983,7 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.createPlayerPanels = function (gamedatas) {
         var _this = this;
+        var _a;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             var html = "<div class=\"counters\">\n                <div id=\"playerhand-counter-wrapper-".concat(player.id, "\" class=\"playerhand-counter\">\n                    <div class=\"player-hand-card\"></div> \n                    <span id=\"playerhand-counter-").concat(player.id, "\"></span>\n                </div>\n            </div><div class=\"counters\">");
@@ -2009,6 +2010,8 @@ var Elawa = /** @class */ (function () {
                 _loop_3(i);
             }
         });
+        (_a = document.getElementById("player_name_".concat(gamedatas.firstPlayerId))) === null || _a === void 0 ? void 0 : _a.insertAdjacentHTML('beforeend', "\n            <div id=\"first-player\">1</div>\n        ");
+        this.setTooltip('first-player', _('First player'));
         this.setTooltipToClass('playerhand-counter', _('Number of cards in hand'));
         this.setTooltipToClass('resource-counter', _('Number of resources by type'));
     };
