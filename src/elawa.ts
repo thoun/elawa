@@ -308,9 +308,9 @@ class Elawa implements ElawaGame {
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
-            case 201:
+            /*case 201: // if we reactivate this option, we need to reset commit "new design for counters" for the case 2 (only)
                 document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
-                break;
+                break;*/
         }
     }
 

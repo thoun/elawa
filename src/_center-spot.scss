@@ -55,7 +55,7 @@
   color: var(--shadow-color);
 }
 
-html[data-easyread="true"] {
+html/*[data-easyread="true"]*/ {
   #table-center {
     margin-top: 10px;
   }
