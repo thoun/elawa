@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `token` (
 
 -- Example 2: add a custom field to the standard "player" table
 ALTER TABLE `player` ADD `player_chief` tinyint UNSIGNED NULL;
-ALTER TABLE `player` ADD `ask_confirm` SMALLINT UNSIGNED NOT NULL DEFAULT 1;
+ALTER TABLE `player` ADD `ask_confirm` SMALLINT UNSIGNED NULL;
 
 CREATE TABLE IF NOT EXISTS `global_variables` (
   `name` varchar(50) NOT NULL,

@@ -85,7 +85,7 @@ class Elawa extends Table {
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_chief) VALUES ";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_chief, ask_confirm) VALUES ";
         $values = [];
 
         $affectedChiefs = [];
@@ -102,8 +102,13 @@ class Elawa extends Table {
         foreach( $players as $player_id => $player ) {
             $color = array_shift( $default_colors );
             $chief = array_shift( $affectedChiefs );
+            
+            $askConfirm = 1;
+            if (array_key_exists($player_id, $this->player_preferences) && array_key_exists(202, $this->player_preferences[$player_id])) {
+                $askConfirm = intval($this->player_preferences[$player_id][202]) == 2 ? 0 : 1;
+            }
 
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $chief)";
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $chief, $askConfirm)";
             if ($chief == min($chiefsInPlay)) {
                 $startingPlayerId = $player_id;
             }
@@ -300,7 +305,7 @@ class Elawa extends Table {
         if($from_version <= 2305041919) {
             // ! important ! Use DBPREFIX_<table_name> for all tables
 
-            $sql = "ALTER TABLE `DBPREFIX_player` ADD `ask_confirm` SMALLINT UNSIGNED NOT NULL DEFAULT 1;";
+            $sql = "ALTER TABLE `DBPREFIX_player` ADD `ask_confirm` SMALLINT UNSIGNED NULL;";
             self::applyDbUpgradeToAllDB($sql);
         }
 

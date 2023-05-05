@@ -331,6 +331,9 @@ class Elawa implements ElawaGame {
             /*case 201: // if we reactivate this option, we need to reset commit "new design for counters" for the case 2 (only)
                 document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
                 break;*/
+            case 202: 
+                this.setAskConfirm(prefValue != 2);
+                break;
         }
     }
 
@@ -539,9 +542,19 @@ class Elawa implements ElawaGame {
         this.takeAction('cancelLastMoves');
     }
 
+    public setAskConfirm(askConfirm: boolean) {
+        this.takeNoLockAction('setAskConfirm', {
+            askConfirm
+        });
+    }
+
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
+        (this as any).ajaxcall(`/elawa/elawa/${action}.html`, data, this, () => {});
+    }
+    public takeNoLockAction(action: string, data?: any) {
+        data = data || {};
         (this as any).ajaxcall(`/elawa/elawa/${action}.html`, data, this, () => {});
     }
 

@@ -74,7 +74,7 @@ trait ActionTrait {
 
         $stateId = intval($this->gamestate->state_id());
 
-        if (CONFIRM_ACTIVATED && $stateId == ST_PLAYER_TAKE_CARD) {
+        if ($stateId == ST_PLAYER_TAKE_CARD && boolval($this->getUniqueValueFromDB("SELECT ask_confirm FROM player WHERE `player_id` = $playerId"))) {
             $this->setGameStateValue(SELECTED_PILE, $pile);
             $this->gamestate->nextState('confirm');
             return;
@@ -467,5 +467,14 @@ trait ActionTrait {
         $this->updateScore($playerId);
 
         $this->gamestate->jumpToState(ST_PLAYER_PLAY_CARD);
+    }
+
+    function setAskConfirm(bool $askConfirm) {
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $this->DbQuery("UPDATE `player` SET `ask_confirm` = ".($askConfirm ? 1 : 0)." WHERE `player_id` = $playerId");
+        
+        // dummy notif so player gets back hand
+        $this->notifyPlayer($playerId, "setAskConfirm", '', []);
     }
 }

@@ -2005,6 +2005,9 @@ var Elawa = /** @class */ (function () {
             /*case 201: // if we reactivate this option, we need to reset commit "new design for counters" for the case 2 (only)
                 document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
                 break;*/
+            case 202:
+                this.setAskConfirm(prefValue != 2);
+                break;
         }
     };
     Elawa.prototype.getOrderedPlayers = function (gamedatas) {
@@ -2167,9 +2170,18 @@ var Elawa = /** @class */ (function () {
         }*/
         this.takeAction('cancelLastMoves');
     };
+    Elawa.prototype.setAskConfirm = function (askConfirm) {
+        this.takeNoLockAction('setAskConfirm', {
+            askConfirm: askConfirm
+        });
+    };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
+        this.ajaxcall("/elawa/elawa/".concat(action, ".html"), data, this, function () { });
+    };
+    Elawa.prototype.takeNoLockAction = function (action, data) {
+        data = data || {};
         this.ajaxcall("/elawa/elawa/".concat(action, ".html"), data, this, function () { });
     };
     ///////////////////////////////////////////////////

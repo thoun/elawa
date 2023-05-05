@@ -1,7 +1,5 @@
 <?php
 
-define('CONFIRM_ACTIVATED', true);
-
 /*
  * Color
  */

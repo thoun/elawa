@@ -144,6 +144,16 @@
 
         self::ajaxResponse();
     }
+  	
+    public function setAskConfirm() {
+        self::setAjaxMode();
+
+        $askConfirm = self::getArg("askConfirm", AT_bool, true);
+
+        $this->game->setAskConfirm($askConfirm);
+
+        self::ajaxResponse();
+    }
   }
   
 

@@ -55,4 +55,14 @@ $game_preferences = [
         ],
         'default' => 1,
     ],*/
+
+    202 => [
+        'name' => totranslate('Confirm when taking a card'),
+        'needReload' => false,
+        'values' => [
+            1 => ['name' => totranslate('Enabled')],
+            2 => ['name' => totranslate('Disabled')],
+        ],
+        'default' => 1,
+    ],
 ];
