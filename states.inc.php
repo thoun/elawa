@@ -89,6 +89,23 @@ $playerActionsGameStates = [
         ]
     ],
 
+    ST_PLAYER_SKIP_RESOURCE => [
+        "name" => "skipResource",
+        "description" => clienttranslate('${actplayer} can skip a pile'),
+        "descriptionmyturn" => clienttranslate('${you} can skip a pile'),
+        "type" => "activeplayer",
+        "args" => "argSkipResource",
+        "possibleactions" => [ 
+            "skipResource",
+            "cancel",
+        ],
+        "transitions" => [
+            "confirm" => ST_PLAYER_CONFIRM_TAKE_CARD,
+            "cancel" => ST_PLAYER_TAKE_CARD,
+            "next" => ST_PLAYER_PLAY_CARD,
+        ]
+    ],
+
     ST_PLAYER_CONFIRM_TAKE_CARD => [
         "name" => "confirmTakeCard",
         "description" => clienttranslate('${actplayer} must confirm the choosen card and the ${number} associated resources'),
@@ -105,20 +122,6 @@ $playerActionsGameStates = [
             "next" => ST_PLAYER_PLAY_CARD,
             "cancel" => ST_PLAYER_TAKE_CARD,
         ],
-    ],
-
-    ST_PLAYER_SKIP_RESOURCE => [
-        "name" => "skipResource",
-        "description" => clienttranslate('${actplayer} can skip a pile'),
-        "descriptionmyturn" => clienttranslate('${you} can skip a pile'),
-        "type" => "activeplayer",
-        "args" => "argSkipResource",
-        "possibleactions" => [ 
-            "skipResource",
-        ],
-        "transitions" => [
-            "next" => ST_PLAYER_PLAY_CARD,
-        ]
     ],
 
     ST_PLAYER_TAKE_CARD_CHIEF_POWER => [

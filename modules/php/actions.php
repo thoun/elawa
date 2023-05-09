@@ -59,6 +59,27 @@ trait ActionTrait {
         return $token;
     }
 
+    function askConfirm(int $playerId) {
+        return boolval($this->getUniqueValueFromDB("SELECT ask_confirm FROM player WHERE `player_id` = $playerId"));
+    }
+
+    function skipResource(int $number) {
+        self::checkAction('skipResource');
+
+        $playerId = intval($this->getActivePlayerId());
+        
+        $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);
+        $skipResourceArray[2] = $number;
+        $this->setGlobalVariable(POWER_SKIP_RESSOURCE, $skipResourceArray);
+
+        if ($this->askConfirm($playerId)) {
+            $this->gamestate->nextState('confirm');
+        } else {
+            $this->applyTakeCard($playerId, $skipResourceArray[0]);
+            $this->gamestate->nextState('next');
+        }
+    }
+
     public function takeCard(int $pile) {
         self::checkAction('takeCard');
 
@@ -73,17 +94,31 @@ trait ActionTrait {
         }
 
         $stateId = intval($this->gamestate->state_id());
+        $hasPowerSkipResource = $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
 
-        if ($stateId == ST_PLAYER_TAKE_CARD && boolval($this->getUniqueValueFromDB("SELECT ask_confirm FROM player WHERE `player_id` = $playerId"))) {
+        if ($stateId == ST_PLAYER_TAKE_CARD && $hasPowerSkipResource) {
+            $this->setGameStateValue(SELECTED_PILE, $pile);
+            $card = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
+            $this->setGlobalVariable(POWER_SKIP_RESSOURCE, [$pile, $card->tokens]);
+            $this->gamestate->nextState('skipResource');
+            return;
+        }
+
+        if ($stateId == ST_PLAYER_TAKE_CARD && $this->askConfirm($playerId)) {
             $this->setGameStateValue(SELECTED_PILE, $pile);
             $this->gamestate->nextState('confirm');
             return;
         }
 
-        $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
+        $this->applyTakeCard($playerId, $pile);
+    }
+
+    public function applyTakeCard(int $playerId, int $pile) {
+        $stateId = intval($this->gamestate->state_id());
         $fromCardPower = $stateId == ST_PLAYER_TAKE_CARD_POWER;
         $fromChieftainPower = $stateId == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
-        $canSkipResource = !$fromCardPower && $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
+
+        $card = $this->getCardFromDb($this->cards->pickCardForLocation('pile'.$pile, 'hand', $playerId));
 
         $message = $fromCardPower || $fromChieftainPower ?
             clienttranslate('${player_name} takes a ${card_color} ${card_type} card with special power ${card_display}') :
@@ -103,7 +138,7 @@ trait ActionTrait {
         ]);
 
         $redirect = false;
-        if (!$fromCardPower && !$canSkipResource) {
+        if (!$fromCardPower) {
             if ($fromChieftainPower) {
                 $emptyPileTakeCard = $this->getGlobalVariable(POWER_EMPTY_PILE);
                 $fromPile = $emptyPileTakeCard[0];
@@ -111,20 +146,25 @@ trait ActionTrait {
                 $this->deleteGlobalVariable(POWER_EMPTY_PILE);
                 $redirect = $this->applyTakeCardResources($playerId, $fromPile, $tokens);
             } else {
-                $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens);
+                $skip = 0;
+                $hasPowerSkipResource = $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
+                if ($hasPowerSkipResource) {
+                    $skip = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true)[2];
+                }
+                $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens, $skip);
             }
         }
 
-        if ($canSkipResource) {
+        /*if ($canSkipResource) {
             $this->setGlobalVariable(POWER_SKIP_RESSOURCE, [$pile, $card->tokens]);
             $this->gamestate->nextState('skipResource');
-        } else {
+        } else {*/
             if ($fromCardPower || $fromChieftainPower) {
                 $this->saveForUndo($playerId, true);
             }
 
             $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
-        }
+        /*}*/
     }
     
     function applyTakeCardResources(int $playerId, int $pile, int $tokens, int $skip = 0) {  // return $redirect
@@ -166,21 +206,6 @@ trait ActionTrait {
         }
 
         return false;
-    }
-
-    function skipResource(int $number) {
-        self::checkAction('skipResource');
-
-        $playerId = intval($this->getActivePlayerId());
-        
-        $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);
-        $pile = $skipResourceArray[0];
-        $tokens = $skipResourceArray[1];
-
-        $this->applyTakeCardResources($playerId, $pile, $tokens, $number); // will always return false as player can't have both powers
-        $this->deleteGlobalVariable(POWER_SKIP_RESSOURCE);
-
-        $this->gamestate->nextState('next');
     }
 
     function applyPlayCard(int $playerId, Card $card) {
@@ -348,7 +373,7 @@ trait ActionTrait {
 
         $stateId = intval($this->gamestate->state_id());
 
-        $this->gamestate->nextState($stateId == ST_PLAYER_CONFIRM_TAKE_CARD ? 'cancel' : 'next');
+        $this->gamestate->nextState(in_array($stateId, [ST_PLAYER_CONFIRM_TAKE_CARD, ST_PLAYER_SKIP_RESOURCE]) ? 'cancel' : 'next');
     }
 
     public function storeToken(int $cardId, int $tokenType) {

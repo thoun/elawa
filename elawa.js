@@ -1600,9 +1600,10 @@ var TableCenter = /** @class */ (function () {
     TableCenter.prototype.setCardsSelectable = function (selectable) {
         this.spots.forEach(function (spot) { return spot.setCardSelectable(selectable); });
     };
-    TableCenter.prototype.setCardSelected = function (pile, card) {
+    TableCenter.prototype.setCardSelected = function (pile, card, skip) {
+        console.log(pile, card, skip, this.game.cardsManager.getCardElement(card));
         this.game.cardsManager.getCardElement(card).classList.add('selected');
-        this.showLinkedTokens(pile, card.tokens, 0);
+        this.showLinkedTokens(pile, card.tokens, skip);
     };
     TableCenter.prototype.unselectCard = function () {
         var _a;
@@ -1794,6 +1795,7 @@ var Elawa = /** @class */ (function () {
             case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
+            case 'skipResource':
             case 'confirmTakeCard':
                 this.onEnteringConfirmTakeCard(args.args);
                 break;
@@ -1823,8 +1825,9 @@ var Elawa = /** @class */ (function () {
         }
     };
     Elawa.prototype.onEnteringConfirmTakeCard = function (args) {
+        var _a;
         if (this.isCurrentPlayerActive()) {
-            this.tableCenter.setCardSelected(args.pile, args.card);
+            this.tableCenter.setCardSelected(args.pile, args.card, (_a = args.skip) !== null && _a !== void 0 ? _a : 0);
         }
     };
     Elawa.prototype.setGamestateDescription = function (property) {
@@ -1860,6 +1863,7 @@ var Elawa = /** @class */ (function () {
             case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
+            case 'skipResource':
             case 'confirmTakeCard':
                 this.onLeavingConfirmTakeCard();
                 break;
@@ -1888,8 +1892,6 @@ var Elawa = /** @class */ (function () {
     };
     Elawa.prototype.onLeavingDiscardCard = function () {
         document.querySelectorAll('.selected-discard').forEach(function (elem) { return elem.classList.remove('selected-discard'); });
-    };
-    Elawa.prototype.onLeavingStoreTokens = function () {
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -1923,6 +1925,7 @@ var Elawa = /** @class */ (function () {
                     for (var i = 0; i < skipResourceArgs_1.resources.length; i++) {
                         _loop_2(i);
                     }
+                    this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
                     break;
                 case 'playCard':
                     this.addActionButton("endTurn_button", _("End turn"), function () { return _this.endTurn(); });

@@ -35,7 +35,7 @@
     &.selectable:not(.disabled):hover {
         cursor: pointer;
         &:not(.selected) {
-            box-shadow: 0 0 5px 3px orange;
+            box-shadow: 0 0 5px 5px orange;
         }
 
         .card-side {
@@ -44,7 +44,7 @@
     }    
 
     &.selected:not(.disabled) {
-        box-shadow: 0 0 5px 5px orange;
+        box-shadow: 0 0 8px 8px orange;
 
         .card-side {
             box-shadow: unset;
@@ -52,7 +52,7 @@
     }
     
     &.selected-discard {
-        outline: 4px solid orange;
+        outline: 5px solid orange;
 
         .card-side {
             box-shadow: unset;

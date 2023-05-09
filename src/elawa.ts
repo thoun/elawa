@@ -95,6 +95,7 @@ class Elawa implements ElawaGame {
             case 'takeCardChiefPower':
                 this.onEnteringTakeCard(args.args);
                 break;
+            case 'skipResource':
             case 'confirmTakeCard':
                 this.onEnteringConfirmTakeCard(args.args);
                 break;
@@ -128,7 +129,7 @@ class Elawa implements ElawaGame {
 
     private onEnteringConfirmTakeCard(args: EnteringConfirmTakeCardArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            this.tableCenter.setCardSelected(args.pile, args.card);
+            this.tableCenter.setCardSelected(args.pile, args.card, args.skip ?? 0);
         }
     }
     
@@ -166,6 +167,7 @@ class Elawa implements ElawaGame {
             case 'takeCardChiefPower':
                 this.onLeavingTakeCard();
                 break;
+            case 'skipResource':
             case 'confirmTakeCard':
                 this.onLeavingConfirmTakeCard();
                 break;
@@ -199,9 +201,6 @@ class Elawa implements ElawaGame {
         document.querySelectorAll('.selected-discard').forEach(elem => elem.classList.remove('selected-discard'));
     }
 
-    private onLeavingStoreTokens() {
-    }
-
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
     //
@@ -229,6 +228,7 @@ class Elawa implements ElawaGame {
                         skipResourceButton.addEventListener('mouseenter', () => this.tableCenter.showLinkedTokens(skipResourceArgs.pile, skipResourceArgs.resources.length - 1, i));
                         skipResourceButton.addEventListener('mouseleave', () => this.tableCenter.showLinkedTokens(skipResourceArgs.pile, 0));
                     }
+                    (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
 
                 case 'playCard':

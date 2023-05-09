@@ -86,6 +86,7 @@ interface EnteringTakeCardArgs {
 interface EnteringConfirmTakeCardArgs {
     pile: number;
     card: Card;
+    skip: number;
 }
 
 interface EnteringSkipResourceArgs {

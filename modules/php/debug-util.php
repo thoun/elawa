@@ -20,9 +20,9 @@ trait DebugUtilTrait {
         $this->debugSetCard(2343492, 3, 10);
 
         $this->updateScore(2343492);*/
-        for ($i=0; $i<6; $i++) {
+        /*for ($i=0; $i<6; $i++) {
             $this->debugAlmostEmptyPile($i);
-        }
+        }*/
         
         //$this->debugLastTurn();
     }

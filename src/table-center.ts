@@ -57,9 +57,10 @@ class TableCenter {
         this.spots.forEach(spot => spot.setCardSelectable(selectable));
     }
     
-    public setCardSelected(pile: number, card: Card) {
+    public setCardSelected(pile: number, card: Card, skip: number) {
+        console.log(pile, card, skip, this.game.cardsManager.getCardElement(card));
         this.game.cardsManager.getCardElement(card).classList.add('selected');
-        this.showLinkedTokens(pile, card.tokens, 0);
+        this.showLinkedTokens(pile, card.tokens, skip);
     }
     
     public unselectCard() {

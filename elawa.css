@@ -272,19 +272,19 @@ body > .card {
   cursor: pointer;
 }
 .elawa-card.selectable:not(.disabled):hover:not(.selected) {
-  box-shadow: 0 0 5px 3px orange;
+  box-shadow: 0 0 5px 5px orange;
 }
 .elawa-card.selectable:not(.disabled):hover .card-side {
   box-shadow: unset;
 }
 .elawa-card.selected:not(.disabled) {
-  box-shadow: 0 0 5px 5px orange;
+  box-shadow: 0 0 8px 8px orange;
 }
 .elawa-card.selected:not(.disabled) .card-side {
   box-shadow: unset;
 }
 .elawa-card.selected-discard {
-  outline: 4px solid orange;
+  outline: 5px solid orange;
 }
 .elawa-card.selected-discard .card-side {
   box-shadow: unset;
@@ -531,7 +531,7 @@ body > .card {
   user-select: none;
 }
 .card.token.selected:not(.disabled) {
-  box-shadow: 0 0 5px 5px orange;
+  box-shadow: 0 0 8px 8px orange;
   border-radius: 50%;
 }
 .card.token .front[data-type="1"] {

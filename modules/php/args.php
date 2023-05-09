@@ -21,22 +21,12 @@ trait ArgsTrait {
             //'available' => [1,2,3,4,5,6],
         ];
     }
-   
-    function argConfirmTakeCard() {
-        $pile = intval($this->getGameStateValue(SELECTED_PILE));
-        $card = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
-
-        return [
-            'pile' => $pile,
-            'number' => $card->tokens, // for title bar
-            'card' => $card,
-        ];
-    }
 
     function argSkipResource() {
         $skipResourceArray = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true);
         $pile = $skipResourceArray[0];
         $tokens = $skipResourceArray[1];
+        $card = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
 
         $resources = [];
         for ($i = 1; $i <= $tokens + 1; $i++) {
@@ -47,6 +37,27 @@ trait ArgsTrait {
         return [
             'pile' => $pile,
             'resources' => $resources,
+            'card' => $card,
+        ];
+    }
+   
+    function argConfirmTakeCard() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $pile = intval($this->getGameStateValue(SELECTED_PILE));
+        $card = $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile));
+
+        $hasPowerSkipResource = $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
+        $skip = 0;
+        if ($hasPowerSkipResource) {
+            $skip = $this->getGlobalVariable(POWER_SKIP_RESSOURCE, true)[2];
+        }
+
+        return [
+            'pile' => $pile,
+            'number' => $card->tokens, // for title bar
+            'card' => $card,
+            'skip' => $skip,
         ];
     }
    
