@@ -140,11 +140,14 @@ trait ActionTrait {
         $redirect = false;
         if (!$fromCardPower) {
             if ($fromChieftainPower) {
-                $emptyPileTakeCard = $this->getGlobalVariable(POWER_EMPTY_PILE);
-                $fromPile = $emptyPileTakeCard[0];
-                $tokens = $emptyPileTakeCard[1];
-                $this->deleteGlobalVariable(POWER_EMPTY_PILE);
-                $redirect = $this->applyTakeCardResources($playerId, $fromPile, $tokens);
+                $emptyPileTakeCards = $this->getGlobalVariable(POWER_EMPTY_PILE) ?? 0;
+                $emptyPileTakeCards -= 1;
+                if ($emptyPileTakeCards > 0) {
+                    $this->setGlobalVariable(POWER_EMPTY_PILE, $emptyPileTakeCards);
+                    $redirect = true;
+                } else {
+                    $this->deleteGlobalVariable(POWER_EMPTY_PILE);
+                }
             } else {
                 $skip = 0;
                 $hasPowerSkipResource = $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
@@ -154,20 +157,17 @@ trait ActionTrait {
                 $redirect = $this->applyTakeCardResources($playerId, $pile, $card->tokens, $skip);
             }
         }
+        
+        if ($fromCardPower || $fromChieftainPower) {
+            $this->saveForUndo($playerId, true);
+        }
 
-        /*if ($canSkipResource) {
-            $this->setGlobalVariable(POWER_SKIP_RESSOURCE, [$pile, $card->tokens]);
-            $this->gamestate->nextState('skipResource');
-        } else {*/
-            if ($fromCardPower || $fromChieftainPower) {
-                $this->saveForUndo($playerId, true);
-            }
-
-            $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
-        /*}*/
+        $this->gamestate->nextState($redirect ? 'takeCard' : 'next');
     }
     
     function applyTakeCardResources(int $playerId, int $pile, int $tokens, int $skip = 0) {  // return $redirect
+        $redirect = false;
+
         for ($i = 1; $i <= $tokens + ($skip == 0 ? 0 : 1); $i++) {
             if ($i == $skip) {
                 continue;
@@ -195,8 +195,9 @@ trait ActionTrait {
                 $this->refillTokenPile($tokenPile, $playerId);
                 
                 if ($this->getChiefPower($playerId) == CHIEF_POWER_TAKE_CARD) {
-                    $this->setGlobalVariable(POWER_EMPTY_PILE, [$tokenPile, $tokens - $i]);
-                    return true;
+                    $remainingCardsToTake = $this->getGlobalVariable(POWER_EMPTY_PILE) ?? 0;
+                    $this->setGlobalVariable(POWER_EMPTY_PILE, $remainingCardsToTake + 1);
+                    $redirect = true;
                 }
             }
         }
@@ -205,7 +206,7 @@ trait ActionTrait {
             $this->takeRessourceFromPool($playerId);
         }
 
-        return false;
+        return $redirect;
     }
 
     function applyPlayCard(int $playerId, Card $card) {
