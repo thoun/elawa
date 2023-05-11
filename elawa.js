@@ -2009,9 +2009,14 @@ var Elawa = /** @class */ (function () {
                 document.getElementsByTagName('html')[0].dataset.easyread = (prefValue == 1).toString();
                 break;*/
             case 202:
-                this.setAskConfirm(prefValue != 2);
+                if (!this.isReadOnly()) {
+                    this.setAskConfirm(prefValue != 2);
+                }
                 break;
         }
+    };
+    Elawa.prototype.isReadOnly = function () {
+        return this.isSpectator || typeof g_replayFrom != 'undefined' || g_archive_mode;
     };
     Elawa.prototype.getOrderedPlayers = function (gamedatas) {
         var _this = this;
