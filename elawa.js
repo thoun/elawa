@@ -2221,10 +2221,12 @@ var Elawa = /** @class */ (function () {
         });
     };
     Elawa.prototype.notif_takeCard = function (notif) {
-        var currentPlayer = this.getPlayerId() == notif.args.playerId;
-        var playerTable = this.getPlayerTable(notif.args.playerId);
+        var playerId = notif.args.playerId;
+        var currentPlayer = this.getPlayerId() == playerId;
+        var playerTable = this.getPlayerTable(playerId);
         (currentPlayer ? playerTable.hand : playerTable.voidStock).addCard(notif.args.card);
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
+        this.handCounters[playerId].toValue(notif.args.handCount);
     };
     Elawa.prototype.notif_takeToken = function (notif) {
         var playerId = notif.args.playerId;

@@ -595,10 +595,12 @@ class Elawa implements ElawaGame {
     }
 
     notif_takeCard(notif: Notif<NotifTakeCardArgs>) {
-        const currentPlayer = this.getPlayerId() == notif.args.playerId;
-        const playerTable = this.getPlayerTable(notif.args.playerId);
+        const playerId = notif.args.playerId;
+        const currentPlayer = this.getPlayerId() == playerId;
+        const playerTable = this.getPlayerTable(playerId);
         (currentPlayer ? playerTable.hand : playerTable.voidStock).addCard(notif.args.card);
         this.tableCenter.setNewCard(notif.args.pile, notif.args.newCard, notif.args.newCount);
+        this.handCounters[playerId].toValue(notif.args.handCount);
     }
 
     notif_takeToken(notif: Notif<NotifTakeTokenArgs>) {

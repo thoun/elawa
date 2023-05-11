@@ -135,6 +135,7 @@ trait ActionTrait {
             'newCard' => $this->getCardFromDb($this->cards->getCardOnTop('pile'.$pile)),
             'newCount' => intval($this->cards->countCardInLocation('pile'.$pile)),
             'card_display' => 100 * $card->color + $card->number, // for logs
+            'handCount' => intval($this->cards->countCardInLocation('hand', $playerId)),
         ]);
 
         $redirect = false;

@@ -118,6 +118,7 @@ interface NotifTakeElementArgs {
 interface NotifTakeCardArgs extends NotifTakeElementArgs {
     card: Card;
     newCard: Card | null;
+    handCount: number;
 } 
 
 // takeToken
