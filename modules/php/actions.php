@@ -80,6 +80,16 @@ trait ActionTrait {
         }
     }
 
+    public function confirm() {
+        self::checkAction('takeCard');
+
+        $playerId = intval($this->getActivePlayerId());
+
+        $pile = intval($this->getGameStateValue(SELECTED_PILE));
+
+        $this->applyTakeCard($playerId, $pile);
+    }
+
     public function takeCard(int $pile) {
         self::checkAction('takeCard');
 
@@ -104,7 +114,7 @@ trait ActionTrait {
             return;
         }
 
-        if ($stateId == ST_PLAYER_TAKE_CARD && $this->askConfirm($playerId)) {
+        if (in_array($stateId, [ST_PLAYER_TAKE_CARD, ST_PLAYER_CONFIRM_TAKE_CARD]) && $this->askConfirm($playerId)) {
             $this->setGameStateValue(SELECTED_PILE, $pile);
             $this->gamestate->nextState('confirm');
             return;

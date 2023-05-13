@@ -211,7 +211,7 @@ class Elawa implements ElawaGame {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'confirmTakeCard':
-                    (this as any).addActionButton(`confirmTakeCard_button`, _("Confirm selected card"), () => this.takeCard(args.pile));
+                    (this as any).addActionButton(`confirmTakeCard_button`, _("Confirm selected card"), () => this.confirm());
                     (this as any).addActionButton(`cancel_button`, _("Cancel"), () => this.cancel(), null, null, 'gray');
                     break;
                 case 'skipResource':
@@ -445,6 +445,14 @@ class Elawa implements ElawaGame {
         this.takeAction('takeCard', {
             pile
         });
+    }
+  	
+    public confirm() {
+        if(!(this as any).checkAction('confirm')) {
+            return;
+        }
+
+        this.takeAction('confirm');
     }
   	
     public playCard(id: number) {

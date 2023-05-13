@@ -48,6 +48,14 @@
         self::ajaxResponse();
     } 
 
+    public function confirm() {
+        self::setAjaxMode();     
+
+        $this->game->confirm();
+
+        self::ajaxResponse();
+    } 
+
     public function playCard() {
         self::setAjaxMode();     
 

@@ -1901,7 +1901,7 @@ var Elawa = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'confirmTakeCard':
-                    this.addActionButton("confirmTakeCard_button", _("Confirm selected card"), function () { return _this.takeCard(args.pile); });
+                    this.addActionButton("confirmTakeCard_button", _("Confirm selected card"), function () { return _this.confirm(); });
                     this.addActionButton("cancel_button", _("Cancel"), function () { return _this.cancel(); }, null, null, 'gray');
                     break;
                 case 'skipResource':
@@ -2096,6 +2096,12 @@ var Elawa = /** @class */ (function () {
         this.takeAction('takeCard', {
             pile: pile
         });
+    };
+    Elawa.prototype.confirm = function () {
+        if (!this.checkAction('confirm')) {
+            return;
+        }
+        this.takeAction('confirm');
     };
     Elawa.prototype.playCard = function (id) {
         if (!this.checkAction('playCard')) {

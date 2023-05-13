@@ -113,10 +113,12 @@ $playerActionsGameStates = [
         "type" => "activeplayer",
         "args" => "argConfirmTakeCard",
         "possibleactions" => [ 
+            "confirm",
             "takeCard",
             "cancel",
         ],
         "transitions" => [
+            "confirm" => ST_PLAYER_CONFIRM_TAKE_CARD,
             "skipResource" => ST_PLAYER_SKIP_RESOURCE,
             "takeCard" => ST_PLAYER_TAKE_CARD_CHIEF_POWER,
             "next" => ST_PLAYER_PLAY_CARD,
