@@ -4,7 +4,7 @@
     left: 5px;
     width: 50px;
     height: 50px;
-    background: #60c2cb;
+    background: #571f13;
     font-weight: bold;
     color: white;
     border-radius: 25px;
@@ -26,43 +26,51 @@
     z-index: 949;
     overflow: hidden;
     background-size: contain;
+    background-repeat: no-repeat;
     transition: width 0.5s, height 0.5s, border-radius 0.5s, background-image 0.5s;
 
+    .color-icon {
+        opacity: 0;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        background-image: url('img/cards.jpg');
+        background-position-x: -80px;
+        border-radius: 5px;
+
+        @for $i from 0 through 4 {
+            &[data-row="#{$i}"] {
+                background-position-y: #{-9px - 282px * $i};
+            }
+        }
+    }
+
     .label {
-        position: absolute;
-        color: white;
         font-size: 10pt;
         opacity: 0;
-        text-transform: uppercase;
         display: flex;
-        justify-content: center;
+        justify-content: start;
         align-items: center;
-        width: 69px;
+        width: 100%;
         height: 42px;
-        word-break: break-word;
-
-        @for $i from 0 through 5 {
-            &[data-row="#{$i}"] {
-              top: #{11 + $i * 49.8}px;
-            }
-        }
-        @for $i from 0 through 1 {
-            &[data-column="#{$i}"] {
-              left: #{38 + $i * 105}px;
-            }
-        }
+        word-break: break-word;  
+        color: black;      
     }
 
     &[data-folded="true"] {
         background-image: url('img/logo-coloradd.svg');
     }
     &[data-folded="false"] {
-        background-image: url('img/color-legend.jpg');
-        width: 223px;
-        height: 312px;
+        width: 120px;
+        height: auto;
         border-radius: 10px;
+        display: grid;
+        grid-template-columns: 40px 80px;
+        align-items: center;
+        justify-items: center;
+        background: #ebdbcb;
         
-        .label {
+        .label, .color-icon {
             opacity: 1;
         }
     }
@@ -82,7 +90,7 @@
 }
 
 #popin_elawaHelpDialog {
-    background: white;
+    background: #ebdbcb;
     background-repeat: repeat;
     max-width: 100vw;
     max-height: 80vh;
@@ -95,28 +103,88 @@
     max-height: calc(80vh - 80px);
     overflow: auto;
 
+    h1, h2 {
+        padding: 5px;
+        border-radius: 10px;
+        font-weight: normal;
+        color: white;
+        font-family: "komika parch";
+        text-align: center;
+    }
+
     h1 {
-        color: #63c5cf;
+        background: #571f13;
+        font-size: 22px;
+        margin: 10px 0;
+    }
+
+    h2 {
+        background: #C1262F;
         font-size: 18px;
         margin: 8px 0;
     }
 
-    .help-section {    
-        color: white;
-        background-color: #63c5cf;
-        border-radius: 8px;
-        padding: 5px;
-        margin: 3px 0;
+    .row {
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        grid-template-columns: 64px auto;
+        gap: 10px;
 
-        display: flex;
+        .help-icon {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            background-image: url('img/cards.jpg');
+            border-radius: 5px;
+    
+            &.card {
+                background-position: -1010px -232px;
+            }
+            &.token {
+                background-position: -1616px -232px;
+            }
 
-        &>div:not(:first-child) {
-            margin-left: 5px;
+            &.score {
+                width: 40px;
+                height: 40px;
+            }
+    
+            &.by-color {
+                background-position: -8px -8px;
+            }
+            &.different {
+                background-position: -1220px -572px;
+            }
+            &.by-resource {
+                background-position: -614px -854px;
+            }
+            &.by-type {
+                background-position: -1826px -290px;
+            }
+        }
 
-            &:not([id]) {
-                flex: 1;
-                margin-left: 5px;
-            } 
-        } 
+        &.help-chief {
+            grid-template-columns: 108px auto;
+
+            .help-icon {
+                width: 100px;
+                background-image: url('img/chiefs.jpg');
+                background-position-y: -231px;
+
+                @for $i from 1 through 4 {
+                    &[data-power="#{$i}"] {
+                        background-position-x: #{-910px - 202px * ($i - 1)};
+                    }
+                }
+            }
+        }
+
+        .help-label {
+            width: 100%;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+        }
     }
 }

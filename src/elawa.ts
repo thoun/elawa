@@ -78,6 +78,7 @@ class Elawa implements ElawaGame {
 
         this.setupNotifications();
         this.setupPreferences();
+        this.addHelp();
 
         log( "Ending game setup" );
     }
@@ -414,6 +415,72 @@ class Elawa implements ElawaGame {
 
     private setScore(playerId: number, score: number) {
         (this as any).scoreCtrl[playerId]?.toValue(score);
+    }
+
+    private addHelp() {
+        let labels = [1, 2, 3, 4, 5].map((number, index) => `<div class="color-icon" data-row="${index}"></div><span class="label"> ${this.cardsManager.getColor(number)}</span>`).join('');
+        dojo.place(`
+            <button id="elawa-help-button">?</button>
+            <button id="color-help-button" data-folded="true">${labels}</button>
+        `, 'left-side');
+        document.getElementById('elawa-help-button').addEventListener('click', () => this.showHelp());
+        const helpButton = document.getElementById('color-help-button');
+        helpButton.addEventListener('click', () => helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true');
+    }
+
+    private showHelp() {
+        const helpDialog = new ebg.popindialog();
+        helpDialog.create('elawaHelpDialog');
+        helpDialog.setTitle(_("Card help").toUpperCase());
+        
+        let html = `
+        <div id="help-popin">
+            <h1>${_("Tribe cards")}</h1>
+            <h2>${_("Immediate effect")}</h2>
+            <div class="row">
+                <div class="help-icon card"></div>
+                <div class="help-label">${this.cardsManager.getPower(10)}</div>
+
+                <div class="help-icon token"></div>
+                <div class="help-label">${this.cardsManager.getPower(11)}</div>
+            </div>    
+
+            <h2>${_("Points earned")}</h2>            
+            <div class="row">
+                <div class="help-icon score by-color"></div>
+                <div class="help-label">${_("X point s for each card of the indicated color in the player’s tribe.")}</div>
+                
+                <div class="help-icon score different"></div>
+                <div class="help-label">${_("X points for each different kind of resource (berry, meat, flint, skin) placed on this card. Bones can replace 1 of these 4 resources.")}</div>
+
+                <div class="help-icon score by-resource"></div>
+                <div class="help-label">${_("X points for each resource on this card.")}</div>
+                
+                <div class="help-icon score by-type"></div>
+                <div class="help-label">${_("X points for each card of the indicated type in the player’s tribe.")}</div>
+            </div>  
+
+            <h1>${_("Powers of the chieftains")}</h1>
+            <div class="row help-chief">
+                <div class="help-icon" data-power="2"></div>
+                <div class="help-label">${this.chiefsManager.getPower(2)}</div>
+
+                <div class="help-icon" data-power="3"></div>
+                <div class="help-label">${this.chiefsManager.getPower(3)}</div>
+
+                <div class="help-icon" data-power="4"></div>
+                <div class="help-label">${this.chiefsManager.getPower(4)}</div>
+
+                <div class="help-icon" data-power="1"></div>
+                <div class="help-label">${this.chiefsManager.getPower(1)}</div>
+            </div>  
+        </div>
+        `;
+        
+        // Show the dialog
+        helpDialog.setContent(html);
+
+        helpDialog.show();
     }
 
     public onCenterCardClick(pile: number): void {

@@ -13,7 +13,7 @@ class ChiefsManager extends CardManager<number> {
         });
     }
 
-    private getPower(number: number): string {
+    public getPower(number: number): string {
         let message = '';
         switch (number) {
             case 1: message = _("When this player takes the resources associated with their chosen card, they may skip a pile."); break;

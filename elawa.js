@@ -1779,6 +1779,7 @@ var Elawa = /** @class */ (function () {
         }
         this.setupNotifications();
         this.setupPreferences();
+        this.addHelp();
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -2070,6 +2071,23 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.setScore = function (playerId, score) {
         var _a;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(score);
+    };
+    Elawa.prototype.addHelp = function () {
+        var _this = this;
+        var labels = [1, 2, 3, 4, 5].map(function (number, index) { return "<div class=\"color-icon\" data-row=\"".concat(index, "\"></div><span class=\"label\"> ").concat(_this.cardsManager.getColor(number), "</span>"); }).join('');
+        dojo.place("\n            <button id=\"elawa-help-button\">?</button>\n            <button id=\"color-help-button\" data-folded=\"true\">".concat(labels, "</button>\n        "), 'left-side');
+        document.getElementById('elawa-help-button').addEventListener('click', function () { return _this.showHelp(); });
+        var helpButton = document.getElementById('color-help-button');
+        helpButton.addEventListener('click', function () { return helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true'; });
+    };
+    Elawa.prototype.showHelp = function () {
+        var helpDialog = new ebg.popindialog();
+        helpDialog.create('elawaHelpDialog');
+        helpDialog.setTitle(_("Card help").toUpperCase());
+        var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Tribe cards"), "</h1>\n            <h2>").concat(_("Immediate effect"), "</h2>\n            <div class=\"row\">\n                <div class=\"help-icon card\"></div>\n                <div class=\"help-label\">").concat(this.cardsManager.getPower(10), "</div>\n\n                <div class=\"help-icon token\"></div>\n                <div class=\"help-label\">").concat(this.cardsManager.getPower(11), "</div>\n            </div>    \n\n            <h2>").concat(_("Points earned"), "</h2>            \n            <div class=\"row\">\n                <div class=\"help-icon score by-color\"></div>\n                <div class=\"help-label\">").concat(_("X point s for each card of the indicated color in the player’s tribe."), "</div>\n                \n                <div class=\"help-icon score different\"></div>\n                <div class=\"help-label\">").concat(_("X points for each different kind of resource (berry, meat, flint, skin) placed on this card. Bones can replace 1 of these 4 resources."), "</div>\n\n                <div class=\"help-icon score by-resource\"></div>\n                <div class=\"help-label\">").concat(_("X points for each resource on this card."), "</div>\n                \n                <div class=\"help-icon score by-type\"></div>\n                <div class=\"help-label\">").concat(_("X points for each card of the indicated type in the player’s tribe."), "</div>\n            </div>  \n\n            <h1>").concat(_("Powers of the chieftains"), "</h1>\n            <div class=\"row help-chief\">\n                <div class=\"help-icon\" data-power=\"2\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(2), "</div>\n\n                <div class=\"help-icon\" data-power=\"3\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(3), "</div>\n\n                <div class=\"help-icon\" data-power=\"4\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(4), "</div>\n\n                <div class=\"help-icon\" data-power=\"1\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(1), "</div>\n            </div>  \n        </div>\n        ");
+        // Show the dialog
+        helpDialog.setContent(html);
+        helpDialog.show();
     };
     Elawa.prototype.onCenterCardClick = function (pile) {
         this.takeCard(pile);

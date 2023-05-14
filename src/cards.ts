@@ -55,7 +55,7 @@ class CardsManager extends CardManager<Card> {
         }
     }
 
-    private getColor(color: number): string {
+    public getColor(color: number): string {
         switch (color) {
             case 1: return _("Blue");
             case 2: return _("Yellow");
@@ -65,7 +65,7 @@ class CardsManager extends CardManager<Card> {
         }
     }
 
-    private getPower(power: number): string {
+    public getPower(power: number): string {
         switch (power) {
             case 10: return _("When a player places this card in front of them, they take 1 visible card from the top of any pile. They do not take the associated resources.");
             case 11: return _("When a player places this card in front of them, they take 1 resource at random from the resource pool.");
