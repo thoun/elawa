@@ -31,3 +31,6 @@ Also add one auto-FTP upload extension (for example https://marketplace.visualst
 
 ## Hint
 Make sure ftp-sync.json and node_modules are in .gitignore
+
+## Rules
+You can only have 4 resources on the "ditterent types store" card (bone can be one the the 4, not a 5th)

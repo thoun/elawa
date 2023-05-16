@@ -44,6 +44,10 @@ class CardsManager extends CardManager<Card> {
         // remove button for that type if storage different
         const elem = this.getCardElement({id: cardId} as Card);
         elem.querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`)?.remove();
+
+        if ((elem.querySelector('.storage-actions') as HTMLElement).dataset.tokenType == '0' && this.storageStocks[cardId].getCards().length == 4) {
+            elem.querySelectorAll(`.storage-action`)?.forEach(elem => elem.remove());
+        }
     }
 
     private getType(type: number): string {
@@ -178,6 +182,7 @@ class CardsManager extends CardManager<Card> {
 
     public setStoreButtons(card: Card) {
         const storageActions = document.createElement('div');
+        storageActions.dataset.tokenType = ''+card.storageType;
         storageActions.dataset.cardId = ''+card.id;
         storageActions.classList.add('storage-actions');
         storageActions.dataset.tokenId = '';
@@ -186,7 +191,12 @@ class CardsManager extends CardManager<Card> {
         this.createStorageStock(card, storageActions);
         let possibleTypes = [card.storageType, BONE];
         if (!card.storageType) {
-            possibleTypes = [1, 2, 3, 4, BONE].filter(type => !(card.storedResources ?? []).some(token => token.type == type));
+            const storedResources = card.storedResources ?? [];
+            if (storedResources.length == 4) {
+                possibleTypes = [];
+            } else {
+                possibleTypes = [1, 2, 3, 4, BONE].filter(type => !storedResources.some(token => token.type == type));
+            }
         }
         possibleTypes.forEach(type => this.createStorageAction(card.id, storageActions, type, !card.storageType));
     }    

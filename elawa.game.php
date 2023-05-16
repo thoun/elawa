@@ -254,31 +254,16 @@ class Elawa extends Table {
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
-    {
+    function zombieTurn($state, $active_player) {
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
                 default:
-                    $this->gamestate->nextState( "next" );
-                	break;
+                    $this->gamestate->jumpToState(ST_NEXT_PLAYER);
+                    break;
             }
 
-            return;
-        }
-
-        if ($state['type'] === "multipleactiveplayer") {
-            $playerId = intval($active_player);
-            // randomly play a card
-            $playerHand = $this->getCardsByLocation('hand', $playerId);
-            $id = $playerHand[bga_rand(0, count($playerHand) - 1)]->id;
-
-            $this->setPlayerSelectedCard($playerId, $id);
-
-            // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive( $active_player, 'next');
-            
             return;
         }
 

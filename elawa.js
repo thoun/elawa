@@ -1243,11 +1243,14 @@ var CardsManager = /** @class */ (function (_super) {
         this.prestorageStocks[cardId].addCard(token);
     };
     CardsManager.prototype.confirmStoreToken = function (cardId, token) {
-        var _a;
+        var _a, _b;
         this.storageStocks[cardId].addCard(token);
         // remove button for that type if storage different
         var elem = this.getCardElement({ id: cardId });
         (_a = elem.querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]"))) === null || _a === void 0 ? void 0 : _a.remove();
+        if (elem.querySelector('.storage-actions').dataset.tokenType == '0' && this.storageStocks[cardId].getCards().length == 4) {
+            (_b = elem.querySelectorAll(".storage-action")) === null || _b === void 0 ? void 0 : _b.forEach(function (elem) { return elem.remove(); });
+        }
     };
     CardsManager.prototype.getType = function (type) {
         switch (type) {
@@ -1362,7 +1365,9 @@ var CardsManager = /** @class */ (function (_super) {
     };
     CardsManager.prototype.setStoreButtons = function (card) {
         var _this = this;
+        var _a;
         var storageActions = document.createElement('div');
+        storageActions.dataset.tokenType = '' + card.storageType;
         storageActions.dataset.cardId = '' + card.id;
         storageActions.classList.add('storage-actions');
         storageActions.dataset.tokenId = '';
@@ -1370,7 +1375,13 @@ var CardsManager = /** @class */ (function (_super) {
         this.createStorageStock(card, storageActions);
         var possibleTypes = [card.storageType, BONE];
         if (!card.storageType) {
-            possibleTypes = [1, 2, 3, 4, BONE].filter(function (type) { var _a; return !((_a = card.storedResources) !== null && _a !== void 0 ? _a : []).some(function (token) { return token.type == type; }); });
+            var storedResources_1 = (_a = card.storedResources) !== null && _a !== void 0 ? _a : [];
+            if (storedResources_1.length == 4) {
+                possibleTypes = [];
+            }
+            else {
+                possibleTypes = [1, 2, 3, 4, BONE].filter(function (type) { return !storedResources_1.some(function (token) { return token.type == type; }); });
+            }
         }
         possibleTypes.forEach(function (type) { return _this.createStorageAction(card.id, storageActions, type, !card.storageType); });
     };

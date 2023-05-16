@@ -405,6 +405,9 @@ trait ActionTrait {
             if ($this->array_some($storedResources, fn($resource) => $resource->type == $tokenType)) {
                 throw new BgaUserException("You cannot store twice the same resource");
             }
+            if (count($storedResources) == 4) {
+                throw new BgaUserException("You can only store 4 resources on this card (one of each)");
+            }
         }
 
         $this->tokens->moveCard($token->id, 'prestore', $cardId);
