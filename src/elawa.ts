@@ -11,6 +11,7 @@ const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
 
 const LOCAL_STORAGE_ZOOM_KEY = 'Elawa-zoom';
+const LOCAL_STORAGE_JUMP_TO_FOLDED_KEY = 'Elawa-jump-to-folded';
 
 class Elawa implements ElawaGame {
     public cardsManager: CardsManager;
@@ -19,6 +20,7 @@ class Elawa implements ElawaGame {
 
     private zoomManager: ZoomManager;
     private animationManager: AnimationManager;
+    private jumpToManager: JumpToManager;
     private gamedatas: ElawaGamedatas;
     private tableCenter: TableCenter;
     private playersTables: PlayerTable[] = [];
@@ -55,6 +57,14 @@ class Elawa implements ElawaGame {
         this.tokensManager = new TokensManager(this);
         this.chiefsManager = new ChiefsManager(this);
         this.animationManager = new AnimationManager(this);
+        this.jumpToManager = new JumpToManager(this, {
+            localStorageFoldedKey: LOCAL_STORAGE_JUMP_TO_FOLDED_KEY,
+            topEntries: [
+                new JumpToEntry(_('Fire'), 'table-center', { 'color': '#8f5f62' })
+            ],
+            entryClasses: 'round-point',
+            defaultFolded: true,
+        });
         this.tableCenter = new TableCenter(this, gamedatas);
         this.createPlayerPanels(gamedatas);
         this.createPlayerTables(gamedatas);
