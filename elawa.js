@@ -1392,6 +1392,9 @@ var CardsManager = /** @class */ (function (_super) {
         });
         document.querySelectorAll('.storage-action button').forEach(function (button) { var _a; return button.classList.toggle('disabled', ((_a = _this.game.getCurrentPlayerTable()) === null || _a === void 0 ? void 0 : _a.getTokenOfType(Number(button.dataset.type))) == null); });
     };
+    CardsManager.prototype.setCardScore = function (id, points) {
+        this.getCardElement({ id: id }).insertAdjacentHTML("beforeend", "\n            <div class=\"final-score\">".concat(points, "</div>\n        "));
+    };
     return CardsManager;
 }(CardManager));
 var TokensManager = /** @class */ (function (_super) {
@@ -1787,6 +1790,13 @@ var Elawa = /** @class */ (function () {
         });
         if (gamedatas.lastTurn) {
             this.notif_lastTurn(false);
+        }
+        if (gamedatas.cardScores) {
+            this.notif_cardScores({
+                args: {
+                    cardScores: gamedatas.cardScores
+                }
+            });
         }
         this.setupNotifications();
         this.setupPreferences();
@@ -2254,6 +2264,7 @@ var Elawa = /** @class */ (function () {
             ['updateScore', 1],
             ['cancelLastMoves', ANIMATION_MS],
             ['lastTurn', 1],
+            ['cardScores', ANIMATION_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -2343,6 +2354,10 @@ var Elawa = /** @class */ (function () {
         [1, 2, 3, 4, 5].forEach(function (type) {
             return _this.resourcesCounters[playerId][type].toValue(notif.args.tokens.filter(function (token) { return token.type == type; }).length);
         });
+    };
+    Elawa.prototype.notif_cardScores = function (notif) {
+        var _this = this;
+        Object.entries(notif.args.cardScores).forEach(function (entry) { return _this.cardsManager.setCardScore(Number(entry[0]), entry[1]); });
     };
     /**
      * Show last turn banner.

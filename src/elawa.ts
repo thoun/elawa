@@ -76,6 +76,14 @@ class Elawa implements ElawaGame {
             this.notif_lastTurn(false);
         }
 
+        if (gamedatas.cardScores) {
+            this.notif_cardScores({
+                args: {
+                    cardScores: gamedatas.cardScores
+                }
+            } as any);
+        }
+
         this.setupNotifications();
         this.setupPreferences();
         this.addHelp();
@@ -669,6 +677,7 @@ class Elawa implements ElawaGame {
             ['updateScore', 1],
             ['cancelLastMoves', ANIMATION_MS],
             ['lastTurn', 1],
+            ['cardScores', ANIMATION_MS],
         ];
     
         notifs.forEach((notif) => {
@@ -767,6 +776,10 @@ class Elawa implements ElawaGame {
         [1,2,3,4,5].forEach(type => 
             this.resourcesCounters[playerId][type].toValue(notif.args.tokens.filter(token => token.type == type).length)
         );
+    }
+
+    notif_cardScores(notif: Notif<NotifCardScoresArgs>) {
+        Object.entries(notif.args.cardScores).forEach(entry => this.cardsManager.setCardScore(Number(entry[0]), entry[1]));
     }
     
     /** 

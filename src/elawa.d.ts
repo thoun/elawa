@@ -58,6 +58,8 @@ interface ElawaGamedatas {
     chieftainOption: number;
     firstPlayerId: number;
     lastTurn: boolean;
+
+    cardScores?: { [cardId: number]: number };
 }
 
 interface ElawaGame extends Game {
@@ -176,3 +178,8 @@ interface NotifCancelLastMovesArgs {
     cards: Card[];
     tokens: Token[];
 } 
+
+// cardScores
+interface NotifCardScoresArgs {
+    cardScores: { [cardId: number]: number };
+}

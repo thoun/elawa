@@ -175,6 +175,8 @@ class Elawa extends Table {
   
         // Gather all information about current game situation (visible by player $current_player_id).
 
+        $cardScores = [];
+
         $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
 
         $chiefsInPlay = array_map(fn($player) => intval($player['chief']), $result['players']);
@@ -195,6 +197,16 @@ class Elawa extends Table {
             if ($currentPlayerId == $playerId) {
                 $player['hand'] = $this->getCardsByLocation('hand', $playerId);
             }
+
+            if ($isEndScore) {                
+                foreach ($player['played'] as $card) {
+                    $cardScores[$card->id] = $this->getCardScore($card, $player['played']);
+                }
+            }
+        }
+
+        if ($isEndScore) {
+            $result['cardScores'] = $cardScores;
         }
         
         $centerCards = [];

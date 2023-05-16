@@ -43,17 +43,24 @@ trait StateTrait {
     function stEndScore() {
         $playersIds = $this->getPlayersIds();
 
+        $cardScores = [];
+
         foreach($playersIds as $playerId) {
             $playedCards = $this->getPlayedCardWithStoredResources($playerId);
             foreach ($playedCards as $card) {
                 $score = $this->getCardScore($card, $playedCards);
                 $this->incStat($score, 'pointCards'.$card->cardType);
                 $this->incStat($score, 'pointCards'.$card->cardType, $playerId);
+                $cardScores[$card->id] = $score;
             }
 
             $scoreAux = count($this->getTokensByLocation('player', $playerId));
             $this->DbQuery("UPDATE player SET player_score_aux = $scoreAux WHERE player_id = $playerId");
         }
+
+        $this->notifyAllPlayers('cardScores', '', [
+            'cardScores' => $cardScores,
+        ]);
 
         $this->gamestate->nextState('endGame');
     }

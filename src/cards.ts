@@ -210,4 +210,10 @@ class CardsManager extends CardManager<Card> {
             button.classList.toggle('disabled', this.game.getCurrentPlayerTable()?.getTokenOfType(Number(button.dataset.type)) == null)
         );
     }
+    
+    public setCardScore(id: number, points: number): void {
+        this.getCardElement({id: id} as Card).insertAdjacentHTML(`beforeend`, `
+            <div class="final-score">${points}</div>
+        `);
+    }
 }

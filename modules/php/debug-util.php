@@ -11,6 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
+        $this->debugSetCard(2343492, 2, 11);
+        $this->debugSetCard(2343492, 4, 10);
         $this->debugSetCard(2343492, 3, 7);
         $this->debugSetCard(2343492, 1, 3);
         $this->debugSetCard(2343492, 4, 4);
@@ -27,7 +29,7 @@ trait DebugUtilTrait {
             $this->debugAlmostEmptyPile($i);
         }*/
         
-        //$this->debugLastTurn();
+        $this->debugLastTurn();
     }
 
     function debugSetCard($playerId, $color, $number) {
