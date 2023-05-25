@@ -3,6 +3,14 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 const BONE = 5;
 
+const sortCard = (a: Card, b: Card) => {
+    if (a.color != b.color) {
+        return a.color - b.color;
+    } else {
+        return a.cardType - b.cardType;
+    }
+}
+
 class PlayerTable {
     public playerId: number;
     public voidStock: VoidStock<Card>;
@@ -47,7 +55,7 @@ class PlayerTable {
         if (this.currentPlayer) {
             const handDiv = document.getElementById(`player-table-${this.playerId}-hand`);
             this.hand = new LineStock<Card>(this.game.cardsManager, handDiv, {
-                sort: (a: Card, b: Card) => a.number - b.number,
+                sort: sortCard,
             });
             this.hand.onCardClick = (card: Card) => {
                 //if (handDiv.classList.contains('selectable')) {
@@ -66,6 +74,7 @@ class PlayerTable {
         
         this.played = new LineStock<Card>(this.game.cardsManager, document.getElementById(`player-table-${this.playerId}-played`), {
             center: false,
+            sort: sortCard,
         });
         this.played.addCards(player.played);
         

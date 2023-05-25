@@ -29,7 +29,7 @@ trait DebugUtilTrait {
             $this->debugAlmostEmptyPile($i);
         }*/
         
-        $this->debugLastTurn();
+        //$this->debugLastTurn();
     }
 
     function debugSetCard($playerId, $color, $number) {

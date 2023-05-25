@@ -943,6 +943,7 @@ html .center-spot[id=center-spot-5] .center-spot-card {
 .player-table .chief-and-tokens {
   display: grid;
   grid-template-columns: 156px 202px;
+  order: -1;
 }
 .player-table .chief-and-tokens .tokens-free {
   align-content: flex-start;

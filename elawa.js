@@ -1733,6 +1733,14 @@ var isDebug = window.location.host == 'studio.boardgamearena.com' || window.loca
 ;
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var BONE = 5;
+var sortCard = function (a, b) {
+    if (a.color != b.color) {
+        return a.color - b.color;
+    }
+    else {
+        return a.cardType - b.cardType;
+    }
+};
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         var _this = this;
@@ -1748,7 +1756,7 @@ var PlayerTable = /** @class */ (function () {
         if (this.currentPlayer) {
             var handDiv = document.getElementById("player-table-".concat(this.playerId, "-hand"));
             this.hand = new LineStock(this.game.cardsManager, handDiv, {
-                sort: function (a, b) { return a.number - b.number; },
+                sort: sortCard,
             });
             this.hand.onCardClick = function (card) {
                 //if (handDiv.classList.contains('selectable')) {
@@ -1763,6 +1771,7 @@ var PlayerTable = /** @class */ (function () {
         this.chief.addCard(player.chief);
         this.played = new LineStock(this.game.cardsManager, document.getElementById("player-table-".concat(this.playerId, "-played")), {
             center: false,
+            sort: sortCard,
         });
         this.played.addCards(player.played);
         this.tokensFree = new LineStock(this.game.tokensManager, document.getElementById("player-table-".concat(this.playerId, "-tokens-free")), {

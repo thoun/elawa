@@ -49,6 +49,7 @@
   .chief-and-tokens {
     display: grid;
     grid-template-columns: 156px 202px;
+    order: -1;
 
     .tokens-free {
       align-content: flex-start;
