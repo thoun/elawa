@@ -11,11 +11,11 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->debugSetCard(2343492, 2, 11);
-        $this->debugSetCard(2343492, 4, 10);
+        //$this->debugSetCard(2343492, 2, 11);
+        //$this->debugSetCard(2343492, 4, 10);
         $this->debugSetCard(2343492, 3, 7);
-        $this->debugSetCard(2343492, 1, 3);
-        $this->debugSetCard(2343492, 4, 4);
+        //$this->debugSetCard(2343492, 1, 3);
+        //$this->debugSetCard(2343492, 4, 4);
         /*$this->addTokensToCard($this->debugSetCard(2343492, 4, 3), 6);
         $this->debugSetCard(2343492, 2, 10);
         $this->debugSetCard(2343492, 5, 7);

@@ -972,13 +972,13 @@ html .center-spot[id=center-spot-5] .center-spot-card {
 
 .storage-actions {
   position: absolute;
-  top: -60px;
-  height: 68px;
+  top: -20px;
   display: none;
   justify-content: center;
   align-items: stretch;
-  gap: 10px;
-  left: 0;
+  flex-wrap: wrap;
+  gap: 2px;
+  left: 30px;
   right: 0;
 }
 .storage-actions[data-used=true] .storage-action {
@@ -987,17 +987,32 @@ html .center-spot[id=center-spot-5] .center-spot-card {
 .storage-actions[data-used=false] .prestorage-stock {
   display: none;
 }
+.storage-actions .storage-action {
+  width: 65px;
+}
+.storage-actions .storage-action button {
+  font-size: 9pt;
+  width: 100%;
+  white-space: break-spaces;
+  word-break: break-word;
+  padding: 6px;
+  margin: 0;
+}
+.storage-actions .prestorage-stock {
+  width: 68px;
+  height: 68px;
+}
 .storage-actions .storage-action, .storage-actions .prestorage-stock {
   position: relative;
-  width: 68px;
   display: flex;
   justify-content: center;
   align-content: center;
 }
 .storage-actions .storage-action button, .storage-actions .prestorage-stock button {
-  white-space: break-spaces;
-  width: 100%;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   /*&.hidden {
     display: none;
   }*/
