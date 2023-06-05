@@ -7,7 +7,7 @@ const SHADOW_COLORS = [
 
 class TableCenter {
     private spots: CenterSpot[] = [];
-    public hiddenToken: HiddenDeck<Token>;
+    public hiddenToken: Deck<Token>;
     public fireCounter: Counter;
         
     constructor(private game: ElawaGame, gamedatas: ElawaGamedatas) {
@@ -15,9 +15,7 @@ class TableCenter {
             this.spots.push(new CenterSpot(game, this, i, gamedatas.centerCards[i], gamedatas.centerCardsCount[i], gamedatas.centerTokens[i], gamedatas.centerTokensCount[i]));
         }
 
-        this.hiddenToken = new HiddenDeck<Token>(game.tokensManager, document.getElementById(`center-stock`), {
-            width: 68,
-            height: 68,
+        this.hiddenToken = new Deck<Token>(game.tokensManager, document.getElementById(`center-stock`), {
             cardNumber: gamedatas.fireTokenCount,
             autoUpdateCardNumber: false,
         });
@@ -58,7 +56,6 @@ class TableCenter {
     }
     
     public setCardSelected(pile: number, card: Card, skip: number) {
-        console.log(pile, card, skip, this.game.cardsManager.getCardElement(card));
         this.game.cardsManager.getCardElement(card).classList.add('selected');
         this.showLinkedTokens(pile, card.tokens, skip);
     }

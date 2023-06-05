@@ -11,6 +11,12 @@ class TokensManager extends CardManager<Token> {
                 div.dataset.type = ''+card.type;                
                 game.setTooltip(div.id, this.getType(card.type));
             },
+            cardWidth: 68,
+            cardHeight: 68,
+            isCardVisible: card => Boolean(card.type),
+            selectableCardClass: 'selectable',
+            selectedCardClass: 'selected',
+            unselectableCardClass: 'disabled',
         });
     }
 

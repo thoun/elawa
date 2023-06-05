@@ -10,6 +10,9 @@ class ChiefsManager extends CardManager<number> {
                 div.dataset.number = ''+card;
                 div.dataset.level = ''+game.getChieftainOption();
             },
+            cardWidth: 202,
+            cardHeight: 282,
+            isCardVisible: () => true,
         });
     }
 

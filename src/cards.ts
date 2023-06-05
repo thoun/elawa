@@ -31,6 +31,12 @@ class CardsManager extends CardManager<Card> {
                     }
                 }
             },
+            cardWidth: 202,
+            cardHeight: 282,
+            isCardVisible: () => true,
+            selectableCardClass: 'selectable',
+            selectedCardClass: 'selected',
+            unselectableCardClass: 'disabled',
         });
     }
     

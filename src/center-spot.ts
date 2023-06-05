@@ -3,8 +3,8 @@ const FIRST_ANIMAL_SHIFT = 28;
 
 class CenterSpot {
 
-    public visibleCard: VisibleDeck<Card>;
-    public visibleToken: VisibleDeck<Token>;
+    public visibleCard: Deck<Card>;
+    public visibleToken: Deck<Token>;
 
     private cardCounter: Counter;
     private tokenCounter: Counter;
@@ -32,9 +32,7 @@ class CenterSpot {
         dojo.place(html, 'table-center');
 
         const cardDeck = document.getElementById(`center-spot-${pile}-card`);
-        this.visibleCard = new VisibleDeck<Card>(game.cardsManager, cardDeck, {
-            width: 202,
-            height: 282,
+        this.visibleCard = new Deck<Card>(game.cardsManager, cardDeck, {
             cardNumber: cardCount,
             autoUpdateCardNumber: false,
         });
@@ -58,9 +56,7 @@ class CenterSpot {
         this.cardCounter.create(`center-spot-${pile}-card-counter`);
         this.cardCounter.setValue(cardCount);
 
-        this.visibleToken = new VisibleDeck<Token>(game.tokensManager, document.getElementById(`center-spot-${pile}-token`), {
-            width: 68,
-            height: 68,
+        this.visibleToken = new Deck<Token>(game.tokensManager, document.getElementById(`center-spot-${pile}-token`), {
             cardNumber: tokenCount,
             autoUpdateCardNumber: false,
         });
