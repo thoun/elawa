@@ -15,12 +15,11 @@ class CardsManager extends CardManager<Card> {
                 div.dataset.cardId = ''+card.id;
             },
             setupFrontDiv: (card: Card, div: HTMLElement) => { 
-                div.id = `${this.getId(card)}-front`;
                 div.dataset.color = ''+card.color;
                 div.dataset.number = ''+card.number;
                 game.setTooltip(div.id, this.getTooltip(card));
 
-                if (card.cardType == STORAGE) {
+                if (card.cardType == STORAGE && !div.classList.contains('storage-stock')) {
                     div.classList.add('storage-stock');
                     
                     this.storageStocks[card.id] = new LineStock<Token>(game.tokensManager, div);
@@ -50,6 +49,7 @@ class CardsManager extends CardManager<Card> {
         // remove button for that type if storage different
         const elem = this.getCardElement({id: cardId} as Card);
         elem.querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`)?.remove();
+        console.log(elem, elem.querySelector(`.storage-action[data-type-remove-on-use="${token.type}"]`));
 
         if ((elem.querySelector('.storage-actions') as HTMLElement).dataset.tokenType == '0' && this.storageStocks[cardId].getCards().length == 4) {
             elem.querySelectorAll(`.storage-action`)?.forEach(elem => elem.remove());

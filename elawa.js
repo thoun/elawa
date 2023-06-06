@@ -2031,11 +2031,10 @@ var CardsManager = /** @class */ (function (_super) {
                 div.dataset.cardId = '' + card.id;
             },
             setupFrontDiv: function (card, div) {
-                div.id = "".concat(_this.getId(card), "-front");
                 div.dataset.color = '' + card.color;
                 div.dataset.number = '' + card.number;
                 game.setTooltip(div.id, _this.getTooltip(card));
-                if (card.cardType == STORAGE) {
+                if (card.cardType == STORAGE && !div.classList.contains('storage-stock')) {
                     div.classList.add('storage-stock');
                     _this.storageStocks[card.id] = new LineStock(game.tokensManager, div);
                     _this.setStoreButtons(card);
@@ -2065,6 +2064,7 @@ var CardsManager = /** @class */ (function (_super) {
         // remove button for that type if storage different
         var elem = this.getCardElement({ id: cardId });
         (_a = elem.querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]"))) === null || _a === void 0 ? void 0 : _a.remove();
+        console.log(elem, elem.querySelector(".storage-action[data-type-remove-on-use=\"".concat(token.type, "\"]")));
         if (elem.querySelector('.storage-actions').dataset.tokenType == '0' && this.storageStocks[cardId].getCards().length == 4) {
             (_b = elem.querySelectorAll(".storage-action")) === null || _b === void 0 ? void 0 : _b.forEach(function (elem) { return elem.remove(); });
         }
@@ -2595,6 +2595,7 @@ var Elawa = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     Elawa.prototype.setup = function (gamedatas) {
+        var _this = this;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
@@ -2637,7 +2638,23 @@ var Elawa = /** @class */ (function () {
         }
         this.setupNotifications();
         this.setupPreferences();
-        this.addHelp();
+        new HelpManager(this, {
+            buttons: [
+                new BgaHelpPopinButton({
+                    title: _("Card help").toUpperCase(),
+                    html: this.getHelpHtml(),
+                    onPopinCreated: function () { return _this.getHelpHtml(); },
+                    buttonBackground: '#571f13',
+                }),
+                new BgaHelpExpandableButton({
+                    unfoldedHtml: this.getColorAddHtml(),
+                    foldedContentExtraClasses: 'color-help-folded-content',
+                    unfoldedContentExtraClasses: 'color-help-unfolded-content',
+                    expandedWidth: '120px',
+                    expandedHeight: '210px',
+                }),
+            ]
+        });
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -2930,22 +2947,13 @@ var Elawa = /** @class */ (function () {
         var _a;
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(score);
     };
-    Elawa.prototype.addHelp = function () {
+    Elawa.prototype.getColorAddHtml = function () {
         var _this = this;
-        var labels = [1, 2, 3, 4, 5].map(function (number, index) { return "<div class=\"color-icon\" data-row=\"".concat(index, "\"></div><span class=\"label\"> ").concat(_this.cardsManager.getColor(number), "</span>"); }).join('');
-        dojo.place("\n            <button id=\"elawa-help-button\">?</button>\n            <button id=\"color-help-button\" data-folded=\"true\">".concat(labels, "</button>\n        "), 'left-side');
-        document.getElementById('elawa-help-button').addEventListener('click', function () { return _this.showHelp(); });
-        var helpButton = document.getElementById('color-help-button');
-        helpButton.addEventListener('click', function () { return helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true'; });
+        return [1, 2, 3, 4, 5].map(function (number, index) { return "<div class=\"color-icon\" data-row=\"".concat(index, "\"></div><span class=\"label\"> ").concat(_this.cardsManager.getColor(number), "</span>"); }).join('');
     };
-    Elawa.prototype.showHelp = function () {
-        var helpDialog = new ebg.popindialog();
-        helpDialog.create('elawaHelpDialog');
-        helpDialog.setTitle(_("Card help").toUpperCase());
+    Elawa.prototype.getHelpHtml = function () {
         var html = "\n        <div id=\"help-popin\">\n            <h1>".concat(_("Tribe cards"), "</h1>\n            <h2>").concat(_("Immediate effect"), "</h2>\n            <div class=\"row\">\n                <div class=\"help-icon card\"></div>\n                <div class=\"help-label\">").concat(this.cardsManager.getPower(10), "</div>\n\n                <div class=\"help-icon token\"></div>\n                <div class=\"help-label\">").concat(this.cardsManager.getPower(11), "</div>\n            </div>    \n\n            <h2>").concat(_("Points earned"), "</h2>            \n            <div class=\"row\">\n                <div class=\"help-icon score by-color\"></div>\n                <div class=\"help-label\">").concat(_("X point s for each card of the indicated color in the player’s tribe."), "</div>\n                \n                <div class=\"help-icon score different\"></div>\n                <div class=\"help-label\">").concat(_("X points for each different kind of resource (berry, meat, flint, skin) placed on this card. Bones can replace 1 of these 4 resources."), "</div>\n\n                <div class=\"help-icon score by-resource\"></div>\n                <div class=\"help-label\">").concat(_("X points for each resource on this card."), "</div>\n                \n                <div class=\"help-icon score by-type\"></div>\n                <div class=\"help-label\">").concat(_("X points for each card of the indicated type in the player’s tribe."), "</div>\n            </div>  \n\n            <h1>").concat(_("Powers of the chieftains"), "</h1>\n            <div class=\"row help-chief\">\n                <div class=\"help-icon\" data-power=\"2\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(2), "</div>\n\n                <div class=\"help-icon\" data-power=\"3\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(3), "</div>\n\n                <div class=\"help-icon\" data-power=\"4\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(4), "</div>\n\n                <div class=\"help-icon\" data-power=\"1\"></div>\n                <div class=\"help-label\">").concat(this.chiefsManager.getPower(1), "</div>\n            </div>  \n        </div>\n        ");
-        // Show the dialog
-        helpDialog.setContent(html);
-        helpDialog.show();
+        return html;
     };
     Elawa.prototype.onCenterCardClick = function (pile) {
         this.takeCard(pile);

@@ -96,7 +96,23 @@ class Elawa implements ElawaGame {
 
         this.setupNotifications();
         this.setupPreferences();
-        this.addHelp();
+        new HelpManager(this, { 
+            buttons: [
+                new BgaHelpPopinButton({
+                    title: _("Card help").toUpperCase(),
+                    html: this.getHelpHtml(),
+                    onPopinCreated: () => this.getHelpHtml(),
+                    buttonBackground: '#571f13',
+                }),
+                new BgaHelpExpandableButton({
+                    unfoldedHtml: this.getColorAddHtml(),
+                    foldedContentExtraClasses: 'color-help-folded-content',
+                    unfoldedContentExtraClasses: 'color-help-unfolded-content',
+                    expandedWidth: '120px',
+                    expandedHeight: '210px',
+                }),
+            ]
+        });
 
         log( "Ending game setup" );
     }
@@ -435,22 +451,11 @@ class Elawa implements ElawaGame {
         (this as any).scoreCtrl[playerId]?.toValue(score);
     }
 
-    private addHelp() {
-        let labels = [1, 2, 3, 4, 5].map((number, index) => `<div class="color-icon" data-row="${index}"></div><span class="label"> ${this.cardsManager.getColor(number)}</span>`).join('');
-        dojo.place(`
-            <button id="elawa-help-button">?</button>
-            <button id="color-help-button" data-folded="true">${labels}</button>
-        `, 'left-side');
-        document.getElementById('elawa-help-button').addEventListener('click', () => this.showHelp());
-        const helpButton = document.getElementById('color-help-button');
-        helpButton.addEventListener('click', () => helpButton.dataset.folded = helpButton.dataset.folded == 'true' ? 'false' : 'true');
+    private getColorAddHtml() {
+        return [1, 2, 3, 4, 5].map((number, index) => `<div class="color-icon" data-row="${index}"></div><span class="label"> ${this.cardsManager.getColor(number)}</span>`).join('');
     }
 
-    private showHelp() {
-        const helpDialog = new ebg.popindialog();
-        helpDialog.create('elawaHelpDialog');
-        helpDialog.setTitle(_("Card help").toUpperCase());
-        
+    private getHelpHtml() {
         let html = `
         <div id="help-popin">
             <h1>${_("Tribe cards")}</h1>
@@ -495,10 +500,7 @@ class Elawa implements ElawaGame {
         </div>
         `;
         
-        // Show the dialog
-        helpDialog.setContent(html);
-
-        helpDialog.show();
+        return html;
     }
 
     public onCenterCardClick(pile: number): void {
