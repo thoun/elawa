@@ -15,15 +15,6 @@ $gameinfos = [
 // Name of the game in English (will serve as the basis for translation) 
 'game_name' => "Elawa",
 
-// Game designer (or game designers, separated by commas)
-'designer' => 'Johannes Goupy, Corentin Lebrat',       
-
-// Game artist (or game artists, separated by commas)
-'artist' => 'Elsa Roman',         
-
-// Year of FIRST publication of this game. Can be negative.
-'year' => 2023,
-
 // Game publisher (use empty string if there is no publisher)
 'publisher' => 'Bombyx',
 
@@ -85,19 +76,7 @@ $gameinfos = [
 // Language dependency. If false or not set, there is no language dependency. If true, all players at the table must speak the same language.
 // If an array of shortcode languages such as array( 1 => 'en', 2 => 'fr', 3 => 'it' ) then all players at the table must speak the same language, and this language must be one of the listed languages.
 // NB: the default will be the first language in this list spoken by the player, so you should list them by popularity/preference.
-'language_dependency' => false,
-
-// Complexity of the game, from 0 (extremely simple) to 5 (extremely complex)
-'complexity' => 2,    
-
-// Luck of the game, from 0 (absolutely no luck in this game) to 5 (totally luck driven)
-'luck' => 3,    
-
-// Strategy of the game, from 0 (no strategy can be setup) to 5 (totally based on strategy)
-'strategy' => 3,    
-
-// Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
-'diplomacy' => 3,    
+'language_dependency' => false,  
 
 // Colors attributed to players
   'player_colors' => [
@@ -131,23 +110,7 @@ $gameinfos = [
     //  maximum possible value: 740 (ie: your game interface should fit with a 740px width (correspond to a 1024px screen)
     //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
     'min' => 930,
-
-    // Maximum width
-    //  default: null (ie: no limit, the game interface is as big as the player's screen allows it).
-    //  maximum possible value: unlimited
-    //  minimum possible value: 740
-    'max' => null
   ],
-
-// Game presentation
-// Short game presentation text that will appear on the game description page, structured as an array of paragraphs.
-// Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
-// A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
-'presentation' => [
-    totranslate("With Elawa, you will find all the flavors of a real smart game in a small format!"),
-    totranslate("You will have to assemble your prehistoric tribe while collecting the elements necessary for its development. But no doubt that the opposing chiefs will not do you any favors: your choices around the campfire are already full of dilemmas..."),
-    totranslate("Each turn, pick up one card from the ones around the campfire placed on the table, add it to your tribe faces up, and get a variable number of resources to allow the members of your tribe to use their abilities."),
-],
 
 //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
 
