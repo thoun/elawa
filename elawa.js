@@ -1235,10 +1235,10 @@ var CardStock = /** @class */ (function () {
         var selectableCardsClass = this.getSelectableCardClass();
         var unselectableCardsClass = this.getUnselectableCardClass();
         if (selectableCardsClass) {
-            element.classList.toggle(selectableCardsClass, selectable);
+            element === null || element === void 0 ? void 0 : element.classList.toggle(selectableCardsClass, selectable);
         }
         if (unselectableCardsClass) {
-            element.classList.toggle(unselectableCardsClass, !selectable);
+            element === null || element === void 0 ? void 0 : element.classList.toggle(unselectableCardsClass, !selectable);
         }
         if (!selectable && this.isSelected(card)) {
             this.unselectCard(card, true);
@@ -1273,7 +1273,7 @@ var CardStock = /** @class */ (function () {
         }
         var element = this.getCardElement(card);
         var selectableCardsClass = this.getSelectableCardClass();
-        if (!element.classList.contains(selectableCardsClass)) {
+        if (!element || !element.classList.contains(selectableCardsClass)) {
             return;
         }
         if (this.selectionMode === 'single') {
@@ -1297,7 +1297,7 @@ var CardStock = /** @class */ (function () {
         if (silent === void 0) { silent = false; }
         var element = this.getCardElement(card);
         var selectedCardsClass = this.getSelectedCardClass();
-        element.classList.remove(selectedCardsClass);
+        element === null || element === void 0 ? void 0 : element.classList.remove(selectedCardsClass);
         var index = this.selectedCards.findIndex(function (c) { return _this.manager.getId(c) == _this.manager.getId(card); });
         if (index !== -1) {
             this.selectedCards.splice(index, 1);
@@ -1444,7 +1444,7 @@ var CardStock = /** @class */ (function () {
         var selectableCardsClass = this.getSelectableCardClass();
         var unselectableCardsClass = this.getUnselectableCardClass();
         var selectedCardsClass = this.getSelectedCardClass();
-        cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
+        cardElement === null || cardElement === void 0 ? void 0 : cardElement.classList.remove(selectableCardsClass, unselectableCardsClass, selectedCardsClass);
     };
     return CardStock;
 }());
@@ -2652,6 +2652,7 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.setup = function (gamedatas) {
         var _this = this;
         log("Starting game setup");
+        this.bga.gameArea.getElement().insertAdjacentHTML('beforeend', "\n            <div id=\"table\">\n                <div id=\"tables-and-center\">\n                    <div id=\"table-center-wrapper\">\n                        <div id=\"table-center\">\n                            <div id=\"fire\">\n                                <div id=\"center-stock\" class=\"center-spot-token\">\n                                    <div id=\"center-token-counter\" class=\"center-spot-counter token-counter\"></div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <div id=\"tables\"></div>\n                </div>\n            </div>\n        ");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
         this.cardsManager = new CardsManager(this);
@@ -2692,7 +2693,7 @@ var Elawa = /** @class */ (function () {
             });
         }
         this.setupNotifications();
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = function (prefId, prefValue) { return _this.onPreferenceChange(prefId, prefValue); };
         new HelpManager(this, {
             buttons: [
                 new BgaHelpPopinButton({
@@ -2916,24 +2917,6 @@ var Elawa = /** @class */ (function () {
     Elawa.prototype.getGameStateName = function () {
         return this.gamedatas.gamestate.name;
     };
-    Elawa.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-            _this.onPreferenceChange(prefId, prefValue);
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
-    };
     Elawa.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
             /*case 201: // if we reactivate this option, we need to reset commit "new design for counters" for the case 2 (only)
@@ -3124,18 +3107,13 @@ var Elawa = /** @class */ (function () {
         this.takeAction('cancelLastMoves');
     };
     Elawa.prototype.setAskConfirm = function (askConfirm) {
-        this.takeNoLockAction('setAskConfirm', {
+        this.bga.actions.performAction('setAskConfirm', {
             askConfirm: askConfirm
-        });
+        }, { checkAction: false, lock: false });
     };
     Elawa.prototype.takeAction = function (action, data) {
         data = data || {};
-        data.lock = true;
-        this.ajaxcall("/elawa/elawa/".concat(action, ".html"), data, this, function () { });
-    };
-    Elawa.prototype.takeNoLockAction = function (action, data) {
-        data = data || {};
-        this.ajaxcall("/elawa/elawa/".concat(action, ".html"), data, this, function () { });
+        this.bga.actions.performAction(action, data, { checkAction: false });
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

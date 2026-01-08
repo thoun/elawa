@@ -16,8 +16,9 @@
   *
   */
 
-
-require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
+use Bga\GameFramework\VisibleSystemException;
 
 require_once('modules/php/objects/card.php');
 require_once('modules/php/objects/token.php');
@@ -37,6 +38,11 @@ class Elawa extends Table {
     use ArgsTrait;
     use DebugUtilTrait;
 
+    public Deck $cards;
+    public Deck $tokens;
+    public array $CENTER_RESOURCES_BY_PLAYER_COUNT;
+    public array $CARDS;
+
 	function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
@@ -55,19 +61,12 @@ class Elawa extends Table {
             CHIEFTAIN_OPTION => CHIEFTAIN_OPTION,
         ]);   
 		
-        $this->cards = $this->getNew("module.common.deck");
-        $this->cards->init("card");
+        $this->cards = $this->deckFactory->createDeck("card");
         $this->cards->autoreshuffle = false;     
 		
-        $this->tokens = $this->getNew("module.common.deck");
-        $this->tokens->init("token");
+        $this->tokens = $this->deckFactory->createDeck("token");
         $this->tokens->autoreshuffle = true;   
 	}
-	
-    protected function getGameName() {
-		// Used for translations and stuff. Please do not modify.
-        return "elawa";
-    }	
 
     /*
         setupNewGame:
@@ -128,17 +127,13 @@ class Elawa extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        $this->initStat('table', 'roundNumber', 0);
-        foreach(['table', 'player'] as $type) {
-            foreach([
-                "playedCards", "playedCards1", "playedCards2", "playedCards3", "playedCards4",
-                "collectedResources", "collectedResources1", "collectedResources2", "collectedResources3", "collectedResources4", "collectedResources5",
-                "pointCards1", "pointCards2", "pointCards3", "pointCards4",
-                "sacrifices", "discardedResourcesEndOfTurn", "collectedResourcesFromFire",
-            ] as $name) {
-                $this->initStat($type, $name, 0);
-            }
-        }
+        $this->tableStats->init('roundNumber', 0);
+        $this->playerStats->init([
+            "playedCards", "playedCards1", "playedCards2", "playedCards3", "playedCards4",
+            "collectedResources", "collectedResources1", "collectedResources2", "collectedResources3", "collectedResources4", "collectedResources5",
+            "pointCards1", "pointCards2", "pointCards3", "pointCards4",
+            "sacrifices", "discardedResourcesEndOfTurn", "collectedResourcesFromFire",
+        ], 0, updateTableStat: true);
 
         // setup the initial game situation here
         $this->setupCards();
@@ -148,10 +143,7 @@ class Elawa extends Table {
         // Activate first player (which is in general a good idea :) )
         $this->gamestate->changeActivePlayer($startingPlayerId);
 
-        // TODO TEMP
-        $this->debugSetup();
-
-        /************ End of the game initialization *****/
+        return \ST_PLAYER_TAKE_CARD;
     }
 
     /*
@@ -163,7 +155,7 @@ class Elawa extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $result = [];
     
         $currentPlayerId = intval(self::getCurrentPlayerId());    // !! We must only return informations visible by this player !!
@@ -177,7 +169,7 @@ class Elawa extends Table {
 
         $cardScores = [];
 
-        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        $isEndScore = $this->gamestate->getCurrentMainStateId() >= ST_END_SCORE;
 
         $chiefsInPlay = array_map(fn($player) => intval($player['chief']), $result['players']);
         
@@ -279,7 +271,7 @@ class Elawa extends Table {
             return;
         }
 
-        throw new feException( "Zombie mode not supported at this game state: ".$statename );
+        throw new VisibleSystemException( "Zombie mode not supported at this game state: ".$statename );
     }
     
 ///////////////////////////////////////////////////////////////////////////////////:

@@ -1,0 +1,15 @@
+{
+    "100": {
+        "name": "Chieftain cards",
+        "values": {
+            "1": {
+                "name": "Normal side"
+            },
+            "2": {
+                "name": "Advanced side",
+                "tmdisplay": "Advanced chieftain card side"
+            }
+        },
+        "default": 1
+    }
+}

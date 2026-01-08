@@ -1,12 +1,3 @@
-declare const define;
-declare const ebg;
-declare const $;
-declare const dojo: Dojo;
-declare const _;
-declare const g_gamethemeurl;
-declare const g_replayFrom;
-declare const g_archive_mode;
-
 const ANIMATION_MS = 500;
 const ACTION_TIMER_DURATION = 5;
 
@@ -29,6 +20,8 @@ class Elawa implements ElawaGame {
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
+    public bga: Bga;
+
     constructor() {
     }
     
@@ -47,6 +40,22 @@ class Elawa implements ElawaGame {
 
     public setup(gamedatas: ElawaGamedatas) {
         log( "Starting game setup" );
+        this.bga.gameArea.getElement().insertAdjacentHTML('beforeend', `
+            <div id="table">
+                <div id="tables-and-center">
+                    <div id="table-center-wrapper">
+                        <div id="table-center">
+                            <div id="fire">
+                                <div id="center-stock" class="center-spot-token">
+                                    <div id="center-token-counter" class="center-spot-counter token-counter"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tables"></div>
+                </div>
+            </div>
+        `);
         
         this.gamedatas = gamedatas;
 
@@ -95,7 +104,7 @@ class Elawa implements ElawaGame {
         }
 
         this.setupNotifications();
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = (prefId, prefValue) => this.onPreferenceChange(prefId, prefValue);
         new HelpManager(this, { 
             buttons: [
                 new BgaHelpPopinButton({
@@ -338,29 +347,6 @@ class Elawa implements ElawaGame {
 
     public getGameStateName(): string {
         return this.gamedatas.gamestate.name;
-    }
-
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_[cf]ontrol_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
     }
       
     private onPreferenceChange(prefId: number, prefValue: number) {
@@ -646,19 +632,14 @@ class Elawa implements ElawaGame {
     }
 
     public setAskConfirm(askConfirm: boolean) {
-        this.takeNoLockAction('setAskConfirm', {
+        this.bga.actions.performAction('setAskConfirm', {
             askConfirm
-        });
+        }, { checkAction: false, lock: false });
     }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
-        data.lock = true;
-        (this as any).ajaxcall(`/elawa/elawa/${action}.html`, data, this, () => {});
-    }
-    public takeNoLockAction(action: string, data?: any) {
-        data = data || {};
-        (this as any).ajaxcall(`/elawa/elawa/${action}.html`, data, this, () => {});
+        this.bga.actions.performAction(action, data, { checkAction: false });
     }
 
     ///////////////////////////////////////////////////
