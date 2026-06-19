@@ -947,6 +947,7 @@ body > .card {
 }
 
 .center-spot-counter {
+  --shadow-color: black;
   position: absolute;
   width: 30px;
   height: 24px;
@@ -1228,6 +1229,10 @@ html .center-spot[id=center-spot-5] .center-spot-card {
 
 #popin_bgaHelpDialog {
   background: #ebdbcb;
+}
+
+html[data-theme=dark] #popin_bgaHelpDialog {
+  background-color: var(--game-palette-bga-gray-244);
 }
 
 #help-popin h1, #help-popin h2 {
