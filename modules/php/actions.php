@@ -16,7 +16,7 @@ trait ActionTrait {
             $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('center', 'player', $playerId));
             $newCount = intval($this->tokens->countCardInLocation('center'));
 
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty). There is ${left} resources remaining on the fire !'), [
+            $this->bga->notify->all('takeToken', clienttranslate('${player_name} takes resource ${type} from center table (pile ${emptyPile} was empty). There is ${left} resources remaining on the fire !'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'emptyPile' => $pile, // for logs
@@ -39,7 +39,7 @@ trait ActionTrait {
             if ($newCount == 0) {
                 $this->setGameStateValue(LAST_TURN, 1);
 
-                self::notifyAllPlayers('lastTurn', clienttranslate('${player_name} took the last token on the fire, triggering the end of the game !'), [
+                $this->bga->notify->all('lastTurn', clienttranslate('${player_name} took the last token on the fire, triggering the end of the game !'), [
                     'playerId' => $playerId,
                     'player_name' => $this->getPlayerName($playerId),
                 ]);
@@ -49,7 +49,7 @@ trait ActionTrait {
         $this->tokens->pickCardsForLocation(5, 'deck', 'pile'.$pile);
         $this->tokens->shuffle('pile'.$pile); // to give them a locationArg asc
 
-        self::notifyAllPlayers('refillTokens', clienttranslate('Pile ${emptyPile} is refilled'), [
+        $this->bga->notify->all('refillTokens', clienttranslate('Pile ${emptyPile} is refilled'), [
             'emptyPile' => $pile, // for logs
             'pile' => $pile,
             'newToken' => $this->getTokenFromDb($this->tokens->getCardOnTop('pile'.$pile)),
@@ -103,7 +103,7 @@ trait ActionTrait {
             throw new BgaUserException("The pile is empty");
         }
 
-        $stateId = intval($this->gamestate->state_id());
+        $stateId = $this->gamestate->getCurrentMainStateId();
         $hasPowerSkipResource = $this->getChiefPower($playerId) == CHIEF_POWER_SKIP_RESOURCE;
 
         if ($stateId == ST_PLAYER_TAKE_CARD && $hasPowerSkipResource) {
@@ -124,7 +124,7 @@ trait ActionTrait {
     }
 
     public function applyTakeCard(int $playerId, int $pile) {
-        $stateId = intval($this->gamestate->state_id());
+        $stateId = $this->gamestate->getCurrentMainStateId();
         $fromCardPower = $stateId == ST_PLAYER_TAKE_CARD_POWER;
         $fromChieftainPower = $stateId == ST_PLAYER_TAKE_CARD_CHIEF_POWER;
 
@@ -134,7 +134,7 @@ trait ActionTrait {
             clienttranslate('${player_name} takes a ${card_color} ${card_type} card with special power ${card_display}') :
             clienttranslate('${player_name} takes a ${card_color} ${card_type} card associated with ${number} tokens ${card_display}');
 
-        self::notifyAllPlayers('takeCard', $message, [
+        $this->bga->notify->all('takeCard', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => $card->tokens, // for logs
@@ -187,7 +187,7 @@ trait ActionTrait {
             $tokenPile = ($pile + $i) % 6;
             $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('pile'.$tokenPile, 'player', $playerId));
 
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
+            $this->bga->notify->all('takeToken', clienttranslate('${player_name} takes resource ${type}'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'token' => $token,
@@ -243,7 +243,7 @@ trait ActionTrait {
             clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand (paid ${types}) ${card_display}') :
             clienttranslate('${player_name} plays a ${card_color} ${card_type} card from their hand ${card_display}');
         
-        self::notifyAllPlayers('playCard', $message, [
+        $this->bga->notify->all('playCard', $message, [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'card' => $card,
@@ -323,7 +323,7 @@ trait ActionTrait {
 
         $discard = true;
         if (count($tokens) <= $max) {
-            self::notifyAllPlayers('discardTokens', '', [
+            $this->bga->notify->all('discardTokens', '', [
                 'playerId' => $playerId,
                 'keptTokens' => $tokens,
                 'discardedTokens' => [],
@@ -351,7 +351,7 @@ trait ActionTrait {
 
         $this->incGameStateValue(CANCELLABLE_MOVES, 1);
 
-        self::notifyPlayer($playerId, 'discardCard', '', [
+        $this->bga->notify->player($playerId, 'discardCard', '', [
             'playerId' => $playerId,
             'card' => $card,
         ]);
@@ -383,7 +383,7 @@ trait ActionTrait {
     public function cancel() {
         self::checkAction('cancel');        
 
-        $stateId = intval($this->gamestate->state_id());
+        $stateId = $this->gamestate->getCurrentMainStateId();
 
         $this->gamestate->nextState(in_array($stateId, [ST_PLAYER_CONFIRM_TAKE_CARD, ST_PLAYER_SKIP_RESOURCE]) ? 'cancel' : 'next');
     }
@@ -414,7 +414,7 @@ trait ActionTrait {
 
         $this->incGameStateValue(CANCELLABLE_MOVES, 1);
 
-        self::notifyAllPlayers('storedToken', clienttranslate('${player_name} stores ${type} on a storage card'), [
+        $this->bga->notify->all('storedToken', clienttranslate('${player_name} stores ${type} on a storage card'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'type' => $token->type, // for logs
@@ -441,7 +441,7 @@ trait ActionTrait {
 
         $this->incGameStateValue(CANCELLABLE_MOVES, 1);
 
-        self::notifyAllPlayers('unstoredToken', clienttranslate('${player_name} removes ${type} from a storage card'), [
+        $this->bga->notify->all('unstoredToken', clienttranslate('${player_name} removes ${type} from a storage card'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'type' => $token->type, // for logs
@@ -469,7 +469,7 @@ trait ActionTrait {
 
         $this->tokens->moveCards(array_map(fn($token) => $token->id, $discardedTokens), 'discard');
 
-        self::notifyAllPlayers('discardTokens', clienttranslate('${player_name} discards ${types}'), [
+        $this->bga->notify->all('discardTokens', clienttranslate('${player_name} discards ${types}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'number' => count($discardedTokens), // for logs
@@ -497,7 +497,7 @@ trait ActionTrait {
 
         $this->setGlobalVariable(POWER_PAY_ONE_LESS, $undo->payOneLess);
 
-        self::notifyAllPlayers('cancelLastMoves', clienttranslate('${player_name} cancels their last moves'), [
+        $this->bga->notify->all('cancelLastMoves', clienttranslate('${player_name} cancels their last moves'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'cards' => $this->getCardsFromDb($this->cards->getCards($undo->cardsIds)),

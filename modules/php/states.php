@@ -55,7 +55,7 @@ trait StateTrait {
             }
 
             $scoreAux = count($this->getTokensByLocation('player', $playerId));
-            $this->DbQuery("UPDATE player SET player_score_aux = $scoreAux WHERE player_id = $playerId");
+            $this->bga->playerScoreAux->set($playerId, $scoreAux, null);
         }
 
         $this->notifyAllPlayers('cardScores', '', [

@@ -296,9 +296,9 @@ trait UtilTrait {
     function updateScore(int $playerId) {
         $playerScore = $this->getPlayerScore($playerId);
 
-        $this->DbQuery("UPDATE player SET player_score = $playerScore WHERE player_id = $playerId");
+        $this->bga->playerScore->set($playerId, $playerScore, null);
 
-        self::notifyAllPlayers('updateScore', '', [
+        $this->bga->notify->all('updateScore', '', [
             'playerId' => $playerId,
             'playerScore' => $playerScore,
         ]);
@@ -322,7 +322,7 @@ trait UtilTrait {
         $token = $this->getTokenFromDb($this->tokens->pickCardForLocation('deck', 'player', $playerId));
 
         if ($token !== null) {
-            self::notifyAllPlayers('takeToken', clienttranslate('${player_name} takes resource ${type} from resource pool'), [
+            $this->bga->notify->all('takeToken', clienttranslate('${player_name} takes resource ${type} from resource pool'), [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 'token' => $token,
@@ -365,7 +365,7 @@ trait UtilTrait {
         $tokens = $this->getTokensByLocation('player', $playerId);
 
         if ($logUndoPoint) {
-            self::notifyPlayer($playerId, 'log', clienttranslate('As you revealed a hidden element, Cancel last moves will only allow to come back to this point'), []);
+            $this->bga->notify->player($playerId, 'log', clienttranslate('As you revealed a hidden element, Cancel last moves will only allow to come back to this point'), []);
         }
 
         $this->setGlobalVariable(UNDO, new Undo(
@@ -387,7 +387,7 @@ trait UtilTrait {
         }
 
         //if (count($tokens) > 0) {
-            self::notifyAllPlayers('confirmStoredTokens', ''/*client translate('${player_name} stores ${number} resource(s)')*/, [
+            $this->bga->notify->all('confirmStoredTokens', ''/*client translate('${player_name} stores ${number} resource(s)')*/, [
                 'playerId' => $playerId,
                 'player_name' => $this->getPlayerName($playerId),
                 //'number' => count($tokens), // for logs

@@ -400,7 +400,7 @@ class Elawa implements ElawaGame {
             html += `
             </div>`;
 
-            dojo.place(html, `player_board_${player.id}`);
+            this.bga.playerPanels.getElement(Number(player.id)).insertAdjacentHTML('beforeend', html);
 
             const handCounter = new ebg.counter();
             handCounter.create(`playerhand-counter-${playerId}`);
@@ -434,7 +434,7 @@ class Elawa implements ElawaGame {
     }
 
     private setScore(playerId: number, score: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(score);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(score);
     }
 
     private getColorAddHtml() {

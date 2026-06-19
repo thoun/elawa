@@ -6,6 +6,7 @@
       "lib": ["dom", "esnext"],  
       "sourceMap": false,
       "outFile": "elawa.js",
+      "strict": false
     },
     "files": [
         "bga-framework.d.ts",

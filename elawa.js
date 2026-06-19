@@ -2951,7 +2951,7 @@ var Elawa = /** @class */ (function () {
                 }
             }
             html += "\n            </div>";
-            dojo.place(html, "player_board_".concat(player.id));
+            _this.bga.playerPanels.getElement(Number(player.id)).insertAdjacentHTML('beforeend', html);
             var handCounter = new ebg.counter();
             handCounter.create("playerhand-counter-".concat(playerId));
             handCounter.setValue(player.handCount);
@@ -2982,8 +2982,7 @@ var Elawa = /** @class */ (function () {
         this.playersTables.push(table);
     };
     Elawa.prototype.setScore = function (playerId, score) {
-        var _a;
-        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(score);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(score);
     };
     Elawa.prototype.getColorAddHtml = function () {
         var _this = this;

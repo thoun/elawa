@@ -109,6 +109,4 @@ $gameinfos = [
     //  minimum possible value: 320 (the lowest value you specify, the better the display is on mobile)
     'min' => 930,
   ],
-
-  'enable_3d' => false,
 ];
